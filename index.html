@@ -1,0 +1,745 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Générateur de Grandes Étiquettes Promo - PDF A4</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Polices Museo Slab & Montserrat -->
+    <link href="https://fonts.cdnfonts.com/css/museo-slab" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Arvo:ital,wght@0,400;0,700;1,400&family=Montserrat:wght@500;600;700;800;900&display=swap" rel="stylesheet">
+    <!-- PDF.js & Tesseract.js & jsPDF -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <style>
+        @font-face {
+            font-family: 'Museo Slab';
+            src: local('Museo Slab'), local('MuseoSlab-500'), url('https://fonts.cdnfonts.com/s/13918/Museo_Slab_500.woff') format('woff');
+            font-weight: 500;
+            font-style: normal;
+        }
+        @font-face {
+            font-family: 'Museo Slab';
+            src: local('Museo Slab 700'), local('MuseoSlab-700'), url('https://fonts.cdnfonts.com/s/13918/Museo_Slab_700.woff') format('woff');
+            font-weight: 700;
+            font-style: normal;
+        }
+        @font-face {
+            font-family: 'Museo Slab';
+            src: local('Museo Slab 900'), local('MuseoSlab-900'), url('https://fonts.cdnfonts.com/s/13918/Museo_Slab_900.woff') format('woff');
+            font-weight: 900;
+            font-style: normal;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 min-h-screen p-4 md:p-6 font-sans text-gray-800">
+    <div class="max-w-7xl mx-auto space-y-6">
+
+        <!-- BANDEAU DE CONFIGURATION GLOBALE -->
+        <div class="bg-white p-5 rounded-xl shadow-md border-t-4 border-red-600 space-y-4 sticky top-2 z-20">
+            <div class="flex flex-wrap justify-between items-center border-b pb-3 gap-2">
+                <div class="flex items-center gap-3">
+                    <h1 class="text-lg font-bold text-gray-800 uppercase tracking-wide">
+                        Générateur de Grandes Étiquettes Promo
+                    </h1>
+                    <span id="badgeCount" class="text-xs bg-red-100 text-red-700 font-bold px-2.5 py-1 rounded-full">
+                        1 étiquette
+                    </span>
+                </div>
+                <div class="flex items-center gap-3">
+                    <span id="ocrStatus" class="text-xs font-bold text-blue-700 bg-blue-50 px-3 py-1.5 rounded-lg border border-blue-200 hidden"></span>
+                    <label class="text-xs bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold py-1.5 px-3 rounded-lg cursor-pointer border border-gray-300 transition">
+                        🔤 Charger polices .OTF (Museo Slab)
+                        <input type="file" id="inputCustomFonts" accept=".otf,.ttf,.woff,.woff2" multiple class="hidden">
+                    </label>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 items-start">
+                <div class="bg-blue-50 p-2.5 rounded-lg border border-blue-200">
+                    <label class="block text-xs font-bold text-blue-900 uppercase mb-1">
+                        📷 1. Déposer photo / PDF (multi-étiquettes)
+                    </label>
+                    <input type="file" id="inputBlueLabel" accept=".jpeg,.jpg,.png,.pdf,.webp,.bmp,image/*,application/pdf" multiple
+                        class="w-full text-xs text-blue-800 file:mr-2 file:py-1.5 file:px-3 file:rounded-md file:border-0 file:text-xs file:font-bold file:bg-blue-600 file:text-white hover:file:bg-blue-700 cursor-pointer">
+                </div>
+
+                <div class="bg-red-50/50 p-2.5 rounded-lg border border-red-100">
+                    <div class="flex justify-between items-center mb-1">
+                        <label class="block text-xs font-bold text-gray-700 uppercase">
+                            🖼️ 2. Image Gauche (JPG, PNG, PDF)
+                        </label>
+                        <label class="flex items-center gap-1 text-[11px] text-gray-600 cursor-pointer" title="Supprime automatiquement les marges blanches des PDF">
+                            <input type="checkbox" id="chkAutoTrim" checked class="rounded text-red-600">
+                            Plein cadre auto
+                        </label>
+                    </div>
+                    <input type="file" id="inputLeftImage" accept=".jpeg,.jpg,.png,.pdf,.webp,.gif,.bmp,.svg,image/*,application/pdf" 
+                        class="w-full text-xs text-gray-600 file:mr-2 file:py-1.5 file:px-3 file:rounded-md file:border-0 file:text-xs file:font-bold file:bg-red-600 file:text-white hover:file:bg-red-700 cursor-pointer">
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-gray-700 uppercase mb-1">
+                        📅 Dates de l'offre (Ligne 1 | Ligne 2)
+                    </label>
+                    <input type="text" id="inputDates" value="DU MARDI 9 AU DIMANCHE 21 | SEPTEMBRE 2025*" 
+                        class="w-full p-2 border rounded-lg text-xs font-semibold focus:ring-2 focus:ring-red-500">
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-gray-700 uppercase mb-1">
+                        🎨 Couleur de la date
+                    </label>
+                    <div class="flex gap-2">
+                        <button type="button" id="btnDateWhite" class="flex-1 py-2 px-3 rounded-lg border-2 border-red-600 bg-gray-800 text-white text-xs font-bold flex items-center justify-center gap-1.5">
+                            <span class="w-3 h-3 rounded-full bg-white inline-block"></span> Blanc
+                        </button>
+                        <button type="button" id="btnDateBlack" class="flex-1 py-2 px-3 rounded-lg border border-gray-300 bg-white text-gray-900 text-xs font-bold flex items-center justify-center gap-1.5">
+                            <span class="w-3 h-3 rounded-full bg-black inline-block"></span> Noir
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 items-end pt-2 border-t border-gray-100">
+                <div>
+                    <label class="block text-xs font-bold text-gray-700 uppercase mb-1">
+                        🏷️ Pourcentage de remise
+                    </label>
+                    <input type="text" id="inputDiscount" value="-30%" 
+                        class="w-full p-2 border rounded-lg text-sm font-bold text-red-600 text-center">
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-gray-700 uppercase mb-1">
+                        💬 Phrase de remise (| = 2e ligne)
+                    </label>
+                    <input type="text" id="inputDiscountText" value="DE REMISE|IMMÉDIATE" 
+                        class="w-full p-2 border rounded-lg text-xs font-semibold">
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-gray-700 uppercase mb-1">
+                        📌 Mention sous prix
+                    </label>
+                    <input type="text" id="inputUnitLabel" value="LE PRODUIT" 
+                        class="w-full p-2 border rounded-lg text-xs font-bold text-red-600 uppercase">
+                </div>
+
+                <div>
+                    <button id="btnDownloadPdfA4" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-2.5 px-4 rounded-lg shadow transition duration-200 text-xs uppercase tracking-wider flex items-center justify-center gap-2">
+                        📄 Télécharger le PDF A4 (4 par page)
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- LISTE DES GRANDES ÉTIQUETTES GÉNÉRÉES -->
+        <div id="postersContainer" class="space-y-6"></div>
+
+    </div>
+
+    <script>
+        pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+
+        let postersList = [
+            {
+                productName: 'PURÉE DE TOMATES BOUTEILLE 680G',
+                oldPrice: 2.16,
+                baseKgPrice: 3.18,
+                weightKg: 0.680,
+                gencode: '8000320010088'
+            }
+        ];
+
+        let rawLeftImage = null;
+        let trimmedLeftImage = null;
+        let dateColor = '#FFFFFF';
+
+        const FONT_SLAB = '"Museo Slab", "Arvo", "Rockwell", serif';
+        const FONT_SANS = '"Montserrat", Arial, sans-serif';
+
+        document.getElementById('inputCustomFonts').addEventListener('change', async function(e) {
+            const files = Array.from(e.target.files);
+            for (const file of files) {
+                const buffer = await file.arrayBuffer();
+                const name = file.name.toLowerCase();
+                let weight = '500';
+                if (name.includes('900')) weight = '900';
+                else if (name.includes('700')) weight = '700';
+                const fontFace = new FontFace('Museo Slab', buffer, { weight });
+                await fontFace.load();
+                document.fonts.add(fontFace);
+            }
+            renderAllPosters();
+        });
+
+        const btnDateWhite = document.getElementById('btnDateWhite');
+        const btnDateBlack = document.getElementById('btnDateBlack');
+
+        btnDateWhite.addEventListener('click', () => {
+            dateColor = '#FFFFFF';
+            btnDateWhite.className = "flex-1 py-2 px-3 rounded-lg border-2 border-red-600 bg-gray-800 text-white text-xs font-bold flex items-center justify-center gap-1.5";
+            btnDateBlack.className = "flex-1 py-2 px-3 rounded-lg border border-gray-300 bg-white text-gray-900 text-xs font-bold flex items-center justify-center gap-1.5";
+            renderAllPosters();
+        });
+
+        btnDateBlack.addEventListener('click', () => {
+            dateColor = '#000000';
+            btnDateBlack.className = "flex-1 py-2 px-3 rounded-lg border-2 border-red-600 bg-gray-100 text-gray-900 text-xs font-bold flex items-center justify-center gap-1.5";
+            btnDateWhite.className = "flex-1 py-2 px-3 rounded-lg border border-gray-300 bg-gray-700 text-white text-xs font-bold flex items-center justify-center gap-1.5 opacity-70";
+            renderAllPosters();
+        });
+
+        function autoTrimWhiteBorders(img) {
+            const tempCanvas = document.createElement('canvas');
+            const tempCtx = tempCanvas.getContext('2d');
+            tempCanvas.width = img.width;
+            tempCanvas.height = img.height;
+            tempCtx.drawImage(img, 0, 0);
+
+            const imgData = tempCtx.getImageData(0, 0, tempCanvas.width, tempCanvas.height);
+            const data = imgData.data;
+            const w = tempCanvas.width;
+            const h = tempCanvas.height;
+
+            let top = 0, bottom = h - 1, left = 0, right = w - 1;
+            const isWhite = (x, y) => {
+                const idx = (y * w + x) * 4;
+                return data[idx + 3] < 15 || (data[idx] > 240 && data[idx + 1] > 240 && data[idx + 2] > 240);
+            };
+
+            topLoop: for (let y = 0; y < h; y++) {
+                for (let x = 0; x < w; x++) { if (!isWhite(x, y)) { top = y; break topLoop; } }
+            }
+            bottomLoop: for (let y = h - 1; y >= top; y--) {
+                for (let x = 0; x < w; x++) { if (!isWhite(x, y)) { bottom = y; break bottomLoop; } }
+            }
+            leftLoop: for (let x = 0; x < w; x++) {
+                for (let y = top; y <= bottom; y++) { if (!isWhite(x, y)) { left = x; break leftLoop; } }
+            }
+            rightLoop: for (let x = w - 1; x >= left; x--) {
+                for (let y = top; y <= bottom; y++) { if (!isWhite(x, y)) { right = x; break rightLoop; } }
+            }
+
+            const cropW = right - left + 1;
+            const cropH = bottom - top + 1;
+            if (cropW <= 20 || cropH <= 20) return img;
+
+            const outCanvas = document.createElement('canvas');
+            outCanvas.width = cropW;
+            outCanvas.height = cropH;
+            outCanvas.getContext('2d').drawImage(tempCanvas, left, top, cropW, cropH, 0, 0, cropW, cropH);
+
+            const outImg = new Image();
+            outImg.src = outCanvas.toDataURL('image/png');
+            return outImg;
+        }
+
+        async function loadFileToImage(file) {
+            if (file.type === 'application/pdf' || file.name.toLowerCase().endsWith('.pdf')) {
+                const arrayBuffer = await file.arrayBuffer();
+                const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+                const page = await pdf.getPage(1);
+                const viewport = page.getViewport({ scale: 2.5 });
+                const tempCanvas = document.createElement('canvas');
+                const tempCtx = tempCanvas.getContext('2d');
+                tempCanvas.width = viewport.width;
+                tempCanvas.height = viewport.height;
+                await page.render({ canvasContext: tempCtx, viewport: viewport }).promise;
+                
+                return new Promise((resolve) => {
+                    const img = new Image();
+                    img.onload = () => resolve(img);
+                    img.src = tempCanvas.toDataURL('image/png');
+                });
+            } else {
+                return new Promise((resolve) => {
+                    const reader = new FileReader();
+                    reader.onload = (e) => {
+                        const img = new Image();
+                        img.onload = () => resolve(img);
+                        img.src = e.target.result;
+                    };
+                    reader.readAsDataURL(file);
+                });
+            }
+        }
+
+        document.getElementById('inputLeftImage').addEventListener('change', async function(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+            rawLeftImage = await loadFileToImage(file);
+            trimmedLeftImage = autoTrimWhiteBorders(rawLeftImage);
+            trimmedLeftImage.onload = renderAllPosters;
+            setTimeout(renderAllPosters, 100);
+        });
+
+        document.getElementById('chkAutoTrim').addEventListener('change', renderAllPosters);
+
+        function upscaleImageForOCR(img) {
+            const c = document.createElement('canvas');
+            const ctxUp = c.getContext('2d');
+            const scale = img.width < 1400 ? 2 : 1.5;
+            c.width = Math.round(img.width * scale);
+            c.height = Math.round(img.height * scale);
+            ctxUp.imageSmoothingEnabled = true;
+            ctxUp.imageSmoothingQuality = 'high';
+            ctxUp.drawImage(img, 0, 0, c.width, c.height);
+            return c.toDataURL('image/png');
+        }
+
+        function isCleanProductLine(line) {
+            if (!line || line.length < 4) return false;
+            if (/^(cont|prix|000|251|260|\d{5,})/i.test(line)) return false;
+            const words = line.split(/\s+/);
+            const realWords = words.filter(w => /^[A-Za-zÀ-ÿ().'-]{3,}$/.test(w) && /[aeiouyàâéèêëîïôùûü]/i.test(w));
+            return realWords.length >= 1;
+        }
+
+        function parseMultipleLabelsFromOCR(rawText) {
+            const lines = rawText
+                .split('\n')
+                .map(l => l.trim())
+                .filter(l => l.length >= 3);
+
+            const contIndices = [];
+            for (let i = 0; i < lines.length; i++) {
+                if (/cont\s*[:.;]?\s*\d+[.,]\d+/i.test(lines[i]) || /\b\d+[.,]\d{3}\s*(kg|l)\b/i.test(lines[i])) {
+                    contIndices.push(i);
+                }
+            }
+
+            if (contIndices.length === 0) {
+                const gencodes = [...rawText.matchAll(/\b(\d{12,13})\b/g)].map(m => m[1]);
+                if (gencodes.length === 0) return [];
+                return gencodes.map(gc => ({
+                    productName: 'PRODUIT',
+                    oldPrice: 1.98,
+                    baseKgPrice: 5.66,
+                    weightKg: 0.350,
+                    gencode: gc
+                }));
+            }
+
+            const detectedLabels = [];
+
+            for (let k = 0; k < contIndices.length; k++) {
+                const contIdx = contIndices[k];
+                const prevContIdx = k > 0 ? contIndices[k - 1] : -1;
+                const nextContIdx = k < contIndices.length - 1 ? contIndices[k + 1] : lines.length;
+
+                let greenBoxName = '';
+                let fallbackUpperName = '';
+
+                const searchStart = Math.max(prevContIdx + 1, contIdx - 6);
+                for (let i = contIdx - 1; i >= searchStart; i--) {
+                    const candidate = lines[i]
+                        .replace(/^[^A-Za-zÀ-ÿ0-9]+|[^A-Za-zÀ-ÿ0-9)]+$/g, '')
+                        .trim();
+
+                    if (!isCleanProductLine(candidate)) continue;
+
+                    const lowers = (candidate.match(/[a-zà-ÿ]/g) || []).length;
+                    const uppers = (candidate.match(/[A-ZÀ-Ý]/g) || []).length;
+
+                    if (lowers >= 2 && !greenBoxName) {
+                        greenBoxName = candidate.toUpperCase();
+                    } else if (uppers > lowers && !fallbackUpperName) {
+                        fallbackUpperName = candidate.toUpperCase();
+                    }
+                }
+
+                const finalProductName = greenBoxName || fallbackUpperName || 'PRODUIT';
+
+                const blockLines = lines.slice(contIdx, Math.min(lines.length, nextContIdx));
+                const blockText = blockLines.join('\n');
+
+                let weightKg = 0.350;
+                const contMatch = blockText.match(/cont\s*[:.;]?\s*(\d+[.,]\d+)\s*(kg|l|g|ml)/i)
+                               || blockText.match(/(\d+[.,]\d{3})\s*(kg|l)/i);
+                if (contMatch) {
+                    const val = parseFloat(contMatch[1].replace(',', '.'));
+                    const unit = (contMatch[2] || 'kg').toLowerCase();
+                    weightKg = (unit === 'kg' || unit === 'l') ? val : val / 1000;
+                }
+
+                let baseKgPrice = 5.66;
+                const prixKgMatch = blockText.match(/prix\s*(?:kg|l)?\s*[:.]?\s*(\d+[.,]\d{2})/i)
+                                 || blockText.match(/(\d+[.,]\d{2})\s*€/i);
+                if (prixKgMatch) {
+                    baseKgPrice = parseFloat(prixKgMatch[1].replace(',', '.'));
+                }
+
+                let gencode = '';
+                const gencodeMatch = blockText.replace(/\s+/g, ' ').match(/\b(\d{12,13})\b/);
+                if (gencodeMatch) {
+                    gencode = gencodeMatch[1];
+                }
+
+                let oldPrice = Math.round(weightKg * baseKgPrice * 100) / 100;
+                if (!oldPrice || oldPrice <= 0) {
+                    const priceFallback = blockText.match(/(\d+)[.,\s€]+(\d{2})\b/);
+                    if (priceFallback) {
+                        oldPrice = parseFloat(`${priceFallback[1]}.${priceFallback[2]}`);
+                    } else {
+                        oldPrice = 1.98;
+                    }
+                }
+
+                detectedLabels.push({
+                    productName: finalProductName,
+                    oldPrice: oldPrice,
+                    baseKgPrice: baseKgPrice,
+                    weightKg: weightKg,
+                    gencode: gencode
+                });
+            }
+
+            return detectedLabels;
+        }
+
+        document.getElementById('inputBlueLabel').addEventListener('change', async function(e) {
+            const files = Array.from(e.target.files);
+            if (files.length === 0) return;
+
+            const status = document.getElementById('ocrStatus');
+            status.classList.remove('hidden');
+            status.textContent = "⏳ Analyse multi-étiquettes en cours...";
+
+            try {
+                let allDetected = [];
+                for (const file of files) {
+                    const img = await loadFileToImage(file);
+                    const upscaledDataUrl = upscaleImageForOCR(img);
+                    const result = await Tesseract.recognize(upscaledDataUrl, 'fra');
+                    const parsed = parseMultipleLabelsFromOCR(result.data.text);
+                    allDetected = allDetected.concat(parsed);
+                }
+
+                if (allDetected.length > 0) {
+                    postersList = allDetected;
+                    status.textContent = `✅ ${postersList.length} étiquette(s) détectée(s) et générée(s) !`;
+                } else {
+                    status.textContent = "⚠️ Aucune étiquette détectée.";
+                }
+
+                renderAllPosters();
+            } catch (err) {
+                console.error(err);
+                status.textContent = "⚠️ Erreur lors de l'analyse.";
+            }
+        });
+
+        function drawFormattedPrice(ctx, priceNumber, centerX, baselineY, isOldPrice) {
+            const priceStr = priceNumber.toFixed(2).replace('.', ',');
+            const parts = priceStr.split(',');
+            const euros = parts[0] || '0';
+            const cents = parts[1] ? ',' + parts[1] : '';
+
+            if (isOldPrice) {
+                ctx.fillStyle = '#000000';
+                ctx.font = `900 62px ${FONT_SLAB}`;
+                const euroWidth = ctx.measureText(euros).width;
+
+                ctx.font = `900 32px ${FONT_SLAB}`;
+                const centWidth = ctx.measureText(cents).width;
+
+                const totalWidth = euroWidth + centWidth;
+                const startX = centerX - (totalWidth / 2);
+
+                ctx.textAlign = 'left';
+                ctx.font = `900 62px ${FONT_SLAB}`;
+                ctx.fillText(euros, startX, baselineY);
+
+                ctx.font = `900 28px ${FONT_SLAB}`;
+                ctx.fillText('€', startX + euroWidth + 2, baselineY - 29);
+
+                ctx.font = `900 32px ${FONT_SLAB}`;
+                ctx.fillText(cents, startX + euroWidth + 2, baselineY);
+
+                ctx.strokeStyle = '#000000';
+                ctx.lineWidth = 4.5;
+                ctx.beginPath();
+                ctx.moveTo(startX - 6, baselineY - 5);
+                ctx.lineTo(startX + totalWidth + 8, baselineY - 42);
+                ctx.stroke();
+            } else {
+                ctx.fillStyle = '#EE1C25';
+                ctx.font = `900 124px ${FONT_SLAB}`;
+                const euroWidth = ctx.measureText(euros).width;
+
+                ctx.font = `900 55px ${FONT_SLAB}`;
+                const centWidth = ctx.measureText(cents).width;
+
+                const totalWidth = euroWidth + centWidth;
+                const startX = centerX - (totalWidth / 2);
+
+                ctx.textAlign = 'left';
+                ctx.font = `900 124px ${FONT_SLAB}`;
+                ctx.fillText(euros, startX, baselineY);
+
+                ctx.font = `900 50px ${FONT_SLAB}`;
+                ctx.fillText('€', startX + euroWidth + 3, baselineY - 58);
+
+                ctx.font = `900 55px ${FONT_SLAB}`;
+                ctx.fillText(cents, startX + euroWidth + 3, baselineY);
+            }
+        }
+
+        function drawLeftZoneImage(ctx, img, zoneWidth, zoneHeight) {
+            ctx.save();
+            ctx.beginPath();
+            ctx.rect(0, 0, zoneWidth, zoneHeight);
+            ctx.clip();
+
+            const scale = Math.max(zoneWidth / img.width, zoneHeight / img.height);
+            const w = img.width * scale;
+            const h = img.height * scale;
+            ctx.drawImage(img, (zoneWidth - w) / 2, (zoneHeight - h) / 2, w, h);
+
+            ctx.restore();
+        }
+
+        function wrapSlabText(ctx, text, x, y, maxWidth, lineHeight) {
+            const words = text.split(/\s+/);
+            let line = '';
+            let currentY = y;
+
+            for (let n = 0; n < words.length; n++) {
+                const testLine = line + words[n] + ' ';
+                const testWidth = ctx.measureText(testLine).width;
+                if (testWidth > maxWidth && n > 0) {
+                    ctx.fillText(line.trim(), x, currentY);
+                    line = words[n] + ' ';
+                    currentY += lineHeight;
+                } else {
+                    line = testLine;
+                }
+            }
+            if (line.trim()) {
+                ctx.fillText(line.trim(), x, currentY);
+                currentY += lineHeight;
+            }
+            return currentY;
+        }
+
+        function drawSinglePoster(canvas, item) {
+            const ctx = canvas.getContext('2d');
+            const discountMatch = document.getElementById('inputDiscount').value.match(/(\d+(?:[.,]\d+)?)/);
+            const pct = discountMatch ? parseFloat(discountMatch[1].replace(',', '.')) : 0;
+
+            const newPrice = item.oldPrice * (1 - pct / 100);
+            let pricePerKgText = '';
+            if (item.weightKg > 0) {
+                const newKg = newPrice / item.weightKg;
+                pricePerKgText = `Le kg : ${newKg.toFixed(2).replace('.', ',')} €`;
+            } else if (item.baseKgPrice > 0) {
+                const newKg = item.baseKgPrice * (1 - pct / 100);
+                pricePerKgText = `Le kg : ${newKg.toFixed(2).replace('.', ',')} €`;
+            }
+
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // 1. Fond blanc
+            ctx.fillStyle = '#FFFFFF';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            // 2. Zone Rouge Gauche
+            const leftWidth = 412;
+            ctx.fillStyle = '#EE1C25';
+            ctx.fillRect(0, 0, leftWidth, canvas.height);
+
+            const activeImg = document.getElementById('chkAutoTrim').checked ? (trimmedLeftImage || rawLeftImage) : rawLeftImage;
+            if (activeImg && activeImg.complete) {
+                drawLeftZoneImage(ctx, activeImg, leftWidth, canvas.height);
+            }
+
+            // Dates
+            const dateRaw = document.getElementById('inputDates').value.trim();
+            if (dateRaw) {
+                const dateLines = dateRaw.split('|').map(s => s.trim());
+                ctx.fillStyle = dateColor;
+                ctx.font = `500 18px ${FONT_SLAB}`;
+                ctx.textAlign = 'center';
+                dateLines.forEach((line, index) => {
+                    ctx.fillText(line, leftWidth / 2, 35 + (index * 22));
+                });
+            }
+
+            // 3. Prix
+            const priceCenterX = 595;
+            drawFormattedPrice(ctx, item.oldPrice, priceCenterX + 25, 168, true);
+            drawFormattedPrice(ctx, newPrice, priceCenterX, 270, false);
+
+            ctx.fillStyle = '#EE1C25';
+            ctx.font = `800 15px ${FONT_SANS}`;
+            ctx.textAlign = 'center';
+            ctx.fillText(document.getElementById('inputUnitLabel').value.toUpperCase(), priceCenterX + 18, 300);
+
+            ctx.fillStyle = '#000000';
+            ctx.font = `600 15px ${FONT_SANS}`;
+            ctx.fillText(pricePerKgText, priceCenterX + 25, 320);
+
+            // 4. Cercle Remise
+            const circleX = 782;
+            const circleY = 185;
+            const radius = 114;
+
+            ctx.fillStyle = '#EE1C25';
+            ctx.beginPath();
+            ctx.arc(circleX, circleY, radius, 0, Math.PI * 2);
+            ctx.fill();
+
+            const discountStr = document.getElementById('inputDiscount').value.trim();
+            ctx.fillStyle = '#FFFFFF';
+            ctx.textAlign = 'center';
+
+            if (discountStr.endsWith('%')) {
+                const numPart = discountStr.slice(0, -1);
+                ctx.font = `900 74px ${FONT_SLAB}`;
+                const numW = ctx.measureText(numPart).width;
+                ctx.font = `900 42px ${FONT_SLAB}`;
+                const pctW = ctx.measureText('%').width;
+
+                const startX = circleX - ((numW + pctW) / 2);
+                ctx.textAlign = 'left';
+                ctx.font = `900 74px ${FONT_SLAB}`;
+                ctx.fillText(numPart, startX, circleY + 2);
+
+                ctx.font = `900 42px ${FONT_SLAB}`;
+                ctx.fillText('%', startX + numW + 2, circleY - 24);
+            } else {
+                ctx.font = `900 70px ${FONT_SLAB}`;
+                ctx.fillText(discountStr, circleX, circleY + 2);
+            }
+
+            const discTextLines = document.getElementById('inputDiscountText').value.split('|');
+            ctx.font = `700 21px ${FONT_SLAB}`;
+            ctx.textAlign = 'center';
+            discTextLines.forEach((line, idx) => {
+                ctx.fillText(line.trim(), circleX, circleY + 32 + (idx * 24));
+            });
+
+            // 5. Nom du produit
+            const rightX = 915;
+            const maxRightWidth = 270;
+
+            ctx.fillStyle = '#000000';
+            ctx.textAlign = 'left';
+
+            const fontSize = item.productName.length > 36 ? 31 : 36;
+            const lineHeight = item.productName.length > 36 ? 37 : 42;
+            ctx.font = `900 ${fontSize}px ${FONT_SLAB}`;
+
+            wrapSlabText(ctx, item.productName.toUpperCase(), rightX, 72, maxRightWidth, lineHeight);
+
+            // 6. Bas de l'étiquette (Mention + Gencode seul)
+            ctx.fillStyle = '#000000';
+            ctx.font = `500 12px ${FONT_SANS}`;
+            ctx.fillText("* Selon jour d'ouverture de votre magasin", 422, 396);
+
+            if (item.gencode) {
+                ctx.fillStyle = '#000000';
+                ctx.font = `700 19px ${FONT_SANS}`;
+                ctx.fillText(item.gencode, rightX, 396);
+            }
+        }
+
+        function renderAllPosters() {
+            const container = document.getElementById('postersContainer');
+            container.innerHTML = '';
+
+            document.getElementById('badgeCount').textContent = `${postersList.length} étiquette${postersList.length > 1 ? 's' : ''}`;
+
+            postersList.forEach((item, index) => {
+                const card = document.createElement('div');
+                card.className = 'bg-white p-5 rounded-xl shadow-md space-y-3';
+
+                const header = document.createElement('div');
+                header.className = 'flex items-center border-b pb-2 gap-3';
+                header.innerHTML = `
+                    <span class="bg-gray-800 text-white text-xs font-bold px-2.5 py-1 rounded">
+                        Étiquette #${index + 1}
+                    </span>
+                    <input type="text" data-idx="${index}" value="${item.productName.replace(/"/g, '&quot;')}" 
+                        class="poster-title-input flex-1 text-xs font-bold uppercase border rounded px-2.5 py-1 text-gray-800 focus:ring-2 focus:ring-red-500"
+                        title="Corriger le nom du produit si nécessaire" />
+                `;
+
+                const canvasWrapper = document.createElement('div');
+                canvasWrapper.className = 'overflow-x-auto w-full flex justify-center border border-gray-200 bg-gray-100 p-4 rounded-lg';
+
+                const canvas = document.createElement('canvas');
+                canvas.width = 1200;
+                canvas.height = 420;
+                canvas.id = `posterCanvas_${index}`;
+                canvas.className = 'max-w-full h-auto shadow-md bg-white';
+
+                canvasWrapper.appendChild(canvas);
+                card.appendChild(header);
+                card.appendChild(canvasWrapper);
+                container.appendChild(card);
+
+                drawSinglePoster(canvas, item);
+            });
+
+            document.querySelectorAll('.poster-title-input').forEach(input => {
+                input.addEventListener('input', function() {
+                    const idx = parseInt(this.getAttribute('data-idx'), 10);
+                    postersList[idx].productName = this.value.toUpperCase();
+                    const c = document.getElementById(`posterCanvas_${idx}`);
+                    if (c) drawSinglePoster(c, postersList[idx]);
+                });
+            });
+        }
+
+        // EXPORT PDF A4 PORTRAIT : 4 étiquettes par page, pleine largeur, sans espace vertical
+        document.getElementById('btnDownloadPdfA4').addEventListener('click', async function() {
+            const { jsPDF } = window.jspdf;
+            const pdf = new jsPDF('p', 'mm', 'a4'); // A4 Portrait (210 x 297 mm)
+            
+            const pageWidth = 210; // mm (pleine largeur)
+            const pageHeight = 297; // mm
+            const posterHeightMm = pageHeight / 4; // Exactement 4 étiquettes en hauteur (~74.25 mm chacune)
+            const maxPerPage = 4;
+
+            for (let i = 0; i < postersList.length; i++) {
+                const pageIndex = Math.floor(i / maxPerPage);
+                const posOnPage = i % maxPerPage;
+
+                if (pageIndex > 0 && posOnPage === 0) {
+                    pdf.addPage();
+                }
+
+                const canvas = document.getElementById(`posterCanvas_${i}`);
+                if (!canvas) continue;
+
+                const imgData = canvas.toDataURL('image/jpeg', 0.98);
+                const posY = posOnPage * posterHeightMm;
+
+                // Position x=0, y=posY, largeur 210mm, hauteur exacte pour 4 par page, sans marges ni espaces
+                pdf.addImage(imgData, 'JPEG', 0, posY, pageWidth, posterHeightMm);
+            }
+
+            pdf.save('grandes_etiquettes_promo_A4.pdf');
+        });
+
+        ['inputDates', 'inputDiscount', 'inputDiscountText', 'inputUnitLabel'].forEach(id => {
+            document.getElementById(id).addEventListener('input', () => {
+                postersList.forEach((item, idx) => {
+                    const c = document.getElementById(`posterCanvas_${idx}`);
+                    if (c) drawSinglePoster(c, item);
+                });
+            });
+        });
+
+        document.fonts.ready.then(() => {
+            renderAllPosters();
+        });
+        window.onload = renderAllPosters;
+    </script>
+</body>
+</html>
