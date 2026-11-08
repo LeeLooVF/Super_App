@@ -233,7 +233,7 @@
                     </p>
                 </div>
                 <div class="flex flex-wrap items-center gap-2">
-                    <input type="text" id="inputSearchGallery" placeholder="🔍 Filtrer (ex: Cirio, Mutti, Noël...)" 
+                    <input type="text" id="inputSearchGallery" placeholder="🔍 Filtrer (ex: Always, Ariel, Nutella...)" 
                         class="text-xs border rounded-lg px-3 py-1.5 w-48 focus:ring-2 focus:ring-red-500">
                     <label class="text-xs font-bold bg-red-600 hover:bg-red-700 text-white px-3 py-1.5 rounded-lg cursor-pointer shadow-sm transition" title="Sélectionne une ou toutes les images pour les mémoriser à 100%">
                         ➕ Ajouter & Mémoriser image(s)
@@ -282,86 +282,86 @@
     <script>
         pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
 
-        // Liste complète pointant vers le sous-dossier "Images Gauche/"[cite: 11]
+        // Liste complète mise à jour avec les fichiers .webp du dossier "Images Gauche"
         const PRESET_IMAGES = [
-            { label: '20% Carte U', file: 'Images Gauche/20%carte_U.png', alts: ['Images Gauche/20%carte_u.png', 'Images Gauche/20carte_U.png', 'Images Gauche/20%carte_U.jpg'] },
-            { label: 'Always', file: 'Images Gauche/Always.png', alts: ['Images Gauche/always.png', 'Images Gauche/Always.jpg'] },
-            { label: 'Always 1', file: 'Images Gauche/Always1.png', alts: ['Images Gauche/always1.png', 'Images Gauche/Always1.jpg'] },
-            { label: 'Ariel', file: 'Images Gauche/Ariel.png', alts: ['Images Gauche/ariel.png', 'Images Gauche/Ariel.jpg'] },
-            { label: 'Ariel 1', file: 'Images Gauche/Ariel1.png', alts: ['Images Gauche/ariel1.png', 'Images Gauche/Ariel1.jpg'] },
-            { label: 'Belin', file: 'Images Gauche/Belin1.jpg', alts: ['Images Gauche/Belin1.png', 'Images Gauche/belin1.jpg', 'Images Gauche/Belin.png'] },
-            { label: 'Bjorg', file: 'Images Gauche/Bjorg.png', alts: ['Images Gauche/bjorg.png', 'Images Gauche/Bjorg.jpg'] },
-            { label: 'BN Logo', file: 'Images Gauche/BN - Logo.png', alts: ['Images Gauche/BN-Logo.png', 'Images Gauche/bn - logo.png'] },
-            { label: 'BN 1', file: 'Images Gauche/Bn1.png', alts: ['Images Gauche/BN1.png', 'Images Gauche/bn1.png'] },
-            { label: 'BN 2', file: 'Images Gauche/Bn2.png', alts: ['Images Gauche/BN2.png', 'Images Gauche/bn2.png'] },
-            { label: 'BN 3', file: 'Images Gauche/Bn3.png', alts: ['Images Gauche/BN3.png', 'Images Gauche/bn3.png'] },
-            { label: 'Bonne Année', file: 'Images Gauche/bonne annee.png', alts: ['Images Gauche/Bonne annee.png', 'Images Gauche/bonne année.png'] },
-            { label: 'Bonne Maman', file: 'Images Gauche/BonneMaman.png', alts: ['Images Gauche/bonnemaman.png', 'Images Gauche/Bonne_Maman.png'] },
-            { label: 'Bredele', file: 'Images Gauche/bredele.png', alts: ['Images Gauche/Bredele.png', 'Images Gauche/bredele.jpg'] },
-            { label: 'Carte Noire', file: 'Images Gauche/Carte_Noire.png', alts: ['Images Gauche/carte_noire.png', 'Images Gauche/Carte Noire.png'] },
-            { label: 'Carte Noire 1', file: 'Images Gauche/Carte_Noire1.png', alts: ['Images Gauche/carte_noire1.png', 'Images Gauche/Carte Noire1.png'] },
-            { label: 'Carte Noire 2', file: 'Images Gauche/Carte_Noire2.png', alts: ['Images Gauche/carte_noire2.png', 'Images Gauche/Carte Noire2.png'] },
-            { label: 'Carte Noire 3', file: 'Images Gauche/carte noire3.png', alts: ['Images Gauche/Carte_Noire3.png', 'Images Gauche/carte_noire3.png'] },
-            { label: "Carte d'Or", file: 'Images Gauche/CarteDor.png', alts: ['Images Gauche/Cartedor.png', 'Images Gauche/cartedor.png'] },
-            { label: 'Chupa Chups', file: 'Images Gauche/Chupa_Chups.png', alts: ['Images Gauche/chupa_chups.png', 'Images Gauche/Chupa Chups.png'] },
-            { label: 'Cirio 1', file: 'Images Gauche/Cirio1.jpg', alts: ['Images Gauche/cirio1.jpg', 'Images Gauche/Cirio1.png'] },
-            { label: 'Cirio 2', file: 'Images Gauche/Cirio2.jpg', alts: ['Images Gauche/cirio2.jpg', 'Images Gauche/Cirio2.png'] },
-            { label: "Côte d'Or", file: 'Images Gauche/cote dor.png', alts: ['Images Gauche/Cote dor.png', 'Images Gauche/CoteDor.png'] },
-            { label: 'Daisuki', file: 'Images Gauche/daisuki.jpg', alts: ['Images Gauche/Daisuki.jpg', 'Images Gauche/daisuki.png'] },
-            { label: 'Daisuki 1', file: 'Images Gauche/daisuki1.jpg', alts: ['Images Gauche/Daisuki1.jpg', 'Images Gauche/daisuki1.png'] },
-            { label: 'Divella', file: 'Images Gauche/Divella.png', alts: ['Images Gauche/divella.png', 'Images Gauche/Divella.jpg'] },
-            { label: 'Divella 2', file: 'Images Gauche/divella2.jpg', alts: ['Images Gauche/Divella2.jpg', 'Images Gauche/divella2.png'] },
-            { label: 'Divella 3', file: 'Images Gauche/divella3.jpg', alts: ['Images Gauche/Divella3.jpg', 'Images Gauche/divella3.png'] },
-            { label: 'Divella 4', file: 'Images Gauche/divella4.jpg', alts: ['Images Gauche/Divella4.jpg', 'Images Gauche/divella4.png'] },
-            { label: 'Fabriqué en France', file: 'Images Gauche/fabriquer en france.png', alts: ['Images Gauche/Fabriquer en france.png', 'Images Gauche/fabriqué en france.png'] },
-            { label: 'Gavottes', file: 'Images Gauche/Gavottes.jpg', alts: ['Images Gauche/gavottes.jpg', 'Images Gauche/Gavottes.png'] },
-            { label: 'Gillette', file: 'Images Gauche/Gilette.png', alts: ['Images Gauche/Gillette.png', 'Images Gauche/gilette.png'] },
-            { label: 'Gillette 1', file: 'Images Gauche/Gilette1.png', alts: ['Images Gauche/Gillette1.png', 'Images Gauche/gilette1.png'] },
-            { label: 'Granola', file: 'Images Gauche/Granola.png', alts: ['Images Gauche/granola.png', 'Images Gauche/Granola.jpg'] },
-            { label: 'Granola 1', file: 'Images Gauche/Granola1.png', alts: ['Images Gauche/granola1.png', 'Images Gauche/Granola1.jpg'] },
-            { label: 'Halloween', file: 'Images Gauche/halloween.png', alts: ['Images Gauche/Halloween.png', 'Images Gauche/halloween.jpg'] },
-            { label: 'Direction Italie', file: 'Images Gauche/italie.png', alts: ['Images Gauche/Italie.png', 'Images Gauche/italie.jpg'] },
-            { label: 'Prix Bas Semaine', file: 'Images Gauche/Les_Prix_Bas_De_La_Semaine.png', alts: ['Images Gauche/les_prix_bas_de_la_semaine.png'] },
-            { label: 'Lindt', file: 'Images Gauche/Lindt.png', alts: ['Images Gauche/lindt.png', 'Images Gauche/Lindt.jpg'] },
-            { label: 'Local et Engagé', file: 'Images Gauche/local et engage.png', alts: ['Images Gauche/Local et engage.png', 'Images Gauche/local et engagé.png'] },
-            { label: 'Logo PomPotes', file: 'Images Gauche/LOGO_POMPOTES.png', alts: ['Images Gauche/logo_pompotes.png', 'Images Gauche/Logo_Pompotes.png'] },
-            { label: "L'Or", file: "Images Gauche/L'or.png", alts: ["Images Gauche/l'or.png", "Images Gauche/L'Or.png", "Images Gauche/Lor.png"] },
-            { label: 'LU', file: 'Images Gauche/Lu.png', alts: ['Images Gauche/LU.png', 'Images Gauche/lu.png'] },
-            { label: 'Matthieu', file: 'Images Gauche/Matthieu.png', alts: ['Images Gauche/matthieu.png', 'Images Gauche/Mathieu.png'] },
-            { label: 'Milka', file: 'Images Gauche/milka.png', alts: ['Images Gauche/Milka.png', 'Images Gauche/milka.jpg'] },
-            { label: 'Mutti', file: 'Images Gauche/Mutti.png', alts: ['Images Gauche/mutti.png', 'Images Gauche/Mutti.jpg'] },
-            { label: 'Mutti 1', file: 'Images Gauche/mutti1.png', alts: ['Images Gauche/Mutti1.png', 'Images Gauche/mutti1.jpg'] },
-            { label: 'Mutti 2', file: 'Images Gauche/mutti2.jpg', alts: ['Images Gauche/Mutti2.jpg', 'Images Gauche/mutti2.png'] },
-            { label: 'Mutti 3', file: 'Images Gauche/mutti3.png', alts: ['Images Gauche/Mutti3.png', 'Images Gauche/mutti3.jpg'] },
-            { label: 'Noël', file: 'Images Gauche/noel.png', alts: ['Images Gauche/noel.jpg', 'Images Gauche/Noel.png', 'Images Gauche/noël.png'] },
-            { label: 'Nutella', file: 'Images Gauche/Nutella.png', alts: ['Images Gauche/nutella.png', 'Images Gauche/Nutella.jpg'] },
-            { label: 'Old El Paso', file: 'Images Gauche/Oldepaso.png', alts: ['Images Gauche/oldepaso.png', 'Images Gauche/Oldelpaso.png'] },
-            { label: 'Old El Paso 1', file: 'Images Gauche/oldelpaso1.png', alts: ['Images Gauche/oldelpaso1.jpg', 'Images Gauche/Oldelpaso1.png', 'Images Gauche/odepaso1.png'] },
-            { label: 'Old El Paso 2', file: 'Images Gauche/oldelpaso2.jpg', alts: ['Images Gauche/oldelpaso2.png', 'Images Gauche/Oldelpaso2.jpg', 'Images Gauche/odepaso2.png'] },
-            { label: 'Old El Paso 3', file: 'Images Gauche/oldelpaso3.jpg', alts: ['Images Gauche/oldelpaso3.png', 'Images Gauche/Oldelpaso3.jpg', 'Images Gauche/odepaso3.png'] },
-            { label: 'Oral-B', file: 'Images Gauche/Oral_B.png', alts: ['Images Gauche/oral_b.png', 'Images Gauche/OralB.png'] },
-            { label: 'Oral-B 1', file: 'Images Gauche/Oral_B1.png', alts: ['Images Gauche/oral_b1.png', 'Images Gauche/OralB1.png'] },
-            { label: 'Oreo', file: 'Images Gauche/Oreo.png', alts: ['Images Gauche/oreo.png', 'Images Gauche/Oreo.jpg'] },
-            { label: 'Pâques', file: 'Images Gauche/paque.png', alts: ['Images Gauche/paque.jpg', 'Images Gauche/Paque.png', 'Images Gauche/paques.png'] },
-            { label: "Pom'Potes", file: "Images Gauche/Pom'Potes.png", alts: ["Images Gauche/pom'potes.png", "Images Gauche/Pompotes.png"] },
-            { label: "Pom'Potes R", file: 'Images Gauche/pomepotesR.png', alts: ['Images Gauche/PomepotesR.png', 'Images Gauche/pomepotesr.png'] },
-            { label: "Pom'Potes 1", file: 'Images Gauche/POMPOTES1.png', alts: ['Images Gauche/Pompotes1.png', 'Images Gauche/pompotes1.png'] },
-            { label: "Pom'Potes 2", file: 'Images Gauche/POMPOTES2.png', alts: ['Images Gauche/Pompotes2.png', 'Images Gauche/pompotes2.png'] },
-            { label: 'Prince LU', file: 'Images Gauche/Prince1.jpg', alts: ['Images Gauche/prince1.jpg', 'Images Gauche/Prince1.png'] },
-            { label: 'REM', file: 'Images Gauche/REM.png', alts: ['Images Gauche/rem.png', 'Images Gauche/Rem.png'] },
-            { label: 'Rummo 1', file: 'Images Gauche/rummo1.jpg', alts: ['Images Gauche/Rummo1.jpg', 'Images Gauche/rummo1.png'] },
-            { label: 'Rummo 2', file: 'Images Gauche/rummo2.jpg', alts: ['Images Gauche/Rummo2.jpg', 'Images Gauche/rummo2.png'] },
-            { label: 'Rummo 3', file: 'Images Gauche/rummo3.jpg', alts: ['Images Gauche/Rummo3.jpg', 'Images Gauche/rummo3.png'] },
-            { label: 'Saint Michel', file: 'Images Gauche/Saint_Michel.png', alts: ['Images Gauche/saint_michel.png', 'Images Gauche/Saint Michel.png'] },
-            { label: 'Rentrée Scolaire', file: 'Images Gauche/scolaire.png', alts: ['Images Gauche/Scolaire.png', 'Images Gauche/scolaire.jpg'] },
-            { label: 'Skip', file: 'Images Gauche/Skip.png', alts: ['Images Gauche/skip.png', 'Images Gauche/Skip.jpg'] },
-            { label: 'Super U', file: 'Images Gauche/Super_U.png', alts: ['Images Gauche/Super U.png', 'Images Gauche/super u.png'] },
-            { label: 'Toussaint', file: 'Images Gauche/toussain.png', alts: ['Images Gauche/Toussain.png', 'Images Gauche/toussaint.png'] },
-            { label: 'Vacances', file: 'Images Gauche/vacances.png', alts: ['Images Gauche/Vacances.png', 'Images Gauche/vacances.jpg'] },
-            { label: 'Whiskas', file: 'Images Gauche/WHISKAS.png', alts: ['Images Gauche/Whiskas.png', 'Images Gauche/whiskas.png'] },
-            { label: 'Wilkinson', file: 'Images Gauche/Wilkinson.png', alts: ['Images Gauche/wilkinson.png', 'Images Gauche/Wilkinson.jpg'] },
-            { label: 'Wilkinson 1', file: 'Images Gauche/Wilkinson1.png', alts: ['Images Gauche/wilkinson1.png', 'Images Gauche/Wilkinson1.jpg'] },
-            { label: 'Wilkinson 2', file: 'Images Gauche/Wilkinson2.jpg', alts: ['Images Gauche/wilkinson2.jpg', 'Images Gauche/Wilkinson2.png'] }
+            { label: '20% Carte U', file: 'Images Gauche/20%carte_U-compressed.webp', alts: ['Images Gauche/20%carte_U.png', 'Images Gauche/20%carte_U-compressed.webp'] },
+            { label: 'Always 1', file: 'Images Gauche/Always1-compressed.webp', alts: ['Images Gauche/Always1.png', 'Images Gauche/Always1-compressed.webp'] },
+            { label: 'Always', file: 'Images Gauche/Always-compressed.webp', alts: ['Images Gauche/Always.png', 'Images Gauche/Always-compressed.webp'] },
+            { label: 'Ariel 1', file: 'Images Gauche/Ariel1-compressed.webp', alts: ['Images Gauche/Ariel1.png', 'Images Gauche/Ariel1-compressed.webp'] },
+            { label: 'Ariel', file: 'Images Gauche/Ariel-compressed.webp', alts: ['Images Gauche/Ariel.png', 'Images Gauche/Ariel-compressed.webp'] },
+            { label: 'Belin 1', file: 'Images Gauche/Belin1-compressed.webp', alts: ['Images Gauche/Belin1.jpg', 'Images Gauche/Belin1-compressed.webp'] },
+            { label: 'Bjorg', file: 'Images Gauche/Bjorg-compressed.webp', alts: ['Images Gauche/Bjorg.png', 'Images Gauche/Bjorg-compressed.webp'] },
+            { label: 'BN Logo', file: 'Images Gauche/BN - Logo-compressed.webp', alts: ['Images Gauche/BN - Logo.png', 'Images Gauche/BN - Logo-compressed.webp'] },
+            { label: 'Bn 1', file: 'Images Gauche/Bn1-compressed.webp', alts: ['Images Gauche/Bn1.png', 'Images Gauche/Bn1-compressed.webp'] },
+            { label: 'Bn 2', file: 'Images Gauche/Bn2-compressed.webp', alts: ['Images Gauche/Bn2.png', 'Images Gauche/Bn2-compressed.webp'] },
+            { label: 'Bn 3', file: 'Images Gauche/Bn3-compressed.webp', alts: ['Images Gauche/Bn3.png', 'Images Gauche/Bn3-compressed.webp'] },
+            { label: 'Bonne Année', file: 'Images Gauche/bonne annee-compressed.webp', alts: ['Images Gauche/bonne annee.png', 'Images Gauche/bonne annee-compressed.webp'] },
+            { label: 'Bonne Maman', file: 'Images Gauche/BonneMaman-compressed.webp', alts: ['Images Gauche/BonneMaman.png', 'Images Gauche/BonneMaman-compressed.webp'] },
+            { label: 'Bredele', file: 'Images Gauche/bredele-compressed.webp', alts: ['Images Gauche/bredele.png', 'Images Gauche/bredele-compressed.webp'] },
+            { label: 'Carte Noire 1', file: 'Images Gauche/Carte_Noire1-compressed.webp', alts: ['Images Gauche/Carte_Noire1.png', 'Images Gauche/Carte_Noire1-compressed.webp'] },
+            { label: 'Carte Noire 2', file: 'Images Gauche/Carte_Noire2-compressed.webp', alts: ['Images Gauche/Carte_Noire2.png', 'Images Gauche/Carte_Noire2-compressed.webp'] },
+            { label: 'Carte Noire 3', file: 'Images Gauche/Carte_Noire3-compressed.webp', alts: ['Images Gauche/carte noire3.png', 'Images Gauche/Carte_Noire3-compressed.webp'] },
+            { label: 'CarteDor', file: 'Images Gauche/CarteDor-compressed.webp', alts: ['Images Gauche/CarteDor.png', 'Images Gauche/CarteDor-compressed.webp'] },
+            { label: 'Chupa Chups', file: 'Images Gauche/Chupa_Chups-compressed.webp', alts: ['Images Gauche/Chupa_Chups.png', 'Images Gauche/Chupa_Chups-compressed.webp'] },
+            { label: 'Cirio 2', file: 'Images Gauche/Cirio2-compressed.webp', alts: ['Images Gauche/Cirio2.jpg', 'Images Gauche/Cirio2-compressed.webp'] },
+            { label: 'Cirio', file: 'Images Gauche/Cirio-compressed.webp', alts: ['Images Gauche/Cirio1.jpg', 'Images Gauche/Cirio-compressed.webp'] },
+            { label: "Côte d'Or", file: 'Images Gauche/cote dor-compressed.webp', alts: ['Images Gauche/cote dor.png', 'Images Gauche/cote dor-compressed.webp'] },
+            { label: 'Daisuki 1', file: 'Images Gauche/daisuki1-compressed.webp', alts: ['Images Gauche/daisuki1.jpg', 'Images Gauche/daisuki1-compressed.webp'] },
+            { label: 'Daisuki', file: 'Images Gauche/daisuki-compressed.webp', alts: ['Images Gauche/daisuki.jpg', 'Images Gauche/daisuki-compressed.webp'] },
+            { label: 'Divella 2', file: 'Images Gauche/divella2-compressed.webp', alts: ['Images Gauche/divella2.jpg', 'Images Gauche/divella2-compressed.webp'] },
+            { label: 'Divella 3', file: 'Images Gauche/divella3-compressed.webp', alts: ['Images Gauche/divella3.jpg', 'Images Gauche/divella3-compressed.webp'] },
+            { label: 'Divella 4', file: 'Images Gauche/divella4-compressed.webp', alts: ['Images Gauche/divella4.jpg', 'Images Gauche/divella4-compressed.webp'] },
+            { label: 'Divella', file: 'Images Gauche/Divella-compressed.webp', alts: ['Images Gauche/Divella.png', 'Images Gauche/Divella-compressed.webp'] },
+            { label: 'Fabriqué en France', file: 'Images Gauche/Fabriquer en france-compressed.webp', alts: ['Images Gauche/fabriquer en france.png', 'Images Gauche/Fabriquer en france-compressed.webp'] },
+            { label: 'Gavottes', file: 'Images Gauche/Gavottes-compressed.webp', alts: ['Images Gauche/Gavottes.jpg', 'Images Gauche/Gavottes-compressed.webp'] },
+            { label: 'Gillette 1', file: 'Images Gauche/Gillette1-compressed.webp', alts: ['Images Gauche/Gilette1.png', 'Images Gauche/Gillette1-compressed.webp'] },
+            { label: 'Gillette', file: 'Images Gauche/Granola1-compressed.webp', alts: ['Images Gauche/Gilette.png', 'Images Gauche/Granola1-compressed.webp'] },
+            { label: 'Granola 1', file: 'Images Gauche/Granola1-compressed.webp', alts: ['Images Gauche/Granola1.png', 'Images Gauche/Granola1-compressed.webp'] },
+            { label: 'Granola', file: 'Images Gauche/Granola-compressed.webp', alts: ['Images Gauche/Granola.png', 'Images Gauche/Granola-compressed.webp'] },
+            { label: 'Halloween', file: 'Images Gauche/halloween-compressed.webp', alts: ['Images Gauche/halloween.png', 'Images Gauche/halloween-compressed.webp'] },
+            { label: 'Italie', file: 'Images Gauche/italie-compressed.webp', alts: ['Images Gauche/italie.png', 'Images Gauche/italie-compressed.webp'] },
+            { label: 'Les Prix Bas', file: 'Images Gauche/Les_Prix_Bas_De_La_Semaine-compressed.webp', alts: ['Images Gauche/Les_Prix_Bas_De_La_Semaine.png', 'Images Gauche/Les_Prix_Bas_De_La_Semaine-compressed.webp'] },
+            { label: 'Lindt', file: 'Images Gauche/Lindt-compressed.webp', alts: ['Images Gauche/Lindt.png', 'Images Gauche/Lindt-compressed.webp'] },
+            { label: 'Local et Engagé 2', file: 'Images Gauche/local et engagé-compressed-2.webp', alts: ['Images Gauche/local et engagé-compressed-2.webp'] },
+            { label: 'Local et Engagé', file: 'Images Gauche/local et engagé-compressed.webp', alts: ['Images Gauche/local et engage.png', 'Images Gauche/local et engagé-compressed.webp'] },
+            { label: 'Logo PomPotes', file: 'Images Gauche/LOGO_POMPOTES-compressed.webp', alts: ['Images Gauche/LOGO_POMPOTES.png', 'Images Gauche/LOGO_POMPOTES-compressed.webp'] },
+            { label: "L'Or", file: "Images Gauche/L'or-compressed.webp", alts: ["Images Gauche/L'or.png", "Images Gauche/L'or-compressed.webp"] },
+            { label: 'Lu', file: 'Images Gauche/Lu-compressed.webp', alts: ['Images Gauche/Lu.png', 'Images Gauche/Lu-compressed.webp'] },
+            { label: 'Matthieu', file: 'Images Gauche/Matthieu-compressed.webp', alts: ['Images Gauche/Matthieu.png', 'Images Gauche/Matthieu-compressed.webp'] },
+            { label: 'Milka', file: 'Images Gauche/milka-compressed.webp', alts: ['Images Gauche/milka.png', 'Images Gauche/milka-compressed.webp'] },
+            { label: 'Mutti 1', file: 'Images Gauche/mutti1-compressed.webp', alts: ['Images Gauche/mutti1.png', 'Images Gauche/mutti1-compressed.webp'] },
+            { label: 'Mutti 2', file: 'Images Gauche/mutti2-compressed.webp', alts: ['Images Gauche/mutti2.jpg', 'Images Gauche/mutti2-compressed.webp'] },
+            { label: 'Mutti 3', file: 'Images Gauche/mutti3-compressed.webp', alts: ['Images Gauche/mutti3.png', 'Images Gauche/mutti3-compressed.webp'] },
+            { label: 'Mutti', file: 'Images Gauche/Mutti-compressed.webp', alts: ['Images Gauche/Mutti.png', 'Images Gauche/Mutti-compressed.webp'] },
+            { label: 'Noel', file: 'Images Gauche/Noel-compressed.webp', alts: ['Images Gauche/noel.png', 'Images Gauche/Noel-compressed.webp'] },
+            { label: 'Nutella', file: 'Images Gauche/Nutella-compressed.webp', alts: ['Images Gauche/Nutella.png', 'Images Gauche/Nutella-compressed.webp'] },
+            { label: 'Old El Paso 1', file: 'Images Gauche/oldelpaso1-compressed.webp', alts: ['Images Gauche/oldelpaso1.png', 'Images Gauche/oldelpaso1-compressed.webp'] },
+            { label: 'Old El Paso 2', file: 'Images Gauche/oldelpaso2-compressed.webp', alts: ['Images Gauche/oldelpaso2.jpg', 'Images Gauche/oldelpaso2-compressed.webp'] },
+            { label: 'Old El Paso 3', file: 'Images Gauche/oldelpaso3-compressed.webp', alts: ['Images Gauche/oldelpaso3.jpg', 'Images Gauche/oldelpaso3-compressed.webp'] },
+            { label: 'Old El Paso', file: 'Images Gauche/Oldelpaso-compressed.webp', alts: ['Images Gauche/Oldepaso.png', 'Images Gauche/Oldelpaso-compressed.webp'] },
+            { label: 'Oral-B 1', file: 'Images Gauche/Oral_B1-compressed.webp', alts: ['Images Gauche/Oral_B1.png', 'Images Gauche/Oral_B1-compressed.webp'] },
+            { label: 'Oral-B', file: 'Images Gauche/Oral_B-compressed.webp', alts: ['Images Gauche/Oral_B.png', 'Images Gauche/Oral_B-compressed.webp'] },
+            { label: 'Oreo', file: 'Images Gauche/Oreo-compressed.webp', alts: ['Images Gauche/Oreo.png', 'Images Gauche/Oreo-compressed.webp'] },
+            { label: 'Paque', file: 'Images Gauche/paque-compressed.webp', alts: ['Images Gauche/paque.png', 'Images Gauche/paque-compressed.webp'] },
+            { label: 'PomepotesR', file: 'Images Gauche/PomepotesR-compressed.webp', alts: ['Images Gauche/pomepotesR.png', 'Images Gauche/PomepotesR-compressed.webp'] },
+            { label: 'PomPotes 1', file: 'Images Gauche/POMPOTES1-compressed.webp', alts: ['Images Gauche/POMPOTES1.png', 'Images Gauche/POMPOTES1-compressed.webp'] },
+            { label: 'PomPotes 2', file: 'Images Gauche/POMPOTES2-compressed.webp', alts: ['Images Gauche/POMPOTES2.png', 'Images Gauche/POMPOTES2-compressed.webp'] },
+            { label: "Pom'Potes", file: "Images Gauche/Pom'Potes-compressed.webp", alts: ["Images Gauche/Pom'Potes.png", "Images Gauche/Pom'Potes-compressed.webp"] },
+            { label: 'Prince 1', file: 'Images Gauche/Prince1-compressed.webp', alts: ['Images Gauche/Prince1.jpg', 'Images Gauche/Prince1-compressed.webp'] },
+            { label: 'REM', file: 'Images Gauche/REM-compressed.webp', alts: ['Images Gauche/REM.png', 'Images Gauche/REM-compressed.webp'] },
+            { label: 'Rummo 1', file: 'Images Gauche/rummo1-compressed.webp', alts: ['Images Gauche/rummo1.jpg', 'Images Gauche/rummo1-compressed.webp'] },
+            { label: 'Rummo 2', file: 'Images Gauche/rummo2-compressed.webp', alts: ['Images Gauche/rummo2.jpg', 'Images Gauche/rummo2-compressed.webp'] },
+            { label: 'Rummo 3', file: 'Images Gauche/rummo3-compressed.webp', alts: ['Images Gauche/rummo3.jpg', 'Images Gauche/rummo3-compressed.webp'] },
+            { label: 'Saint Michel', file: 'Images Gauche/Saint Michel-compressed.webp', alts: ['Images Gauche/Saint_Michel.png', 'Images Gauche/Saint Michel-compressed.webp'] },
+            { label: 'Scolaire', file: 'Images Gauche/scolaire-compressed.webp', alts: ['Images Gauche/scolaire.png', 'Images Gauche/scolaire-compressed.webp'] },
+            { label: 'Skip', file: 'Images Gauche/Skip-compressed.webp', alts: ['Images Gauche/Skip.png', 'Images Gauche/Skip-compressed.webp'] },
+            { label: 'Super U', file: 'Images Gauche/Super U-compressed.webp', alts: ['Images Gauche/Super_U.png', 'Images Gauche/Super U-compressed.webp'] },
+            { label: 'Toussain', file: 'Images Gauche/Toussain-compressed.webp', alts: ['Images Gauche/toussain.png', 'Images Gauche/Toussain-compressed.webp'] },
+            { label: 'Vacances', file: 'Images Gauche/vacances-compressed.webp', alts: ['Images Gauche/vacances.png', 'Images Gauche/vacances-compressed.webp'] },
+            { label: 'Whiskas', file: 'Images Gauche/WHISKAS-compressed.webp', alts: ['Images Gauche/WHISKAS.png', 'Images Gauche/WHISKAS-compressed.webp'] },
+            { label: 'Wilkinson 1', file: 'Images Gauche/Wilkinson1-compressed.webp', alts: ['Images Gauche/Wilkinson1.png', 'Images Gauche/Wilkinson1-compressed.webp'] },
+            { label: 'Wilkinson 2', file: 'Images Gauche/Wilkinson2-compressed.webp', alts: ['Images Gauche/Wilkinson2.jpg', 'Images Gauche/Wilkinson2-compressed.webp'] },
+            { label: 'Wilkinson', file: 'Images Gauche/Wilkinson-compressed.webp', alts: ['Images Gauche/Wilkinson.png', 'Images Gauche/Wilkinson-compressed.webp'] }
         ];
 
         function safeFileUrl(fileName) {
@@ -370,16 +370,7 @@
 
         function getCandidateUrls(preset) {
             const list = [preset.file, ...(preset.alts || [])];
-            const baseNoExt = preset.file.replace(/\.[^.]+$/, '');
-            const ext = (preset.file.match(/\.[^.]+$/) || ['.png'])[0].toLowerCase();
-            const otherExt = ext === '.png' ? '.jpg' : '.png';
-
-            list.push(baseNoExt + otherExt);
-            list.push(baseNoExt.toLowerCase() + ext);
-            list.push(baseNoExt.toLowerCase() + otherExt);
-
-            const unique = [...new Set(list)];
-            return unique.map(safeFileUrl);
+            return [...new Set(list)].map(safeFileUrl);
         }
 
         const MECHANIC_PRESETS = {
@@ -1359,6 +1350,9 @@
             }
         });
 
+        // ============================================================================
+        // DESSIN SUR CANVAS DE LA GRANDE ÉTIQUETTE (+ LIGNES DE COUPE VERTES)
+        // ============================================================================
         function drawFormattedPrice(ctx, priceNumber, preferredCenterX, baselineY, isOldPrice, maxRightX = 656) {
             const priceStr = priceNumber.toFixed(2).replace('.', ',');
             const parts = priceStr.split(',');
@@ -1828,6 +1822,14 @@
             if (item.gencode) {
                 drawVisualBarcode(ctx, item.gencode, rightX, 398, 260);
             }
+
+            // 7. LIGNE DE COUPE VERTE EN BAS DE L'ÉTIQUETTE (comme sur fvfvg.png)
+            ctx.strokeStyle = '#008000'; // Vert
+            ctx.lineWidth = 4;
+            ctx.beginPath();
+            ctx.moveTo(0, canvas.height - 2);
+            ctx.lineTo(canvas.width, canvas.height - 2);
+            ctx.stroke();
         }
 
         function renderAllPosters() {
@@ -2003,6 +2005,7 @@
             });
         }
 
+        // EXPORT PDF A4 PORTRAIT : 4 étiquettes par page avec lignes de coupe vertes
         document.getElementById('btnDownloadPdfA4').addEventListener('click', async function() {
             const { jsPDF } = window.jspdf;
             const pdf = new jsPDF('p', 'mm', 'a4');
@@ -2053,3 +2056,9 @@
     </script>
 </body>
 </html>
+```[cite: 1, 2, 8, 9, 11, 12, 13]
+
+<ElicitationsGroup message="Souhaites-tu ajouter une option supplémentaire ?">
+  <Elicitation label="Ajouter une étiquette vierge" query="Ajoute un bouton pour ajouter une étiquette manuellement sans importer de PDF."/>
+  <Elicitation label="Changer l'épaisseur de la ligne verte" query="Modifie l'épaisseur ou la couleur des lignes de coupe sur le PDF."/>
+</ElicitationsGroup>
