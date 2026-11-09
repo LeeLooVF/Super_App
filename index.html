@@ -59,17 +59,17 @@
                         1 étiquette
                     </span>
                     <!-- BOUTON BASCULE A4 PORTRAIT -->
-                    <button type="button" id="btnToggleA4Mode" class="text-xs font-extrabold px-3 py-1.5 rounded-lg border-2 border-gray-800 bg-white text-gray-800 hover:bg-gray-800 hover:text-white transition flex items-center gap-1.5 shadow-sm" title="Basculer entre 4 étiquettes par page (Images Gauche) et 1 grande affiche A4 Portrait (Images A4)">
+                    <button type="button" id="btnToggleA4Mode" class="text-xs font-extrabold px-3 py-1.5 rounded-lg border-2 border-gray-800 bg-white text-gray-800 hover:bg-gray-800 hover:text-white transition flex items-center gap-1.5 shadow-sm">
                         <span>📐 Mode : 4 par page</span>
                         <span class="bg-red-600 text-white text-[10px] px-1.5 py-0.5 rounded">Basculer A4 Portrait</span>
                     </button>
                     <!-- BOUTON MENTION ALCOOL -18 ANS -->
-                    <button type="button" id="btnToggleAlcohol18" class="text-xs font-extrabold px-3 py-1.5 rounded-lg border-2 border-orange-300 bg-orange-50 text-orange-800 hover:bg-orange-100 transition flex items-center gap-1.5 shadow-sm" title="Afficher ou masquer le bandeau légal -18 ans Vente d'alcool interdite aux mineurs">
+                    <button type="button" id="btnToggleAlcohol18" class="text-xs font-extrabold px-3 py-1.5 rounded-lg border-2 border-orange-300 bg-orange-50 text-orange-800 hover:bg-orange-100 transition flex items-center gap-1.5 shadow-sm">
                         <span class="bg-orange-600 text-white text-[10px] font-black px-1.5 py-0.5 rounded">-18</span>
                         <span id="alcoholBtnLabel">Alcool : Masqué</span>
                     </button>
                     <!-- BOUTON BIBLIOTHÈQUE DE FICHIERS DÉJÀ CRÉÉS (PARTAGÉE R2) -->
-                    <button type="button" id="btnOpenReadyDocsModal" class="text-xs font-extrabold px-3 py-1.5 rounded-lg border-2 border-indigo-600 bg-indigo-600 text-white hover:bg-indigo-700 transition flex items-center gap-1.5 shadow-sm" title="Ouvrir la bibliothèque partagée de fichiers déjà créés (Images, PDF, SVG)">
+                    <button type="button" id="btnOpenReadyDocsModal" class="text-xs font-extrabold px-3 py-1.5 rounded-lg border-2 border-indigo-600 bg-indigo-600 text-white hover:bg-indigo-700 transition flex items-center gap-1.5 shadow-sm">
                         <span>📚 Bibliothèque Fichiers Créés</span>
                         <span id="readyDocsCountBadge" class="bg-white text-indigo-700 text-[10px] px-1.5 py-0.5 rounded-full font-black">0</span>
                     </button>
@@ -79,13 +79,13 @@
                         ☁️ R2 Connecté
                     </span>
                     <span id="ocrStatus" class="text-xs font-bold text-blue-700 bg-blue-50 px-3 py-1.5 rounded-lg border border-blue-200 hidden"></span>
-                    <span id="fontStatus" class="text-[11px] font-semibold text-green-700 bg-green-50 px-2.5 py-1 rounded border border-green-200 hidden">
-                        ✓ Polices Museo Slab
+                    <span id="fontStatus" class="text-[11px] font-semibold text-green-700 bg-green-50 px-2.5 py-1 rounded border border-green-200">
+                        ✓ Police : <span id="activeFontBadgeName">Museo Slab</span>
                     </span>
-                    <label class="text-xs bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold py-1.5 px-3 rounded-lg cursor-pointer border border-gray-300 transition">
-                        🔤 Polices .OTF
-                        <input type="file" id="inputCustomFonts" accept=".otf,.ttf,.woff,.woff2" multiple class="hidden">
-                    </label>
+                    <!-- BOUTON OUVERTURE GESTIONNAIRE DE POLICES R2 -->
+                    <button type="button" id="btnOpenFontModal" class="text-xs bg-gray-100 hover:bg-gray-200 text-gray-800 font-bold py-1.5 px-3 rounded-lg cursor-pointer border border-gray-300 transition flex items-center gap-1 shadow-sm">
+                        🔤 Polices .OTF / R2
+                    </button>
                 </div>
             </div>
 
@@ -106,19 +106,19 @@
                         <label id="labelZoneImage" class="block text-xs font-bold text-gray-700 uppercase">
                             🖼️ 2. IMAGE GAUCHE
                         </label>
-                        <label class="flex items-center gap-1 text-[11px] text-gray-600 cursor-pointer leading-tight" title="Supprime automatiquement les marges blanches des PDF">
+                        <label class="flex items-center gap-1 text-[11px] text-gray-600 cursor-pointer leading-tight">
                             <input type="checkbox" id="chkAutoTrim" checked class="rounded text-red-600">
                             <span>Plein cadre auto</span>
                         </label>
                     </div>
                     <div class="flex items-center gap-1.5">
-                        <button type="button" id="btnOpenGlobalGallery" class="w-1/2 py-1.5 px-2.5 bg-white hover:bg-red-50 border border-red-300 rounded-md text-xs font-bold text-gray-800 flex items-center justify-between shadow-sm transition" title="Ouvrir la galerie visuelle partagée">
+                        <button type="button" id="btnOpenGlobalGallery" class="w-1/2 py-1.5 px-2.5 bg-white hover:bg-red-50 border border-red-300 rounded-md text-xs font-bold text-gray-800 flex items-center justify-between shadow-sm transition">
                             <span id="globalGalleryLabel" class="truncate">🖼️ Les Prix Bas</span>
                             <span class="text-[10px] text-gray-500 ml-1">▼</span>
                         </button>
                         <input type="file" id="inputLeftImage" accept=".jpeg,.jpg,.png,.pdf,.webp,.gif,.bmp,.svg,image/*,application/pdf" 
                             class="w-1/2 text-[11px] text-gray-600 file:mr-1.5 file:py-1.5 file:px-2.5 file:rounded-md file:border-0 file:text-[11px] file:font-bold file:bg-red-600 file:text-white hover:file:bg-red-700 cursor-pointer"
-                            title="Déposer une image ou PDF (partagé automatiquement sur Cloudflare R2 pour tout le monde !)">
+                            title="Déposer une nouvelle image sur le stockage R2 dans cette bibliothèque">
                     </div>
                 </div>
 
@@ -152,9 +152,8 @@
                 </div>
             </div>
 
-            <!-- LIGNE 2 DE CONFIGURATION : MENU DÉROULANT DES MÉCANIQUES PROMO (MASQUÉ DE BASE) -->
+            <!-- LIGNE 2 DE CONFIGURATION : MENU DÉROULANT DES MÉCANIQUES PROMO -->
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 items-end pt-3 border-t border-gray-100">
-                <!-- Colonne 1 : Choix déroulant de la mécanique + Valeur -->
                 <div>
                     <label class="block text-xs font-bold text-gray-700 uppercase mb-1.5">
                         ⚙️ TYPE DE MÉCANIQUE & VALEUR
@@ -190,18 +189,17 @@
                                 <option value="prix_choc">Prix Choc / Prix Bas</option>
                             </optgroup>
                         </select>
-                        <input type="text" id="inputDiscount" value="-34%" disabled title="Valeur affichée en grand dans le cercle rouge"
+                        <input type="text" id="inputDiscount" value="-34%" disabled
                             class="w-1/3 p-2 border rounded-lg text-sm font-bold text-red-600 text-center opacity-50 bg-gray-100">
                     </div>
                 </div>
 
-                <!-- Colonne 2 : Texte de la mécanique + Bouton affichée/masquée à droite -->
                 <div>
                     <div class="flex justify-between items-center mb-1.5">
                         <label class="block text-xs font-bold text-gray-700 uppercase">
                             MÉCANIQUE (TEXTE CERCLE)
                         </label>
-                        <button type="button" id="btnToggleDiscountText" class="min-w-[88px] text-center text-[11px] font-bold px-3 py-0.5 rounded bg-red-100 text-red-800 border border-red-300 hover:bg-red-200 transition" title="Affiche ou masque toute la mécanique et le cercle rouge">
+                        <button type="button" id="btnToggleDiscountText" class="min-w-[88px] text-center text-[11px] font-bold px-3 py-0.5 rounded bg-red-100 text-red-800 border border-red-300 hover:bg-red-200 transition">
                             masquée
                         </button>
                     </div>
@@ -209,13 +207,12 @@
                         class="w-full p-2 border rounded-lg text-xs font-semibold opacity-50 bg-gray-100">
                 </div>
 
-                <!-- Colonne 3 : Mention sous prix + Option Contenance -->
                 <div>
                     <div class="flex justify-between items-center mb-1.5">
                         <label class="block text-xs font-bold text-gray-700 uppercase">
                             📌 MENTION SOUS PRIX
                         </label>
-                        <label class="flex items-center gap-1 text-[11px] font-bold text-blue-700 cursor-pointer" title="Afficher ou masquer la contenance sur les grandes étiquettes">
+                        <label class="flex items-center gap-1 text-[11px] font-bold text-blue-700 cursor-pointer">
                             <input type="checkbox" id="chkShowContenance" checked class="rounded text-blue-600">
                             <span>Afficher contenance</span>
                         </label>
@@ -224,7 +221,6 @@
                         class="w-full p-2 border rounded-lg text-xs font-bold text-red-600 uppercase">
                 </div>
 
-                <!-- Colonne 4 : Bouton Télécharger PDF -->
                 <div>
                     <button id="btnDownloadPdfA4" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-2.5 px-4 rounded-lg shadow transition duration-200 text-xs uppercase tracking-wider flex items-center justify-center gap-2">
                         <span id="btnDownloadLabel">📄 TÉLÉCHARGER LE PDF A4 (4 PAR PAGE)</span>
@@ -238,23 +234,26 @@
 
     </div>
 
-    <!-- FENÊTRE MODALE 1 : GALERIE VISUELLE PARTAGÉE (IMAGES GAUCHE & IMAGES A4) -->
+    <!-- FENÊTRE MODALE 1 : GALERIE VISUELLE PARTAGÉE (IMAGES GAUCHE & IMAGES A4 DÉTECTÉES AUTOMATIQUEMENT) -->
     <div id="visualGalleryModal" class="fixed inset-0 bg-black/60 z-50 hidden flex items-center justify-center p-4 backdrop-blur-sm">
         <div class="bg-white rounded-2xl shadow-2xl max-w-5xl w-full max-h-[90vh] flex flex-col overflow-hidden border-t-4 border-red-600">
             <div class="flex flex-wrap justify-between items-center px-5 py-3.5 border-b bg-gray-50 gap-3">
                 <div>
                     <h2 id="galleryModalTitle" class="text-sm font-extrabold text-gray-800 uppercase tracking-wide">
-                        🖼️ Choisir un visuel de gauche
+                        🖼️ Choisir un visuel
                     </h2>
-                    <p id="galleryModalSubtitle" class="text-[11px] text-gray-500">
-                        Tous les visuels ajoutés ici sont automatiquement partagés sur Cloudflare R2 avec toute l'équipe
+                    <p class="text-[11px] text-gray-500">
+                        Détection dynamique (R2 + Dossier) — Suppression protégée par mot de passe
                     </p>
                 </div>
                 <div class="flex flex-wrap items-center gap-2">
-                    <input type="text" id="inputSearchGallery" placeholder="🔍 Filtrer (ex: Prix bas, Alsace, Always...)" 
+                    <input type="text" id="inputSearchGallery" placeholder="🔍 Filtrer (ex: Prix bas, Alsace...)" 
                         class="text-xs border rounded-lg px-3 py-1.5 w-48 focus:ring-2 focus:ring-red-500">
-                    <label class="text-xs font-bold bg-red-600 hover:bg-red-700 text-white px-3 py-1.5 rounded-lg cursor-pointer shadow-sm transition" title="Partager une nouvelle image sur Cloudflare R2">
-                        ☁️ Ajouter & Partager image(s)
+                    <button type="button" id="btnRefreshSharedGallery" class="text-xs font-bold bg-gray-200 hover:bg-gray-300 text-gray-800 px-2.5 py-1.5 rounded-lg transition" title="Rafraîchir la détection automatique">
+                        🔄
+                    </button>
+                    <label class="text-xs font-bold bg-red-600 hover:bg-red-700 text-white px-3 py-1.5 rounded-lg cursor-pointer shadow-sm transition">
+                        ☁️ Déposer sur R2 dans cette galerie
                         <input type="file" id="inputAddGalleryImage" accept=".jpeg,.jpg,.png,.pdf,.webp,.gif,.bmp,.svg,image/*,application/pdf" multiple class="hidden">
                     </label>
                     <button type="button" id="btnCloseGalleryModal" class="text-gray-500 hover:text-red-600 font-bold text-lg px-2.5 py-1 rounded-lg hover:bg-red-50 transition">
@@ -264,23 +263,20 @@
             </div>
 
             <div class="p-5 overflow-y-auto space-y-5 bg-gray-100/70 flex-1">
-                <!-- SECTION 1 : IMAGES PARTAGÉES SUR CLOUDFLARE R2 (+ CACHE LOCAL) -->
+                <!-- SECTION 1 : IMAGES DÉPOSÉES SUR LE STOCKAGE R2 -->
                 <div id="savedGallerySection" class="hidden space-y-2">
                     <div class="flex justify-between items-center">
                         <h3 class="text-xs font-extrabold uppercase text-blue-800 bg-blue-100 px-2.5 py-1 rounded-md inline-block">
-                            ☁️ Visuels ajoutés & partagés par l'équipe (<span id="savedCountBadge">0</span>)
+                            ☁️ Visuels déposés sur R2 (<span id="savedCountBadge">0</span>)
                         </h3>
-                        <button type="button" id="btnRefreshSharedGallery" class="text-[11px] text-blue-700 hover:underline font-bold">
-                            🔄 Actualiser depuis R2
-                        </button>
                     </div>
                     <div id="savedGalleryGrid" class="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-3"></div>
                 </div>
 
-                <!-- SECTION 2 : BIBLIOTHÈQUE DE BASE DU DOSSIER -->
+                <!-- SECTION 2 : DÉTECTION AUTOMATIQUE DU DOSSIER (IMAGES GAUCHE OU IMAGES A4) -->
                 <div class="space-y-2">
                     <h3 id="galleryFolderHeading" class="text-xs font-extrabold uppercase text-gray-700 bg-gray-200 px-2.5 py-1 rounded-md inline-block">
-                        📁 Bibliothèque du dossier "Images Gauche" (<span id="presetCountBadge">0</span> visuels)
+                        📁 Visuels détectés automatiquement (<span id="presetCountBadge">0</span>)
                     </h3>
                     <div id="galleryGrid" class="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-3"></div>
                 </div>
@@ -297,26 +293,34 @@
         </div>
     </div>
 
-    <!-- FENÊTRE MODALE 2 : BIBLIOTHÈQUE PARTAGÉE DE FICHIERS DÉJÀ CRÉÉS (IMAGES, PDF, SVG) -->
+    <!-- FENÊTRE MODALE 2 : BIBLIOTHÈQUE PARTAGÉE (SÉPARÉE EN 2 ONGLETS + GESTION DES DOSSIERS) -->
     <div id="readyDocsModal" class="fixed inset-0 bg-black/65 z-50 hidden flex items-center justify-center p-4 backdrop-blur-sm">
         <div class="bg-white rounded-2xl shadow-2xl max-w-6xl w-full max-h-[92vh] flex flex-col overflow-hidden border-t-4 border-indigo-600">
+            <!-- En-tête + Bouton bascule Fichiers Déposés / Affiches Générées -->
             <div class="flex flex-wrap justify-between items-center px-5 py-3.5 border-b bg-gray-50 gap-3">
-                <div>
-                    <h2 class="text-sm font-extrabold text-indigo-900 uppercase tracking-wide flex items-center gap-2">
-                        📚 Bibliothèque Partagée de Fichiers Créés (Images, PDF, SVG)
+                <div class="flex flex-wrap items-center gap-3">
+                    <h2 class="text-sm font-extrabold text-indigo-900 uppercase tracking-wide">
+                        📚 Bibliothèque Partagée R2
                     </h2>
-                    <p class="text-[11px] text-gray-500">
-                        Synchronisée sur Cloudflare R2 (`pub-06317316428d44fe94ff17808d4763df.r2.dev`) — Clique sur un fichier pour l'afficher en grand, l'imprimer ou le télécharger
-                    </p>
+                    <!-- BOUTON POUR PASSER DE "FICHIERS DÉPOSÉS" À "AFFICHES GÉNÉRÉES" -->
+                    <div class="inline-flex rounded-xl bg-gray-200 p-1 border border-gray-300">
+                        <button type="button" id="btnTabDeposited" class="text-xs font-extrabold px-3.5 py-1.5 rounded-lg bg-indigo-600 text-white shadow transition flex items-center gap-1.5">
+                            📥 Fichiers déposés (<span id="countDepositedBadge">0</span>)
+                        </button>
+                        <button type="button" id="btnTabGenerated" class="text-xs font-extrabold px-3.5 py-1.5 rounded-lg text-gray-700 hover:text-indigo-800 transition flex items-center gap-1.5">
+                            ✨ Affiches générées (<span id="countGeneratedBadge">0</span>)
+                        </button>
+                    </div>
                 </div>
+
                 <div class="flex flex-wrap items-center gap-2">
                     <input type="text" id="inputSearchReadyDocs" placeholder="🔍 Rechercher un fichier..." 
-                        class="text-xs border rounded-lg px-3 py-1.5 w-48 focus:ring-2 focus:ring-indigo-500">
-                    <button type="button" id="btnRefreshReadyDocs" class="text-xs font-bold bg-gray-200 hover:bg-gray-300 text-gray-800 px-2.5 py-1.5 rounded-lg transition" title="Rafraîchir la liste depuis Cloudflare R2">
-                        🔄
+                        class="text-xs border rounded-lg px-3 py-1.5 w-44 focus:ring-2 focus:ring-indigo-500">
+                    <button type="button" id="btnCreateNewSubFolder" class="text-xs font-bold bg-amber-500 hover:bg-amber-600 text-white px-3 py-1.5 rounded-lg shadow-sm transition flex items-center gap-1">
+                        📁+ Nouveau dossier
                     </button>
                     <label class="text-xs font-bold bg-indigo-600 hover:bg-indigo-700 text-white px-3.5 py-1.5 rounded-lg cursor-pointer shadow-sm transition flex items-center gap-1.5">
-                        ☁️ Importer & Partager (Images / PDF / SVG)
+                        ☁️ Déposer dans ce dossier
                         <input type="file" id="inputUploadReadyDocs" accept=".pdf,.svg,.png,.jpg,.jpeg,.webp,.bmp,.gif,image/*,application/pdf,image/svg+xml" multiple class="hidden">
                     </label>
                     <button type="button" id="btnCloseReadyDocsModal" class="text-gray-500 hover:text-red-600 font-bold text-lg px-2.5 py-1 rounded-lg hover:bg-red-50 transition">
@@ -325,12 +329,19 @@
                 </div>
             </div>
 
+            <!-- BARRE DES DOSSIERS DE LA BIBLIOTHÈQUE ACTIVE -->
+            <div class="px-5 py-2.5 bg-indigo-50/70 border-b flex flex-wrap items-center gap-2">
+                <span class="text-[11px] font-extrabold uppercase text-indigo-900">📂 Dossiers :</span>
+                <div id="librarySubFoldersBar" class="flex flex-wrap items-center gap-1.5"></div>
+            </div>
+
+            <!-- Grille des fichiers -->
             <div class="p-5 overflow-y-auto flex-1 bg-gray-100/80 space-y-4">
                 <div id="readyDocsEmptyState" class="text-center py-12 bg-white rounded-xl border-2 border-dashed border-gray-300 space-y-3">
-                    <div class="text-4xl">☁️</div>
-                    <p class="text-sm font-bold text-gray-700">Aucun fichier dans la bibliothèque partagée pour le moment.</p>
+                    <div class="text-4xl">📂</div>
+                    <p class="text-sm font-bold text-gray-700">Aucun fichier dans ce dossier pour le moment.</p>
                     <p class="text-xs text-gray-500 max-w-md mx-auto">
-                        Clique sur « ☁️ Importer & Partager (Images / PDF / SVG) » en haut à droite pour envoyer tes affiches prêtes à imprimer sur Cloudflare R2. Elles seront immédiatement accessibles par tout le monde.
+                        Utilise « 📁+ Nouveau dossier » pour organiser tes fichiers ou « ☁️ Déposer dans ce dossier » pour ajouter des PDF, SVG ou Images.
                     </p>
                 </div>
                 <div id="readyDocsGrid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4"></div>
@@ -345,7 +356,71 @@
         </div>
     </div>
 
-    <!-- FENÊTRE MODALE 3 : VISIONNEUSE GRAND FORMAT (APERÇU PLEIN ÉCRAN + IMPRIMER + TÉLÉCHARGER) -->
+    <!-- FENÊTRE MODALE 3 : CHOIX DU DOSSIER DE DESTINATION LORS DE L'ENREGISTREMENT D'UNE AFFICHE GÉNÉRÉE -->
+    <div id="saveDestinationModal" class="fixed inset-0 bg-black/65 z-[55] hidden flex items-center justify-center p-4 backdrop-blur-sm">
+        <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full p-5 space-y-4 border-t-4 border-indigo-600">
+            <div class="flex justify-between items-center border-b pb-2.5">
+                <h3 class="text-sm font-extrabold text-gray-800 uppercase">
+                    ☁️ Enregistrer l'affiche dans la bibliothèque
+                </h3>
+                <button type="button" id="btnCloseSaveDestModal" class="text-gray-400 hover:text-red-600 font-bold">✕</button>
+            </div>
+            <div class="space-y-3">
+                <div>
+                    <label class="block text-xs font-bold text-gray-700 uppercase mb-1">Nom de l'affiche :</label>
+                    <input type="text" id="inputSavePosterName" class="w-full p-2 border rounded-lg text-xs font-bold text-gray-800">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-gray-700 uppercase mb-1">Choisir le dossier de destination (Affiches générées) :</label>
+                    <select id="selectSaveDestinationFolder" class="w-full p-2 border rounded-lg text-xs font-bold text-indigo-900 bg-indigo-50"></select>
+                </div>
+                <div>
+                    <label class="block text-[11px] font-semibold text-gray-500 mb-1">Ou créer un nouveau dossier directement :</label>
+                    <input type="text" id="inputNewDestFolder" placeholder="Ex: Promo Semaine 46, Boissons, Foire aux vins..." class="w-full p-2 border rounded-lg text-xs">
+                </div>
+            </div>
+            <div class="flex justify-end gap-2 pt-2 border-t">
+                <button type="button" id="btnCancelSaveDest" class="text-xs font-bold bg-gray-200 hover:bg-gray-300 text-gray-800 px-4 py-2 rounded-lg">Annuler</button>
+                <button type="button" id="btnConfirmSaveDest" class="text-xs font-extrabold bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg shadow">
+                    ☁️ Enregistrer sur R2
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- FENÊTRE MODALE 4 : GESTIONNAIRE DE POLICES (.OTF / .TTF / .WOFF) SUR R2 -->
+    <div id="fontManagerModal" class="fixed inset-0 bg-black/65 z-[55] hidden flex items-center justify-center p-4 backdrop-blur-sm">
+        <div class="bg-white rounded-2xl shadow-2xl max-w-2xl w-full p-5 space-y-4 border-t-4 border-emerald-600">
+            <div class="flex flex-wrap justify-between items-center border-b pb-3 gap-2">
+                <div>
+                    <h3 class="text-sm font-extrabold text-gray-800 uppercase">
+                        🔤 Gestionnaire de Polices d'écriture (R2)
+                    </h3>
+                    <p class="text-[11px] text-gray-500">
+                        Sélectionne la police à appliquer aux étiquettes, dépose une nouvelle police sur R2 ou supprime avec mot de passe
+                    </p>
+                </div>
+                <div class="flex items-center gap-2">
+                    <label class="text-xs font-bold bg-emerald-600 hover:bg-emerald-700 text-white px-3 py-1.5 rounded-lg cursor-pointer shadow-sm transition">
+                        ☁️ Déposer Police sur R2 (.otf / .ttf)
+                        <input type="file" id="inputUploadFontR2" accept=".otf,.ttf,.woff,.woff2" multiple class="hidden">
+                    </label>
+                    <button type="button" id="btnCloseFontModal" class="text-gray-400 hover:text-red-600 font-bold text-lg px-2">✕</button>
+                </div>
+            </div>
+
+            <div id="fontListContainer" class="space-y-2 max-h-[55vh] overflow-y-auto p-1"></div>
+
+            <div class="flex justify-between items-center pt-2 border-t">
+                <span id="fontUploadStatus" class="text-xs font-bold text-emerald-700"></span>
+                <button type="button" id="btnCancelFontModal" class="text-xs font-bold bg-gray-200 hover:bg-gray-300 text-gray-800 px-4 py-1.5 rounded-lg">
+                    Fermer
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- FENÊTRE MODALE 5 : VISIONNEUSE GRAND FORMAT -->
     <div id="docLightboxModal" class="fixed inset-0 bg-black/85 z-[60] hidden flex flex-col justify-between p-4 backdrop-blur-md">
         <div class="flex flex-wrap justify-between items-center bg-white/95 px-5 py-3 rounded-xl shadow-lg max-w-5xl w-full mx-auto gap-3">
             <div class="flex items-center gap-2.5 min-w-0">
@@ -364,7 +439,6 @@
                 </button>
             </div>
         </div>
-
         <div class="flex-1 flex items-center justify-center overflow-auto my-3 p-2">
             <img id="lightboxImagePreview" src="" alt="Aperçu Grand Format" class="max-w-full max-h-[80vh] object-contain rounded-lg shadow-2xl bg-white">
         </div>
@@ -373,128 +447,87 @@
     <script>
         pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
 
-        // URL PUBLIQUE CLOUDFLARE R2 CONFIGURÉE
         const R2_PUBLIC_BASE_URL = 'https://pub-06317316428d44fe94ff17808d4763df.r2.dev';
         const R2_API_ENDPOINT = '/api';
+        const GITHUB_REPO_API = 'https://api.github.com/repos/LeeLooVF/Super_App/contents';
+        const REQUIRED_DELETE_CODE = 'Bonesink124!';
 
-        // 1. BIBLIOTHÈQUE MODE 4 PAR PAGE : Dossier "Images Gauche"
-        const PRESET_IMAGES_4_PER_PAGE = [
-            { label: 'Les Prix Bas', file: 'Images Gauche/Les_Prix_Bas_De_La_Semaine-compressed.webp', alts: ['Images Gauche/Les_Prix_Bas_De_La_Semaine.png'] },
-            { label: '20 Jours Plus', file: 'Images Gauche/20 jours plus-compressed.webp', alts: ['Images Gauche/20 jours plus.webp', 'Images Gauche/20 jours plus.png'] },
-            { label: 'Prix Bas Jaune', file: 'Images Gauche/Prix bas semaine Jaune-compressed.webp', alts: ['Images Gauche/Prix bas semaine Jaune.webp', 'Images Gauche/Prix bas semaine Jaune.png'] },
-            { label: 'Sélection Alsace', file: 'Images Gauche/selection Alsace-compressed.webp', alts: ['Images Gauche/selection Alsace.webp', 'Images Gauche/selection Alsace.png'] },
-            { label: 'Super Format', file: 'Images Gauche/Super format-compressed.webp', alts: ['Images Gauche/Super format.webp', 'Images Gauche/Super format.png'] },
-            { label: '20% Carte U', file: 'Images Gauche/20%carte_U-compressed.webp', alts: ['Images Gauche/20%carte_U.png'] },
-            { label: 'Always 1', file: 'Images Gauche/Always1-compressed.webp', alts: ['Images Gauche/Always1.png'] },
-            { label: 'Always', file: 'Images Gauche/Always-compressed.webp', alts: ['Images Gauche/Always.png'] },
-            { label: 'Ariel 1', file: 'Images Gauche/Ariel1-compressed.webp', alts: ['Images Gauche/Ariel1.png'] },
-            { label: 'Ariel', file: 'Images Gauche/Ariel-compressed.webp', alts: ['Images Gauche/Ariel.png'] },
-            { label: 'Belin 1', file: 'Images Gauche/Belin1-compressed.webp', alts: ['Images Gauche/Belin1.jpg'] },
-            { label: 'Bjorg', file: 'Images Gauche/Bjorg-compressed.webp', alts: ['Images Gauche/Bjorg.png'] },
-            { label: 'BN Logo', file: 'Images Gauche/BN - Logo-compressed.webp', alts: ['Images Gauche/BN - Logo.png'] },
-            { label: 'Bn 1', file: 'Images Gauche/Bn1-compressed.webp', alts: ['Images Gauche/Bn1.png'] },
-            { label: 'Bn 2', file: 'Images Gauche/Bn2-compressed.webp', alts: ['Images Gauche/Bn2.png'] },
-            { label: 'Bn 3', file: 'Images Gauche/Bn3-compressed.webp', alts: ['Images Gauche/Bn3.png'] },
-            { label: 'Bonne Année', file: 'Images Gauche/bonne annee-compressed.webp', alts: ['Images Gauche/bonne annee.png'] },
-            { label: 'Bonne Maman', file: 'Images Gauche/BonneMaman-compressed.webp', alts: ['Images Gauche/BonneMaman.png'] },
-            { label: 'Bredele', file: 'Images Gauche/bredele-compressed.webp', alts: ['Images Gauche/bredele.png'] },
-            { label: 'Carte Noire 1', file: 'Images Gauche/Carte_Noire1-compressed.webp', alts: ['Images Gauche/Carte_Noire1.png'] },
-            { label: 'Carte Noire 2', file: 'Images Gauche/Carte_Noire2-compressed.webp', alts: ['Images Gauche/Carte_Noire2.png'] },
-            { label: 'Carte Noire 3', file: 'Images Gauche/Carte_Noire3-compressed.webp', alts: ['Images Gauche/carte noire3.png'] },
-            { label: 'Carte Noire', file: 'Images Gauche/Carte_Noire-compressed.webp', alts: ['Images Gauche/Carte_Noire.png'] },
-            { label: 'CarteDor', file: 'Images Gauche/CarteDor-compressed.webp', alts: ['Images Gauche/CarteDor.png'] },
-            { label: 'Chupa Chups', file: 'Images Gauche/Chupa_Chups-compressed.webp', alts: ['Images Gauche/Chupa_Chups.png'] },
-            { label: 'Cirio 2', file: 'Images Gauche/Cirio2-compressed.webp', alts: ['Images Gauche/Cirio2.jpg'] },
-            { label: 'Cirio', file: 'Images Gauche/Cirio-compressed.webp', alts: ['Images Gauche/Cirio1.jpg'] },
-            { label: "Côte d'Or", file: 'Images Gauche/cote dor-compressed.webp', alts: ['Images Gauche/cote dor.png'] },
-            { label: 'Daisuki 1', file: 'Images Gauche/daisuki1-compressed.webp', alts: ['Images Gauche/daisuki1.jpg'] },
-            { label: 'Daisuki', file: 'Images Gauche/daisuki-compressed.webp', alts: ['Images Gauche/daisuki.jpg'] },
-            { label: 'Divella 2', file: 'Images Gauche/divella2-compressed.webp', alts: ['Images Gauche/divella2.jpg'] },
-            { label: 'Divella 3', file: 'Images Gauche/divella3-compressed.webp', alts: ['Images Gauche/divella3.jpg'] },
-            { label: 'Divella 4', file: 'Images Gauche/divella4-compressed.webp', alts: ['Images Gauche/divella4.jpg'] },
-            { label: 'Divella', file: 'Images Gauche/Divella-compressed.webp', alts: ['Images Gauche/Divella.png'] },
-            { label: 'Fabriqué en France', file: 'Images Gauche/Fabriquer en france-compressed.webp', alts: ['Images Gauche/fabriquer en france.png'] },
-            { label: 'Gavottes', file: 'Images Gauche/Gavottes-compressed.webp', alts: ['Images Gauche/Gavottes.jpg'] },
-            { label: 'Gillette 1', file: 'Images Gauche/Gilette1-compressed.webp', alts: ['Images Gauche/Gillette1-compressed.webp', 'Images Gauche/Gilette1.png'] },
-            { label: 'Gillette', file: 'Images Gauche/Gilette-compressed.webp', alts: ['Images Gauche/Gillette-compressed.webp', 'Images Gauche/Gilette.png'] },
-            { label: 'Granola 1', file: 'Images Gauche/Granola1-compressed.webp', alts: ['Images Gauche/Granola1.png'] },
-            { label: 'Granola', file: 'Images Gauche/Granola-compressed.webp', alts: ['Images Gauche/Granola.png'] },
-            { label: 'Halloween', file: 'Images Gauche/halloween-compressed.webp', alts: ['Images Gauche/halloween.png'] },
-            { label: 'Italie', file: 'Images Gauche/italie-compressed.webp', alts: ['Images Gauche/italie.png'] },
-            { label: 'Lindt', file: 'Images Gauche/Lindt-compressed.webp', alts: ['Images Gauche/Lindt.png'] },
-            { label: 'Local et Engagé 2', file: 'Images Gauche/local et engagé-compressed-2.webp', alts: ['Images Gauche/local et engage-compressed-2.webp'] },
-            { label: 'Local et Engagé', file: 'Images Gauche/local et engagé-compressed.webp', alts: ['Images Gauche/local et engage.png'] },
-            { label: 'Logo PomPotes', file: 'Images Gauche/LOGO_POMPOTES-compressed.webp', alts: ['Images Gauche/LOGO_POMPOTES.png'] },
-            { label: "L'Or", file: "Images Gauche/L'or-compressed.webp", alts: ["Images Gauche/L'or.png"] },
-            { label: 'Lu', file: 'Images Gauche/Lu-compressed.webp', alts: ['Images Gauche/Lu.png'] },
-            { label: 'Matthieu', file: 'Images Gauche/Matthieu-compressed.webp', alts: ['Images Gauche/Matthieu.png'] },
-            { label: 'Milka', file: 'Images Gauche/milka-compressed.webp', alts: ['Images Gauche/milka.png'] },
-            { label: 'Mutti 1', file: 'Images Gauche/mutti1-compressed.webp', alts: ['Images Gauche/mutti1.png'] },
-            { label: 'Mutti 2', file: 'Images Gauche/mutti2-compressed.webp', alts: ['Images Gauche/mutti2.jpg'] },
-            { label: 'Mutti 3', file: 'Images Gauche/mutti3-compressed.webp', alts: ['Images Gauche/mutti3.png'] },
-            { label: 'Mutti', file: 'Images Gauche/Mutti-compressed.webp', alts: ['Images Gauche/Mutti.png'] },
-            { label: 'Noel', file: 'Images Gauche/Noel-compressed.webp', alts: ['Images Gauche/noel.png'] },
-            { label: 'Nutella', file: 'Images Gauche/Nutella-compressed.webp', alts: ['Images Gauche/Nutella.png'] },
-            { label: 'Old El Paso 1', file: 'Images Gauche/oldelpaso1-compressed.webp', alts: ['Images Gauche/oldelpaso1.png'] },
-            { label: 'Old El Paso 2', file: 'Images Gauche/oldelpaso2-compressed.webp', alts: ['Images Gauche/oldelpaso2.jpg'] },
-            { label: 'Old El Paso 3', file: 'Images Gauche/oldelpaso3-compressed.webp', alts: ['Images Gauche/oldelpaso3.jpg'] },
-            { label: 'Old El Paso', file: 'Images Gauche/Oldepaso-compressed.webp', alts: ['Images Gauche/Oldelpaso-compressed.webp', 'Images Gauche/Oldepaso.png'] },
-            { label: 'Oral-B 1', file: 'Images Gauche/Oral_B1-compressed.webp', alts: ['Images Gauche/Oral_B1.png'] },
-            { label: 'Oral-B', file: 'Images Gauche/Oral_B-compressed.webp', alts: ['Images Gauche/Oral_B.png'] },
-            { label: 'Oreo', file: 'Images Gauche/Oreo-compressed.webp', alts: ['Images Gauche/Oreo.png'] },
-            { label: 'Paque', file: 'Images Gauche/paque-compressed.webp', alts: ['Images Gauche/paque.png'] },
-            { label: 'PomepotesR', file: 'Images Gauche/PomepotesR-compressed.webp', alts: ['Images Gauche/pomepotesR.png'] },
-            { label: 'PomPotes 1', file: 'Images Gauche/POMPOTES1-compressed.webp', alts: ['Images Gauche/POMPOTES1.png'] },
-            { label: 'PomPotes 2', file: 'Images Gauche/POMPOTES2-compressed.webp', alts: ['Images Gauche/POMPOTES2.png'] },
-            { label: "Pom'Potes", file: "Images Gauche/Pom'Potes-compressed.webp", alts: ["Images Gauche/Pom'Potes.png"] },
-            { label: 'Prince 1', file: 'Images Gauche/Prince1-compressed.webp', alts: ['Images Gauche/Prince1.jpg'] },
-            { label: 'REM', file: 'Images Gauche/REM-compressed.webp', alts: ['Images Gauche/REM.png'] },
-            { label: 'Rummo 1', file: 'Images Gauche/rummo1-compressed.webp', alts: ['Images Gauche/rummo1.jpg'] },
-            { label: 'Rummo 2', file: 'Images Gauche/rummo2-compressed.webp', alts: ['Images Gauche/rummo2.jpg'] },
-            { label: 'Rummo 3', file: 'Images Gauche/rummo3-compressed.webp', alts: ['Images Gauche/rummo3.jpg'] },
-            { label: 'Saint Michel', file: 'Images Gauche/Saint Michel-compressed.webp', alts: ['Images Gauche/Saint_Michel.png'] },
-            { label: 'Scolaire', file: 'Images Gauche/scolaire-compressed.webp', alts: ['Images Gauche/scolaire.png'] },
-            { label: 'Skip', file: 'Images Gauche/Skip-compressed.webp', alts: ['Images Gauche/Skip.png'] },
-            { label: 'Super U', file: 'Images Gauche/Super U-compressed.webp', alts: ['Images Gauche/Super_U.png'] },
-            { label: 'Toussain', file: 'Images Gauche/Toussain-compressed.webp', alts: ['Images Gauche/toussain.png'] },
-            { label: 'Vacances', file: 'Images Gauche/vacances-compressed.webp', alts: ['Images Gauche/vacances.png'] },
-            { label: 'Whiskas', file: 'Images Gauche/WHISKAS-compressed.webp', alts: ['Images Gauche/WHISKAS.png'] },
-            { label: 'Wilkinson 1', file: 'Images Gauche/Wilkinson1-compressed.webp', alts: ['Images Gauche/Wilkinson1.png'] },
-            { label: 'Wilkinson 2', file: 'Images Gauche/Wilkinson2-compressed.webp', alts: ['Images Gauche/Wilkinson2.jpg'] },
-            { label: 'Wilkinson', file: 'Images Gauche/Wilkinson-compressed.webp', alts: ['Images Gauche/Wilkinson.png'] }
-        ];
+        // Vérification du mot de passe de suppression (Bonesink124!)
+        function askDeletePasscode(itemName = 'cet élément') {
+            const code = prompt(`🔒 Sécurité : Entre le code pour supprimer "${itemName}" :`);
+            if (code === null) return null;
+            if (code !== REQUIRED_DELETE_CODE) {
+                alert("❌ Code incorrect ! Suppression annulée.");
+                return null;
+            }
+            return code;
+        }
 
-        // 2. BIBLIOTHÈQUE MODE A4 PORTRAIT : Dossier "Images A4"
-        const PRESET_IMAGES_A4_PORTRAIT = [
-            { label: 'Les Prix Bas (A4)', file: 'Images A4/Les prix bas de la semaine-compressed-compressed.webp', alts: ['Images A4/Les prix bas de la semaine-compressed.webp', 'Images A4/Les_Prix_Bas_De_La_Semaine-compressed.webp'] },
-            { label: 'Les 20 Jours Plus (A4)', file: 'Images A4/les 20 jour pluls-compressed.webp', alts: ['Images A4/les 20 jours plus-compressed.webp', 'Images A4/20 jours plus-compressed.webp', 'Images Gauche/20 jours plus-compressed.webp'] },
-            { label: 'Prix Bas Jaune (A4)', file: 'Images A4/prix bas de la semaine jaune-compressed.webp', alts: ['Images A4/Prix bas semaine Jaune-compressed.webp', 'Images Gauche/Prix bas semaine Jaune-compressed.webp'] },
-            { label: "Sélection d'Alsace (A4)", file: "Images A4/selection d'alsace-compressed.webp", alts: ["Images A4/selection Alsace-compressed.webp", "Images Gauche/selection Alsace-compressed.webp"] },
-            { label: 'Super Format (A4)', file: 'Images A4/Super format-compressed.webp', alts: ['Images A4/super format-compressed.webp', 'Images Gauche/Super format-compressed.webp'] },
-            { label: 'Local et Engagé (A4)', file: 'Images A4/local et engager-compressed-compressed.webp', alts: ['Images A4/local et engager-compressed.webp', 'Images A4/local et engagé-compressed-compressed.webp'] },
-            { label: 'Bonne Année (A4)', file: 'Images A4/bonne annee-compressed-compressed.webp', alts: ['Images A4/bonne annee-compressed.webp'] },
-            { label: 'Bredele (A4)', file: 'Images A4/Bredele-compressed-compressed.webp', alts: ['Images A4/bredele-compressed-compressed.webp', 'Images A4/Bredele-compressed.webp'] },
-            { label: "Direction l'Italie (A4)", file: "Images A4/direction l'italie-compressed-compressed.webp", alts: ["Images A4/direction l'italie-compressed.webp", "Images A4/italie-compressed-compressed.webp"] },
-            { label: 'Halloween (A4)', file: 'Images A4/halloween-compressed-compressed.webp', alts: ['Images A4/halloween-compressed.webp'] },
-            { label: 'Magie de Noël (A4)', file: 'Images A4/magie de noel-compressed-compressed.webp', alts: ['Images A4/magie de noel-compressed.webp', 'Images A4/noel-compressed-compressed.webp'] },
-            { label: 'Rentrée Scolaire (A4)', file: 'Images A4/scolaire-compressed-compressed.webp', alts: ['Images A4/scolaire-compressed.webp'] },
-            { label: 'Vacances (A4)', file: 'Images A4/vacances-compressed-compressed.webp', alts: ['Images A4/vacances-compressed.webp'] }
-        ];
+        // Liste des fichiers masqués/supprimés (stockée sur R2 ou localement pour permettre de masquer même un fichier issu de GitHub sans toucher au code)
+        let deletedStaticFiles = JSON.parse(localStorage.getItem('superu_deleted_static_files') || '[]');
+        let dynamicPresets4PerPage = [];
+        let dynamicPresetsA4Portrait = [];
 
-        function getActivePresetList() {
-            return isA4PortraitMode ? PRESET_IMAGES_A4_PORTRAIT : PRESET_IMAGES_4_PER_PAGE;
+        function cleanLabelFromFilename(filename) {
+            return filename
+                .replace(/\.[^.]+$/, '')
+                .replace(/-compressed/gi, '')
+                .replace(/_/g, ' ')
+                .trim();
         }
 
         function safeFileUrl(fileName) {
-            // Permet aussi de chercher directement sur le bucket R2 si le fichier y a été copié
             return fileName.split('/').map(part => encodeURIComponent(part)).join('/');
         }
 
+        // DÉTECTION AUTOMATIQUE DYNAMIQUE DES IMAGES DANS "Images Gauche" ET "Images A4" (sans les figer dans le code)
+        async function discoverFolderImagesAutomatically() {
+            const loadGithubFolder = async (folderName) => {
+                try {
+                    const res = await fetch(`${GITHUB_REPO_API}/${encodeURIComponent(folderName)}`);
+                    if (!res.ok) return [];
+                    const items = await res.json();
+                    if (!Array.isArray(items)) return [];
+                    return items
+                        .filter(it => it.type === 'file' && /\.(webp|png|jpg|jpeg|svg|gif)$/i.test(it.name))
+                        .filter(it => !deletedStaticFiles.includes(`${folderName}/${it.name}`))
+                        .map(it => ({
+                            label: cleanLabelFromFilename(it.name),
+                            file: `${folderName}/${it.name}`,
+                            isStaticFolder: true
+                        }));
+                } catch (e) {
+                    return [];
+                }
+            };
+
+            const [ghLeft, ghA4] = await Promise.all([
+                loadGithubFolder('Images Gauche'),
+                loadGithubFolder('Images A4')
+            ]);
+
+            // Tri pour mettre "Les Prix Bas" en premier s'il est présent dans le dossier
+            const sortPrixBasFirst = (list) => {
+                return list.sort((a, b) => {
+                    const aPB = /prix[\s_]*bas/i.test(a.label) ? -1 : 0;
+                    const bPB = /prix[\s_]*bas/i.test(b.label) ? -1 : 0;
+                    if (aPB !== bPB) return aPB - bPB;
+                    return a.label.localeCompare(b.label);
+                });
+            };
+
+            dynamicPresets4PerPage = sortPrixBasFirst(ghLeft);
+            dynamicPresetsA4Portrait = sortPrixBasFirst(ghA4);
+        }
+
+        function getActivePresetList() {
+            return isA4PortraitMode ? dynamicPresetsA4Portrait : dynamicPresets4PerPage;
+        }
+
         function getCandidateUrls(preset) {
-            const list = [preset.file, ...(preset.alts || [])];
-            const encodedLocal = [...new Set(list)].map(safeFileUrl);
-            const encodedR2 = encodedLocal.map(u => `${R2_PUBLIC_BASE_URL}/${u}`);
-            return [...encodedLocal, ...encodedR2];
+            const encodedLocal = safeFileUrl(preset.file);
+            const encodedR2 = `${R2_PUBLIC_BASE_URL}/${encodedLocal}`;
+            return [encodedLocal, encodedR2];
         }
 
         const MECHANIC_PRESETS = {
@@ -533,7 +566,8 @@
                 customRawImg: null,
                 customTrimmedImg: null,
                 customImageLabel: '',
-                showAlcohol18: null
+                showAlcohol18: null,
+                detectedPromo: null // Si une promo est détectée sur l'étiquette importée, elle s'active automatiquement !
             }
         ];
 
@@ -551,11 +585,28 @@
         let showAlcoholGlobal = false;
         let isA4PortraitMode = false;
         let currentGalleryTarget = 'global';
+
         let savedUserImages = [];
-        let readyLibraryDocs = [];
+        let readyDepositedDocs = []; // Onglet 1 : Fichiers déposés
+        let readyGeneratedDocs = []; // Onglet 2 : Affiches générées
+        let customSubFolders = { ready_deposited: ['Général'], ready_generated: ['Général'] };
+        let activeLibraryTab = 'ready_deposited'; // 'ready_deposited' ou 'ready_generated'
+        let activeLibrarySubFolder = 'Général';
+        let pendingSavePosterIndex = null;
+
+        // Polices d'écriture (Museo Slab par défaut + polices déposées sur R2)
+        let activeFontFamilyName = 'Museo Slab';
+        let availableFontsList = [
+            { id: 'default_museo', name: 'Museo Slab', isSystem: true },
+            { id: 'default_montserrat', name: 'Montserrat', isSystem: true },
+            { id: 'default_arvo', name: 'Arvo', isSystem: true }
+        ];
+
         let currentLightboxDoc = null;
 
-        const FONT_SLAB = '"Museo Slab", "Arvo", "Rockwell", serif';
+        function getActiveFontSlab() {
+            return `"${activeFontFamilyName}", "Museo Slab", "Arvo", serif`;
+        }
         const FONT_SANS = '"Montserrat", Arial, sans-serif';
 
         // ============================================================================
@@ -582,8 +633,7 @@
             });
         }
 
-        // Envoie un fichier vers Cloudflare R2 via /api (et garde une copie locale de secours)
-        async function uploadToR2OrLocal(folder, label, fileName, fileType, dataUrl, previewDataUrl) {
+        async function uploadToR2OrLocal(folder, label, fileName, fileType, dataUrl, previewDataUrl, subFolder = 'Général') {
             const badge = document.getElementById('r2SyncBadge');
             try {
                 if (badge) badge.textContent = '⏳ Envoi R2...';
@@ -592,6 +642,7 @@
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
                         folder,
+                        subFolder,
                         label,
                         fileName,
                         fileType,
@@ -609,9 +660,10 @@
                 if (badge) badge.textContent = '💾 Mode Local';
             }
 
-            // Fallback local IndexedDB si testé hors-ligne sur le PC
-            if (folder === 'ready_docs') {
+            if (folder === 'ready_deposited' || folder === 'ready_generated' || folder === 'ready_docs') {
                 await saveReadyDocLocal({
+                    folder: folder === 'ready_docs' ? 'ready_deposited' : folder,
+                    subFolder: subFolder || 'Général',
                     name: label,
                     fileName: fileName,
                     fileType: fileType,
@@ -624,6 +676,26 @@
             }
         }
 
+        async function createSubFolderOnR2(tabFolder, subFolderName) {
+            const cleanSub = subFolderName.trim();
+            if (!cleanSub) return;
+            if (!customSubFolders[tabFolder].includes(cleanSub)) {
+                customSubFolders[tabFolder].push(cleanSub);
+            }
+            try {
+                await fetch(R2_API_ENDPOINT, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        action: 'create_folder',
+                        folder: tabFolder,
+                        subFolder: cleanSub
+                    })
+                });
+            } catch (e) {}
+            await syncAllFromR2();
+        }
+
         async function syncAllFromR2() {
             const badge = document.getElementById('r2SyncBadge');
             try {
@@ -631,22 +703,42 @@
                 const json = await res.json();
                 if (json && json.ok && Array.isArray(json.files)) {
                     if (badge) badge.textContent = '☁️ R2 Connecté';
+
+                    // 1. Images Gauche (left_4) & Images A4 (top_a4) déposées sur R2
                     const r2LeftAndA4 = json.files
-                        .filter(f => f.folder === 'left_4' || f.folder === 'top_a4')
+                        .filter(f => (f.folder === 'left_4' || f.folder === 'top_a4') && f.fileType !== 'FOLDER')
                         .map(f => ({
                             id: f.key,
                             r2Key: f.key,
+                            thumbKey: f.thumbKey || '',
                             folder: f.folder,
                             label: f.label,
                             dataUrl: f.url,
                             date: f.uploaded
                         }));
 
-                    const r2ReadyDocs = json.files
-                        .filter(f => f.folder === 'ready_docs')
+                    // 2. Dossiers personnalisés dans les 2 bibliothèques
+                    const depFolders = new Set(['Général']);
+                    const genFolders = new Set(['Général']);
+
+                    json.files.forEach(f => {
+                        const sub = f.subFolder || 'Général';
+                        if (f.folder === 'ready_deposited' || f.folder === 'ready_docs') depFolders.add(sub);
+                        if (f.folder === 'ready_generated') genFolders.add(sub);
+                    });
+
+                    customSubFolders.ready_deposited = Array.from(depFolders);
+                    customSubFolders.ready_generated = Array.from(genFolders);
+
+                    // 3. Fichiers déposés vs Affiches générées
+                    const r2Deposited = json.files
+                        .filter(f => (f.folder === 'ready_deposited' || f.folder === 'ready_docs') && f.fileType !== 'FOLDER')
                         .map(f => ({
                             id: f.key,
                             r2Key: f.key,
+                            thumbKey: f.thumbKey || '',
+                            folder: 'ready_deposited',
+                            subFolder: f.subFolder || 'Général',
                             name: f.label,
                             fileName: f.fileName,
                             fileType: f.fileType,
@@ -655,26 +747,77 @@
                             date: f.uploaded
                         }));
 
+                    const r2Generated = json.files
+                        .filter(f => f.folder === 'ready_generated' && f.fileType !== 'FOLDER')
+                        .map(f => ({
+                            id: f.key,
+                            r2Key: f.key,
+                            thumbKey: f.thumbKey || '',
+                            folder: 'ready_generated',
+                            subFolder: f.subFolder || 'Général',
+                            name: f.label,
+                            fileName: f.fileName,
+                            fileType: f.fileType,
+                            previewDataUrl: f.thumbUrl || f.url,
+                            rawDataUrl: f.url,
+                            date: f.uploaded
+                        }));
+
+                    // 4. Polices d'écriture déposées sur R2 (folder === 'fonts')
+                    const r2Fonts = json.files.filter(f => f.folder === 'fonts' && f.fileType !== 'FOLDER');
+                    for (const fObj of r2Fonts) {
+                        const cleanFontName = fObj.label.replace(/\.[^.]+$/, '');
+                        if (!availableFontsList.some(fl => fl.r2Key === fObj.key)) {
+                            try {
+                                const fontResp = await fetch(fObj.url);
+                                if (fontResp.ok) {
+                                    const buf = await fontResp.arrayBuffer();
+                                    const ff = new FontFace(cleanFontName, buf);
+                                    await ff.load();
+                                    document.fonts.add(ff);
+                                    availableFontsList.push({
+                                        id: fObj.key,
+                                        r2Key: fObj.key,
+                                        name: cleanFontName,
+                                        fileName: fObj.fileName,
+                                        isSystem: false
+                                    });
+                                }
+                            } catch (e) {}
+                        }
+                    }
+
                     const localImgs = await getLocalImages();
                     const localDocs = await getLocalReadyDocs();
 
                     savedUserImages = [...r2LeftAndA4, ...localImgs];
-                    readyLibraryDocs = [...r2ReadyDocs, ...localDocs];
+                    readyDepositedDocs = [...r2Deposited, ...localDocs.filter(d => d.folder !== 'ready_generated')];
+                    readyGeneratedDocs = [...r2Generated, ...localDocs.filter(d => d.folder === 'ready_generated')];
 
-                    document.getElementById('readyDocsCountBadge').textContent = readyLibraryDocs.length;
+                    updateLibraryBadgesAndUI();
                     renderSavedGallerySection(document.getElementById('inputSearchGallery')?.value || '');
-                    renderReadyDocsGrid(document.getElementById('inputSearchReadyDocs')?.value || '');
+                    renderFontManagerList();
                     return;
                 }
             } catch (e) {
                 if (badge) badge.textContent = '💾 Stockage Local';
             }
 
-            // Si /api n'est pas encore déployé, charge depuis IndexedDB local
             savedUserImages = await getLocalImages();
-            readyLibraryDocs = await getLocalReadyDocs();
-            document.getElementById('readyDocsCountBadge').textContent = readyLibraryDocs.length;
+            const localDocs = await getLocalReadyDocs();
+            readyDepositedDocs = localDocs.filter(d => d.folder !== 'ready_generated');
+            readyGeneratedDocs = localDocs.filter(d => d.folder === 'ready_generated');
+            updateLibraryBadgesAndUI();
             renderSavedGallerySection(document.getElementById('inputSearchGallery')?.value || '');
+            renderFontManagerList();
+        }
+
+        function updateLibraryBadgesAndUI() {
+            const total = readyDepositedDocs.length + readyGeneratedDocs.length;
+            document.getElementById('readyDocsCountBadge').textContent = total;
+            document.getElementById('countDepositedBadge').textContent = readyDepositedDocs.length;
+            document.getElementById('countGeneratedBadge').textContent = readyGeneratedDocs.length;
+            renderLibrarySubFoldersBar();
             renderReadyDocsGrid(document.getElementById('inputSearchReadyDocs')?.value || '');
         }
 
@@ -724,12 +867,24 @@
             } catch (e) { return []; }
         }
 
-        async function deleteSharedOrLocalItem(item, storeName) {
+        // SUPPRESSION PROTÉGÉE PAR LE CODE Bonesink124!
+        async function deleteSharedOrLocalItemWithPassword(item, storeName, displayName) {
+            const code = askDeletePasscode(displayName || item.label || item.name);
+            if (!code) return false;
+
             if (item.r2Key) {
                 try {
-                    await fetch(`${R2_API_ENDPOINT}?key=${encodeURIComponent(item.r2Key)}`, { method: 'DELETE' });
+                    const res = await fetch(
+                        `${R2_API_ENDPOINT}?key=${encodeURIComponent(item.r2Key)}&thumbKey=${encodeURIComponent(item.thumbKey || '')}&code=${encodeURIComponent(code)}`,
+                        { method: 'DELETE' }
+                    );
+                    const json = await res.json();
+                    if (!json.ok) {
+                        alert("Erreur serveur : " + (json.error || "Suppression refusée"));
+                        return false;
+                    }
                 } catch (e) {}
-            } else {
+            } else if (storeName) {
                 try {
                     const db = await openImageDB();
                     await new Promise((resolve) => {
@@ -740,7 +895,111 @@
                 } catch (e) {}
             }
             await syncAllFromR2();
+            return true;
         }
+
+        // ============================================================================
+        // GESTIONNAIRE DE POLICES (.OTF / R2) AVEC SUPPRESSION PAR MOT DE PASSE
+        // ============================================================================
+        const fontManagerModal = document.getElementById('fontManagerModal');
+        const fontListContainer = document.getElementById('fontListContainer');
+        const fontUploadStatus = document.getElementById('fontUploadStatus');
+
+        document.getElementById('btnOpenFontModal').addEventListener('click', () => {
+            renderFontManagerList();
+            fontManagerModal.classList.remove('hidden');
+        });
+
+        function closeFontModal() {
+            fontManagerModal.classList.add('hidden');
+        }
+        document.getElementById('btnCloseFontModal').addEventListener('click', closeFontModal);
+        document.getElementById('btnCancelFontModal').addEventListener('click', closeFontModal);
+
+        function renderFontManagerList() {
+            fontListContainer.innerHTML = '';
+            availableFontsList.forEach(fontItem => {
+                const isSelected = activeFontFamilyName === fontItem.name;
+                const row = document.createElement('div');
+                row.className = `flex justify-between items-center p-3 rounded-xl border-2 transition ${isSelected ? 'border-emerald-600 bg-emerald-50' : 'border-gray-200 bg-white hover:border-gray-300'}`;
+                row.innerHTML = `
+                    <div class="flex items-center gap-3">
+                        <span class="text-sm font-black px-2.5 py-1 rounded ${isSelected ? 'bg-emerald-600 text-white' : 'bg-gray-100 text-gray-700'}">Aa</span>
+                        <div>
+                            <p class="text-sm font-bold text-gray-900" style="font-family: '${fontItem.name}', serif;">${fontItem.name}</p>
+                            <p class="text-[11px] text-gray-500">${fontItem.isSystem ? 'Police intégrée' : '☁️ Police partagée sur R2'}</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <button type="button" class="btn-use-font text-xs font-extrabold px-3 py-1.5 rounded-lg transition ${isSelected ? 'bg-emerald-700 text-white' : 'bg-gray-200 hover:bg-emerald-600 hover:text-white text-gray-800'}">
+                            ${isSelected ? '✓ Utilisée' : 'Utiliser'}
+                        </button>
+                        ${!fontItem.isSystem ? `<button type="button" class="btn-del-font text-xs font-bold px-2.5 py-1.5 rounded-lg bg-red-50 hover:bg-red-600 text-red-600 hover:text-white border border-red-200 transition" title="Supprimer de R2 (Code requis)">🗑️</button>` : ''}
+                    </div>
+                `;
+
+                row.querySelector('.btn-use-font').addEventListener('click', () => {
+                    activeFontFamilyName = fontItem.name;
+                    document.getElementById('activeFontBadgeName').textContent = fontItem.name;
+                    renderFontManagerList();
+                    renderAllPosters();
+                });
+
+                const delBtn = row.querySelector('.btn-del-font');
+                if (delBtn) {
+                    delBtn.addEventListener('click', async () => {
+                        const ok = await deleteSharedOrLocalItemWithPassword(fontItem, null, fontItem.name);
+                        if (ok) {
+                            availableFontsList = availableFontsList.filter(f => f.id !== fontItem.id);
+                            if (activeFontFamilyName === fontItem.name) {
+                                activeFontFamilyName = 'Museo Slab';
+                                document.getElementById('activeFontBadgeName').textContent = 'Museo Slab';
+                            }
+                            renderFontManagerList();
+                            renderAllPosters();
+                        }
+                    });
+                }
+
+                fontListContainer.appendChild(row);
+            });
+        }
+
+        document.getElementById('inputUploadFontR2').addEventListener('change', async function(e) {
+            const files = Array.from(e.target.files);
+            if (files.length === 0) return;
+            fontUploadStatus.textContent = `⏳ Envoi de ${files.length} police(s) sur Cloudflare R2...`;
+
+            for (const file of files) {
+                const cleanName = file.name.replace(/\.[^.]+$/, '');
+                const buffer = await file.arrayBuffer();
+                try {
+                    const fontFace = new FontFace(cleanName, buffer);
+                    await fontFace.load();
+                    document.fonts.add(fontFace);
+                } catch (err) {}
+
+                const dataUrl = await readFileAsDataURL(file);
+                const uploaded = await uploadToR2OrLocal('fonts', cleanName, file.name, 'FONT', dataUrl, dataUrl);
+                if (uploaded && !availableFontsList.some(f => f.name === cleanName)) {
+                    availableFontsList.push({
+                        id: uploaded.key || cleanName,
+                        r2Key: uploaded.key,
+                        name: cleanName,
+                        fileName: file.name,
+                        isSystem: false
+                    });
+                }
+                activeFontFamilyName = cleanName;
+                document.getElementById('activeFontBadgeName').textContent = cleanName;
+            }
+
+            fontUploadStatus.textContent = '✅ Police ajoutée sur R2 et activée !';
+            setTimeout(() => { fontUploadStatus.textContent = ''; }, 3500);
+            renderFontManagerList();
+            renderAllPosters();
+            this.value = '';
+        });
 
         // ============================================================================
         // BOUTONS GLOBAUX (ALCOOL -18, MODE A4 PORTRAIT, MÉCANIQUE, DATES)
@@ -760,7 +1019,7 @@
         });
 
         function loadDefaultModeImages() {
-            const default4 = PRESET_IMAGES_4_PER_PAGE[0];
+            const default4 = dynamicPresets4PerPage[0] || { label: 'Les Prix Bas', file: 'Images Gauche/Les_Prix_Bas_De_La_Semaine-compressed.webp' };
             const candidates4 = getCandidateUrls(default4);
             let idx4 = 0;
             const load4 = () => {
@@ -781,7 +1040,7 @@
             };
             load4();
 
-            const defaultA4 = PRESET_IMAGES_A4_PORTRAIT[0];
+            const defaultA4 = dynamicPresetsA4Portrait[0] || { label: 'Les Prix Bas (A4)', file: 'Images A4/Les prix bas de la semaine-compressed-compressed.webp' };
             const candidatesA4 = getCandidateUrls(defaultA4);
             let idxA4 = 0;
             const loadA4 = () => {
@@ -827,7 +1086,7 @@
         });
 
         // ============================================================================
-        // GESTION DE LA BIBLIOTHÈQUE PARTAGÉE DE FICHIERS DÉJÀ CRÉÉS
+        // BIBLIOTHÈQUE PARTAGÉE : 2 ONGLETS (DÉPOSÉS / GÉNÉRÉS) + SOUS-DOSSIERS
         // ============================================================================
         function readFileAsDataURL(file) {
             return new Promise((resolve) => {
@@ -842,6 +1101,58 @@
         const readyDocsEmptyState = document.getElementById('readyDocsEmptyState');
         const inputSearchReadyDocs = document.getElementById('inputSearchReadyDocs');
         const readyDocsUploadStatus = document.getElementById('readyDocsUploadStatus');
+        const btnTabDeposited = document.getElementById('btnTabDeposited');
+        const btnTabGenerated = document.getElementById('btnTabGenerated');
+        const librarySubFoldersBar = document.getElementById('librarySubFoldersBar');
+
+        function setLibraryActiveTab(tab) {
+            activeLibraryTab = tab;
+            activeLibrarySubFolder = 'Général';
+            if (tab === 'ready_deposited') {
+                btnTabDeposited.className = 'text-xs font-extrabold px-3.5 py-1.5 rounded-lg bg-indigo-600 text-white shadow transition flex items-center gap-1.5';
+                btnTabGenerated.className = 'text-xs font-extrabold px-3.5 py-1.5 rounded-lg text-gray-700 hover:text-indigo-800 transition flex items-center gap-1.5';
+            } else {
+                btnTabGenerated.className = 'text-xs font-extrabold px-3.5 py-1.5 rounded-lg bg-indigo-600 text-white shadow transition flex items-center gap-1.5';
+                btnTabDeposited.className = 'text-xs font-extrabold px-3.5 py-1.5 rounded-lg text-gray-700 hover:text-indigo-800 transition flex items-center gap-1.5';
+            }
+            renderLibrarySubFoldersBar();
+            renderReadyDocsGrid(inputSearchReadyDocs.value);
+        }
+
+        btnTabDeposited.addEventListener('click', () => setLibraryActiveTab('ready_deposited'));
+        btnTabGenerated.addEventListener('click', () => setLibraryActiveTab('ready_generated'));
+
+        function renderLibrarySubFoldersBar() {
+            librarySubFoldersBar.innerHTML = '';
+            const folders = customSubFolders[activeLibraryTab] || ['Général'];
+
+            folders.forEach(folderName => {
+                const isAct = activeLibrarySubFolder === folderName;
+                const btn = document.createElement('button');
+                btn.type = 'button';
+                btn.className = `text-xs font-bold px-3 py-1 rounded-lg border transition flex items-center gap-1 ${
+                    isAct
+                        ? 'bg-indigo-600 text-white border-indigo-700 shadow-sm'
+                        : 'bg-white text-gray-700 border-gray-300 hover:bg-indigo-100'
+                }`;
+                btn.innerHTML = `<span>📁 ${folderName}</span>`;
+                btn.addEventListener('click', () => {
+                    activeLibrarySubFolder = folderName;
+                    renderLibrarySubFoldersBar();
+                    renderReadyDocsGrid(inputSearchReadyDocs.value);
+                });
+                librarySubFoldersBar.appendChild(btn);
+            });
+        }
+
+        document.getElementById('btnCreateNewSubFolder').addEventListener('click', async () => {
+            const tabName = activeLibraryTab === 'ready_deposited' ? 'Fichiers déposés' : 'Affiches générées';
+            const folderName = prompt(`📁 Nom du nouveau dossier dans "${tabName}" :`);
+            if (!folderName || !folderName.trim()) return;
+            const clean = folderName.trim();
+            activeLibrarySubFolder = clean;
+            await createSubFolderOnR2(activeLibraryTab, clean);
+        });
 
         document.getElementById('btnOpenReadyDocsModal').addEventListener('click', () => {
             inputSearchReadyDocs.value = '';
@@ -849,14 +1160,9 @@
             readyDocsModal.classList.remove('hidden');
         });
 
-        document.getElementById('btnRefreshReadyDocs').addEventListener('click', () => {
-            syncAllFromR2();
-        });
-
         function closeReadyDocsModal() {
             readyDocsModal.classList.add('hidden');
         }
-
         document.getElementById('btnCloseReadyDocsModal').addEventListener('click', closeReadyDocsModal);
         document.getElementById('btnCancelReadyDocsModal').addEventListener('click', closeReadyDocsModal);
         readyDocsModal.addEventListener('click', (e) => {
@@ -871,7 +1177,7 @@
             const files = Array.from(e.target.files);
             if (files.length === 0) return;
 
-            readyDocsUploadStatus.textContent = `⏳ Envoi de ${files.length} fichier(s) vers Cloudflare R2...`;
+            readyDocsUploadStatus.textContent = `⏳ Envoi de ${files.length} fichier(s) dans "${activeLibrarySubFolder}"...`;
 
             for (const file of files) {
                 const ext = (file.name.split('.').pop() || '').toUpperCase();
@@ -882,25 +1188,29 @@
                     for (let p = 0; p < pages.length; p++) {
                         const previewDataUrl = pages[p].canvas.toDataURL('image/png');
                         const label = pages.length > 1 ? `${file.name.replace(/\.[^.]+$/, '')} (Page ${p + 1})` : file.name;
-                        await uploadToR2OrLocal('ready_docs', label, file.name, 'PDF', rawDataUrl, previewDataUrl);
+                        await uploadToR2OrLocal(activeLibraryTab, label, file.name, 'PDF', rawDataUrl, previewDataUrl, activeLibrarySubFolder);
                     }
                 } else {
                     const typeLabel = ext === 'SVG' ? 'SVG' : 'IMAGE';
-                    await uploadToR2OrLocal('ready_docs', file.name, file.name, typeLabel, rawDataUrl, rawDataUrl);
+                    await uploadToR2OrLocal(activeLibraryTab, file.name, file.name, typeLabel, rawDataUrl, rawDataUrl, activeLibrarySubFolder);
                 }
             }
-            readyDocsUploadStatus.textContent = '✅ Fichier(s) partagé(s) avec succès !';
+            readyDocsUploadStatus.textContent = '✅ Fichier(s) enregistré(s) sur R2 !';
             setTimeout(() => { readyDocsUploadStatus.textContent = ''; }, 4000);
             this.value = '';
         });
 
         function renderReadyDocsGrid(filterText = '') {
             const q = filterText.trim().toLowerCase();
-            const filtered = readyLibraryDocs.filter(doc => !q || (doc.name || '').toLowerCase().includes(q) || (doc.fileType || '').toLowerCase().includes(q));
+            const sourceList = activeLibraryTab === 'ready_deposited' ? readyDepositedDocs : readyGeneratedDocs;
+            const filtered = sourceList.filter(doc =>
+                (doc.subFolder || 'Général') === activeLibrarySubFolder &&
+                (!q || (doc.name || '').toLowerCase().includes(q) || (doc.fileType || '').toLowerCase().includes(q))
+            );
 
             readyDocsGrid.innerHTML = '';
 
-            if (readyLibraryDocs.length === 0) {
+            if (filtered.length === 0) {
                 readyDocsEmptyState.classList.remove('hidden');
                 return;
             }
@@ -913,7 +1223,7 @@
                 card.innerHTML = `
                     <div class="flex justify-between items-center">
                         <span class="text-[10px] font-black uppercase px-2 py-0.5 rounded ${badgeColor}">${doc.fileType}</span>
-                        <button type="button" class="btn-del-ready-doc text-gray-400 hover:text-red-600 font-bold text-xs px-1.5 py-0.5 rounded hover:bg-red-50 transition" title="Supprimer de la bibliothèque">✕</button>
+                        <button type="button" class="btn-del-ready-doc text-gray-400 hover:text-red-600 font-bold text-xs px-1.5 py-0.5 rounded hover:bg-red-50 transition" title="Supprimer (Code Bonesink124! requis)">✕</button>
                     </div>
                     <div class="w-full h-40 bg-gray-50 rounded-lg overflow-hidden flex items-center justify-center border border-gray-100 p-1">
                         <img src="${doc.previewDataUrl}" alt="${doc.name}" class="max-w-full max-h-full object-contain group-hover:scale-105 transition duration-200">
@@ -934,7 +1244,7 @@
                 card.addEventListener('click', (e) => {
                     if (e.target.closest('.btn-del-ready-doc')) {
                         e.stopPropagation();
-                        deleteSharedOrLocalItem(doc, READY_DOCS_STORE);
+                        deleteSharedOrLocalItemWithPassword(doc, READY_DOCS_STORE, doc.name);
                         return;
                     }
                     if (e.target.closest('.btn-quick-print')) {
@@ -954,6 +1264,66 @@
             });
         }
 
+        // ============================================================================
+        // MODALE DE CHOIX DU DOSSIER DE DESTINATION LORS DU CLIC SUR "☁️ BIBLIO"
+        // ============================================================================
+        const saveDestinationModal = document.getElementById('saveDestinationModal');
+        const inputSavePosterName = document.getElementById('inputSavePosterName');
+        const selectSaveDestinationFolder = document.getElementById('selectSaveDestinationFolder');
+        const inputNewDestFolder = document.getElementById('inputNewDestFolder');
+
+        function openSaveDestinationModal(posterIdx) {
+            pendingSavePosterIndex = posterIdx;
+            const item = postersList[posterIdx];
+            inputSavePosterName.value = item.productName || `Affiche_${posterIdx + 1}`;
+            inputNewDestFolder.value = '';
+
+            selectSaveDestinationFolder.innerHTML = '';
+            const genFolders = customSubFolders.ready_generated || ['Général'];
+            genFolders.forEach(f => {
+                const opt = document.createElement('option');
+                opt.value = f;
+                opt.textContent = `📁 ${f}`;
+                selectSaveDestinationFolder.appendChild(opt);
+            });
+
+            saveDestinationModal.classList.remove('hidden');
+        }
+
+        function closeSaveDestinationModal() {
+            saveDestinationModal.classList.add('hidden');
+            pendingSavePosterIndex = null;
+        }
+
+        document.getElementById('btnCloseSaveDestModal').addEventListener('click', closeSaveDestinationModal);
+        document.getElementById('btnCancelSaveDest').addEventListener('click', closeSaveDestinationModal);
+
+        document.getElementById('btnConfirmSaveDest').addEventListener('click', async function() {
+            if (pendingSavePosterIndex === null) return;
+            const c = document.getElementById(`posterCanvas_${pendingSavePosterIndex}`);
+            if (!c) return;
+
+            const chosenName = inputSavePosterName.value.trim() || `Affiche_${pendingSavePosterIndex + 1}`;
+            const newFolderTyped = inputNewDestFolder.value.trim();
+            const targetSubFolder = newFolderTyped || selectSaveDestinationFolder.value || 'Général';
+
+            const originalText = this.textContent;
+            this.textContent = '⏳ Enregistrement R2...';
+            this.disabled = true;
+
+            if (newFolderTyped && !customSubFolders.ready_generated.includes(newFolderTyped)) {
+                await createSubFolderOnR2('ready_generated', newFolderTyped);
+            }
+
+            const dataUrl = c.toDataURL('image/png');
+            await uploadToR2OrLocal('ready_generated', chosenName, `${chosenName}.png`, 'IMAGE', dataUrl, dataUrl, targetSubFolder);
+
+            this.textContent = originalText;
+            this.disabled = false;
+            closeSaveDestinationModal();
+        });
+
+        // Visionneuse Plein Écran
         const docLightboxModal = document.getElementById('docLightboxModal');
         const lightboxImagePreview = document.getElementById('lightboxImagePreview');
         const lightboxTitle = document.getElementById('lightboxTitle');
@@ -1022,7 +1392,7 @@
         });
 
         // ============================================================================
-        // POLICES & BOUTONS DE CONFIGURATION
+        // CHARGEMENT AUTOMATIQUE DES POLICES LOCALES DE BASE
         // ============================================================================
         async function autoLoadMuseoSlabFonts() {
             if (window.location.protocol === 'file:') return;
@@ -1035,7 +1405,6 @@
                 { file: 'Copie de Museo_Slab_4.otf', weight: '900' }
             ];
 
-            let loadedCount = 0;
             for (const item of fontCandidates) {
                 try {
                     const response = await fetch(safeFileUrl(item.file));
@@ -1044,32 +1413,11 @@
                         const fontFace = new FontFace('Museo Slab', buffer, { weight: item.weight });
                         await fontFace.load();
                         document.fonts.add(fontFace);
-                        loadedCount++;
                     }
                 } catch (e) {}
             }
-
-            if (loadedCount > 0) {
-                document.getElementById('fontStatus')?.classList.remove('hidden');
-                renderAllPosters();
-            }
-        }
-
-        document.getElementById('inputCustomFonts').addEventListener('change', async function(e) {
-            const files = Array.from(e.target.files);
-            for (const file of files) {
-                const buffer = await file.arrayBuffer();
-                const name = file.name.toLowerCase();
-                let weight = '500';
-                if (name.includes('900') || name.includes('1000') || name.includes('_4')) weight = '900';
-                else if (name.includes('700') || name.includes('_3')) weight = '700';
-                const fontFace = new FontFace('Museo Slab', buffer, { weight });
-                await fontFace.load();
-                document.fonts.add(fontFace);
-            }
-            document.getElementById('fontStatus').classList.remove('hidden');
             renderAllPosters();
-        });
+        }
 
         const selectMechanicPreset = document.getElementById('selectMechanicPreset');
         const inputDiscount = document.getElementById('inputDiscount');
@@ -1246,6 +1594,9 @@
             }
         }
 
+        // ============================================================================
+        // GALERIES IMAGES GAUCHE & IMAGES A4 (DÉTECTION DYNAMIQUE + SUPPRESSION AVEC MOT DE PASSE)
+        // ============================================================================
         const visualGalleryModal = document.getElementById('visualGalleryModal');
         const galleryGrid = document.getElementById('galleryGrid');
         const savedGallerySection = document.getElementById('savedGallerySection');
@@ -1275,7 +1626,7 @@
                 const wrapper = document.createElement('div');
                 wrapper.className = 'relative bg-white border-2 border-blue-300 hover:border-red-600 rounded-xl p-2 flex flex-col items-center gap-1.5 shadow-sm hover:shadow-md transition group cursor-pointer';
                 wrapper.innerHTML = `
-                    <button type="button" class="btn-del-saved absolute top-1 right-1 bg-red-600 text-white text-[10px] font-bold w-5 h-5 rounded-full flex items-center justify-center opacity-80 hover:opacity-100 z-10" title="Supprimer ce visuel partagé">✕</button>
+                    <button type="button" class="btn-del-saved absolute top-1 right-1 bg-red-600 text-white text-[10px] font-bold w-5 h-5 rounded-full flex items-center justify-center opacity-80 hover:opacity-100 z-10" title="Supprimer de R2 (Code Bonesink124! requis)">✕</button>
                     <div class="w-full h-24 bg-gray-50 rounded-lg overflow-hidden flex items-center justify-center border border-gray-100">
                         <img src="${saved.dataUrl}" alt="${saved.label}" class="max-w-full max-h-full object-contain group-hover:scale-105 transition duration-200">
                     </div>
@@ -1284,7 +1635,7 @@
                 wrapper.addEventListener('click', (e) => {
                     if (e.target.closest('.btn-del-saved')) {
                         e.stopPropagation();
-                        deleteSharedOrLocalItem(saved, STORE_NAME);
+                        deleteSharedOrLocalItemWithPassword(saved, STORE_NAME, saved.label);
                         return;
                     }
                     applyDataUrlVisual(saved.dataUrl, saved.label);
@@ -1300,15 +1651,34 @@
             const filtered = activePresets.filter(p => !q || p.label.toLowerCase().includes(q) || p.file.toLowerCase().includes(q));
 
             const folderName = isA4PortraitMode ? 'Images A4' : 'Images Gauche';
-            galleryFolderHeading.innerHTML = `📁 Bibliothèque du dossier "${folderName}" (<span id="presetCountBadge">${filtered.length}</span> visuels)`;
+            galleryFolderHeading.innerHTML = `📁 Visuels détectés dans "${folderName}" (<span id="presetCountBadge">${filtered.length}</span>)`;
 
             filtered.forEach(preset => {
                 const candidates = getCandidateUrls(preset);
                 let resolvedUrl = candidates[0];
 
-                const card = document.createElement('button');
-                card.type = 'button';
-                card.className = 'bg-white border-2 border-gray-200 hover:border-red-600 rounded-xl p-2 flex flex-col items-center gap-1.5 shadow-sm hover:shadow-md transition group cursor-pointer focus:outline-none focus:ring-2 focus:ring-red-500';
+                const card = document.createElement('div');
+                card.className = 'relative bg-white border-2 border-gray-200 hover:border-red-600 rounded-xl p-2 flex flex-col items-center gap-1.5 shadow-sm hover:shadow-md transition group cursor-pointer';
+
+                // Bouton de suppression avec mot de passe également sur les images détectées dans Images Gauche / Images A4
+                const delBtn = document.createElement('button');
+                delBtn.type = 'button';
+                delBtn.className = 'absolute top-1 right-1 bg-red-600 text-white text-[10px] font-bold w-5 h-5 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-90 hover:!opacity-100 z-10 transition';
+                delBtn.title = 'Supprimer ce visuel (Code Bonesink124! requis)';
+                delBtn.textContent = '✕';
+                delBtn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    const code = askDeletePasscode(preset.label);
+                    if (!code) return;
+                    deletedStaticFiles.push(preset.file);
+                    localStorage.setItem('superu_deleted_static_files', JSON.stringify(deletedStaticFiles));
+                    if (isA4PortraitMode) {
+                        dynamicPresetsA4Portrait = dynamicPresetsA4Portrait.filter(p => p.file !== preset.file);
+                    } else {
+                        dynamicPresets4PerPage = dynamicPresets4PerPage.filter(p => p.file !== preset.file);
+                    }
+                    buildVisualGallery(inputSearchGallery.value);
+                });
 
                 const imgBox = document.createElement('div');
                 imgBox.className = 'w-full h-24 bg-gray-50 rounded-lg overflow-hidden flex items-center justify-center border border-gray-100';
@@ -1324,7 +1694,8 @@
                         resolvedUrl = candidates[tryIndex];
                         thumbImg.src = resolvedUrl;
                     } else {
-                        imgBox.innerHTML = `<span class="text-[10px] text-gray-400 p-2 text-center leading-tight">Introuvable :<br><b>${preset.label}</b><br><span class="text-[9px] text-blue-600">Clique sur ☁️ pour le partager</span></span>`;
+                        // Si un fichier a été supprimé physiquement du dossier, on le retire automatiquement sans erreur !
+                        card.remove();
                     }
                 };
                 thumbImg.src = resolvedUrl;
@@ -1335,6 +1706,7 @@
                 caption.className = 'text-[11px] font-extrabold text-gray-800 group-hover:text-red-600 uppercase tracking-tight truncate w-full text-center';
                 caption.textContent = preset.label;
 
+                card.appendChild(delBtn);
                 card.appendChild(imgBox);
                 card.appendChild(caption);
 
@@ -1351,8 +1723,10 @@
             buildVisualGallery(this.value);
         });
 
-        document.getElementById('btnRefreshSharedGallery').addEventListener('click', () => {
-            syncAllFromR2();
+        document.getElementById('btnRefreshSharedGallery').addEventListener('click', async () => {
+            await discoverFolderImagesAutomatically();
+            await syncAllFromR2();
+            buildVisualGallery(inputSearchGallery.value);
         });
 
         document.getElementById('inputAddGalleryImage').addEventListener('change', async function(e) {
@@ -1378,7 +1752,7 @@
             inputSearchGallery.value = '';
             syncAllFromR2();
             buildVisualGallery('');
-            const folderInfo = isA4PortraitMode ? 'Dossier Images A4' : 'Dossier Images Gauche';
+            const folderInfo = isA4PortraitMode ? 'Bibliothèque Images A4' : 'Bibliothèque Images Gauche';
             if (target === 'global') {
                 galleryModalTitle.textContent = `🖼️ Choisir le visuel (${folderInfo} - Global)`;
             } else {
@@ -1429,12 +1803,8 @@
 
         function applyPresetVisualWithFallback(candidateUrls, labelName) {
             let idxTry = 0;
-            const folderName = isA4PortraitMode ? 'Images A4' : 'Images Gauche';
             const tryNext = () => {
-                if (idxTry >= candidateUrls.length) {
-                    alert(`Le fichier pour "${labelName}" n'a pas été trouvé dans "${folderName}".\nAstuce : Clique sur le bouton rouge "☁️ Ajouter & Partager image(s)" pour l'envoyer sur R2 !`);
-                    return;
-                }
+                if (idxTry >= candidateUrls.length) return;
                 const img = new Image();
                 if (window.location.protocol !== 'file:') {
                     img.crossOrigin = 'anonymous';
@@ -1542,7 +1912,7 @@
         document.getElementById('chkAutoTrim').addEventListener('change', renderAllPosters);
 
         // ============================================================================
-        // VÉRIFICATION MATHÉMATIQUE STRICTE DES GENCODES EAN-13 & EAN-8
+        // DÉTECTION AUTOMATIQUE DES PROMOS ET EXTRACTION EAN-13 SUR LES ÉTIQUETTES IMPORTÉES
         // ============================================================================
         function isValidEAN13Checksum(code13) {
             if (!/^\d{13}$/.test(code13)) return false;
@@ -1630,6 +2000,47 @@
             if (candidates.length === 0) return '';
             candidates.sort((a, b) => b.score - a.score);
             return candidates[0].code;
+        }
+
+        // Détecte si l'étiquette importée contient une promotion explicite (-X%, 2+1, 1+1, 2ème à -50%, ou 2 prix distincts)
+        function detectLabelPromotion(fullText, productName) {
+            // Retourne le texte sans le nom du produit (pour ne pas confondre "30%MG" avec une remise de -30%)
+            const textWithoutTitle = fullText.replace(productName, '');
+
+            // 1. Offre 2+1 ou 1+1
+            if (/\b2\s*\+\s*1\b/i.test(textWithoutTitle) || /\b2\s*achet[eé]s?\s*1\s*(?:offert|gratuit)/i.test(textWithoutTitle)) {
+                return { active: true, presetKey: '2_plus_1', discount: '2+1', text: 'OFFERT', unitLabel: 'LES 3 PRODUITS' };
+            }
+            if (/\b1\s*\+\s*1\b/i.test(textWithoutTitle) || /\b1\s*achet[eé]\s*1\s*(?:offert|gratuit)/i.test(textWithoutTitle)) {
+                return { active: true, presetKey: '1_plus_1', discount: '1+1', text: 'GRATUIT', unitLabel: 'LE LOT DE 2' };
+            }
+
+            // 2. Offre sur le 2ème produit (ex: -50% sur le 2ème, -68% sur le 2ème)
+            const secondMatch = textWithoutTitle.match(/-\s*(\d{1,2})\s*%\s*(?:sur\s*le\s*2|2[eè]me)/i)
+                             || textWithoutTitle.match(/2[eè]me\s*(?:produit\s*)?[aà]\s*-\s*(\d{1,2})\s*%/i);
+            if (secondMatch) {
+                const pct = parseInt(secondMatch[1], 10);
+                return { active: true, presetKey: '2eme_50', discount: `-${pct}%`, text: 'SUR LE 2ÈME|PRODUIT', unitLabel: 'LE 2ÈME PRODUIT' };
+            }
+
+            // 3. Remise immédiate en % (en ignorant "% MG" ou "% vol")
+            const pctRemiseMatch = textWithoutTitle.match(/-\s*(\d{1,2})\s*%(?!\s*(?:MG|M\.G|VOL))/i)
+                                || textWithoutTitle.match(/(\d{1,2})\s*%\s*(?:de\s*)?remise/i);
+            if (pctRemiseMatch) {
+                const pct = parseInt(pctRemiseMatch[1], 10);
+                if (pct >= 5 && pct <= 90) {
+                    return { active: true, presetKey: 'remise_imm', discount: `-${pct}%`, text: 'DE REMISE|IMMÉDIATE', unitLabel: 'LE PRODUIT' };
+                }
+            }
+
+            // 4. Remise immédiate en €
+            const euroRemiseMatch = textWithoutTitle.match(/-\s*(\d{1,2}(?:[.,]\d{1,2})?)\s*€\s*(?:de\s*remise)?/i);
+            if (euroRemiseMatch) {
+                const val = euroRemiseMatch[1].replace('.', ',');
+                return { active: true, presetKey: 'remise_euros', discount: `-${val}€`, text: 'DE REMISE|IMMÉDIATE', unitLabel: 'LE PRODUIT' };
+            }
+
+            return null;
         }
 
         function cleanProductFirstLine(rawLine) {
@@ -1829,6 +2240,7 @@
             }
 
             const gencode = extractBestGencode(fullText, bottomEanText, rawLines);
+            const detectedPromo = detectLabelPromotion(fullText, productName);
 
             const hasValidSignal = (oldPrice > 0) || (gencode.length >= 8) || /cont\s*[:.;]?/i.test(fullText);
             if (!hasValidSignal || (!productName && !gencode && oldPrice <= 0)) {
@@ -1847,7 +2259,8 @@
                 customRawImg: null,
                 customTrimmedImg: null,
                 customImageLabel: '',
-                showAlcohol18: null
+                showAlcohol18: null,
+                detectedPromo: detectedPromo
             };
         }
 
@@ -2051,7 +2464,8 @@
 
                 if (allDetected.length > 0) {
                     postersList = allDetected;
-                    status.textContent = `✅ ${postersList.length} étiquette(s) extraite(s) et générée(s) !`;
+                    const promoCount = postersList.filter(it => it.detectedPromo && it.detectedPromo.active).length;
+                    status.textContent = `✅ ${postersList.length} étiquette(s) extraite(s) (${promoCount} promo(s) auto-activée(s)) !`;
                 } else {
                     status.textContent = "⚠️ Aucune étiquette détectée sur le fichier.";
                 }
@@ -2081,6 +2495,7 @@
         }
 
         function drawAlcohol18Banner(ctx, x, y, scale = 1.0) {
+            const FONT_SLAB = getActiveFontSlab();
             ctx.save();
             ctx.translate(x, y);
             ctx.scale(scale, scale);
@@ -2132,6 +2547,7 @@
         // DESSIN SUR CANVAS : MODE BANDEAU (4/PAGE) & MODE A4 PORTRAIT (1/PAGE)
         // ============================================================================
         function drawFormattedPrice(ctx, priceNumber, preferredCenterX, baselineY, isOldPrice, maxRightX = 656, scaleFactor = 1.0) {
+            const FONT_SLAB = getActiveFontSlab();
             const priceStr = priceNumber.toFixed(2).replace('.', ',');
             const parts = priceStr.split(',');
             const euros = parts[0] || '0';
@@ -2221,6 +2637,7 @@
         }
 
         function drawFittedProductTitle(ctx, text, x, startY, maxWidth, maxBottomY, maxFont = 34, minFont = 17, align = 'left') {
+            const FONT_SLAB = getActiveFontSlab();
             const cleanText = (text || 'PRODUIT').toUpperCase().trim();
 
             function splitTokensForWrap(rawStr, maxW) {
@@ -2446,7 +2863,8 @@
             };
         }
 
-        function drawA4PortraitPoster(canvas, item, pricing, activeImg, dateRaw, discountInput, showContenance, displayAlcohol) {
+        function drawA4PortraitPoster(canvas, item, pricing, activeImg, dateRaw, discountInput, rawDiscText, unitLabelText, isItemMechanicShown, showContenance, displayAlcohol) {
+            const FONT_SLAB = getActiveFontSlab();
             const ctx = canvas.getContext('2d');
             const W = canvas.width;  // 840
             const H = canvas.height; // 1188
@@ -2473,7 +2891,7 @@
                 });
             }
 
-            if (showMechanic) {
+            if (isItemMechanicShown) {
                 const circleX = 605;
                 const circleY = 490;
                 const radius = 165;
@@ -2484,7 +2902,6 @@
                 ctx.fill();
 
                 const discountStr = discountInput;
-                const rawDiscText = document.getElementById('inputDiscountText').value.trim();
                 const hasDiscPhrase = rawDiscText.length > 0;
                 const mainYOffset = hasDiscPhrase ? 5 : 35;
 
@@ -2536,7 +2953,7 @@
                 ctx.fillStyle = '#EE1C25';
                 ctx.font = `800 22px ${FONT_SANS}`;
                 ctx.textAlign = 'center';
-                ctx.fillText(document.getElementById('inputUnitLabel').value.toUpperCase(), priceCenterX, 598);
+                ctx.fillText(unitLabelText.toUpperCase(), priceCenterX, 598);
 
                 ctx.fillStyle = '#000000';
                 ctx.font = `600 21px ${FONT_SANS}`;
@@ -2554,7 +2971,7 @@
                 ctx.fillStyle = '#EE1C25';
                 ctx.font = `800 25px ${FONT_SANS}`;
                 ctx.textAlign = 'center';
-                ctx.fillText(document.getElementById('inputUnitLabel').value.toUpperCase(), soloPriceCenterX, 555);
+                ctx.fillText(unitLabelText.toUpperCase(), soloPriceCenterX, 555);
 
                 ctx.fillStyle = '#000000';
                 ctx.font = `600 23px ${FONT_SANS}`;
@@ -2589,12 +3006,20 @@
         }
 
         function drawSinglePoster(canvas, item) {
-            const discountInput = document.getElementById('inputDiscount').value.trim();
-            const presetKey = document.getElementById('selectMechanicPreset').value;
+            const FONT_SLAB = getActiveFontSlab();
+
+            // Si une promo a été détectée sur l'étiquette importée, on l'active pour cette étiquette ; sinon on garde l'affichage de base (global)
+            const hasAutoPromo = Boolean(item.detectedPromo && item.detectedPromo.active);
+            const isItemMechanicShown = hasAutoPromo ? true : showMechanic;
+            const discountInput = hasAutoPromo ? item.detectedPromo.discount : document.getElementById('inputDiscount').value.trim();
+            const rawDiscText = hasAutoPromo ? item.detectedPromo.text : document.getElementById('inputDiscountText').value.trim();
+            const presetKey = hasAutoPromo ? item.detectedPromo.presetKey : document.getElementById('selectMechanicPreset').value;
+            const unitLabelText = hasAutoPromo ? item.detectedPromo.unitLabel : document.getElementById('inputUnitLabel').value;
+
             const showContenance = document.getElementById('chkShowContenance').checked;
             const dateRaw = document.getElementById('inputDates').value.trim();
 
-            const pricing = computePromoPricing(item, presetKey, discountInput, showMechanic);
+            const pricing = computePromoPricing(item, presetKey, discountInput, isItemMechanicShown);
             const displayAlcohol = item.showAlcohol18 !== null ? item.showAlcohol18 : showAlcoholGlobal;
 
             const autoTrim = document.getElementById('chkAutoTrim').checked;
@@ -2612,7 +3037,7 @@
                     canvas.width = 840;
                     canvas.height = 1188;
                 }
-                drawA4PortraitPoster(canvas, item, pricing, activeImg, dateRaw, discountInput, showContenance, displayAlcohol);
+                drawA4PortraitPoster(canvas, item, pricing, activeImg, dateRaw, discountInput, rawDiscText, unitLabelText, isItemMechanicShown, showContenance, displayAlcohol);
                 return;
             }
 
@@ -2653,14 +3078,13 @@
             const circleY = 185;
             const radius = 114;
 
-            if (showMechanic) {
+            if (isItemMechanicShown) {
                 ctx.fillStyle = '#EE1C25';
                 ctx.beginPath();
                 ctx.arc(circleX, circleY, radius, 0, Math.PI * 2);
                 ctx.fill();
 
                 const discountStr = discountInput;
-                const rawDiscText = document.getElementById('inputDiscountText').value.trim();
                 const hasDiscPhrase = rawDiscText.length > 0;
                 const mainYOffset = hasDiscPhrase ? 2 : 26;
 
@@ -2703,7 +3127,7 @@
             }
 
             // 4. Prix + Mention sous prix + Prix à l'unité + Contenance
-            if (showMechanic) {
+            if (isItemMechanicShown) {
                 const priceCenterX = 550;
                 const maxPriceRightX = circleX - radius - 12;
 
@@ -2717,7 +3141,7 @@
                 ctx.fillStyle = '#EE1C25';
                 ctx.font = `800 15px ${FONT_SANS}`;
                 ctx.textAlign = 'center';
-                ctx.fillText(document.getElementById('inputUnitLabel').value.toUpperCase(), priceCenterX + 5, 294);
+                ctx.fillText(unitLabelText.toUpperCase(), priceCenterX + 5, 294);
 
                 ctx.fillStyle = '#000000';
                 ctx.font = `600 15px ${FONT_SANS}`;
@@ -2735,7 +3159,7 @@
                 ctx.fillStyle = '#EE1C25';
                 ctx.font = `800 16px ${FONT_SANS}`;
                 ctx.textAlign = 'center';
-                ctx.fillText(document.getElementById('inputUnitLabel').value.toUpperCase(), soloPriceCenterX, 265);
+                ctx.fillText(unitLabelText.toUpperCase(), soloPriceCenterX, 265);
 
                 ctx.fillStyle = '#000000';
                 ctx.font = `600 16px ${FONT_SANS}`;
@@ -2749,7 +3173,7 @@
             }
 
             // 5. Nom du produit
-            const titleStartX = showMechanic ? 912 : 740;
+            const titleStartX = isItemMechanicShown ? 912 : 740;
             const maxRightWidth = 1180 - titleStartX;
             ctx.fillStyle = '#000000';
 
@@ -2798,6 +3222,7 @@
                 const isCustomActive = Boolean(item.useCustomLeftImage);
                 const customLabelText = item.customImageLabel ? item.customImageLabel : 'Visuel';
                 const isItemAlcohol = item.showAlcohol18 !== null ? item.showAlcohol18 : showAlcoholGlobal;
+                const hasItemPromo = Boolean(item.detectedPromo && item.detectedPromo.active);
 
                 const header = document.createElement('div');
                 header.className = 'flex flex-wrap items-center border-b pb-2 gap-2';
@@ -2808,6 +3233,11 @@
                     <input type="text" data-idx="${index}" data-field="productName" value="${item.productName.replace(/"/g, '&quot;')}" 
                         class="poster-edit-input flex-1 min-w-[160px] text-xs font-bold uppercase border rounded px-2.5 py-1 text-gray-800 focus:ring-2 focus:ring-red-500"
                         title="Nom du produit (1re ligne)" placeholder="Nom du produit" />
+
+                    <!-- BOUTON PROMO INDIVIDUELLE AUTO-DÉTECTÉE -->
+                    <button type="button" data-idx="${index}" class="btn-toggle-item-promo text-[11px] font-extrabold px-2 py-1 rounded border transition ${hasItemPromo ? 'bg-red-600 text-white border-red-700' : 'bg-gray-100 text-gray-600 border-gray-300 hover:bg-gray-200'}" title="Activer ou désactiver la promo détectée sur cette étiquette">
+                        🎯 Promo ${hasItemPromo ? item.detectedPromo.discount : 'Base'}
+                    </button>
 
                     <!-- BOUTON OPTIONNEL D'IMAGE INDIVIDUELLE -->
                     <div class="flex items-center gap-1.5 px-2 py-0.5 rounded-lg border ${isCustomActive ? 'border-green-500 bg-green-50/60' : 'border-gray-200 bg-gray-50'}">
@@ -2825,7 +3255,7 @@
                     </div>
 
                     <!-- BOUTON -18 ANS ALCOOL SUR L'ÉTIQUETTE -->
-                    <button type="button" data-idx="${index}" class="btn-toggle-item-alcohol text-[11px] font-extrabold px-2 py-1 rounded border transition ${isItemAlcohol ? 'bg-orange-600 text-white border-orange-700' : 'bg-orange-50 text-orange-800 border-orange-200 hover:bg-orange-100'}" title="Afficher ou masquer la mention légale Alcool -18 ans sur cette étiquette">
+                    <button type="button" data-idx="${index}" class="btn-toggle-item-alcohol text-[11px] font-extrabold px-2 py-1 rounded border transition ${isItemAlcohol ? 'bg-orange-600 text-white border-orange-700' : 'bg-orange-50 text-orange-800 border-orange-200 hover:bg-orange-100'}">
                         -18 ${isItemAlcohol ? 'ON' : 'OFF'}
                     </button>
 
@@ -2850,14 +3280,14 @@
                     <label class="flex items-center gap-1 text-xs font-semibold text-gray-600">
                         Cont.:
                         <input type="text" data-idx="${index}" data-field="contenanceText" value="${(item.contenanceText || '').replace(/"/g, '&quot;')}" 
-                            class="poster-edit-input w-20 text-xs font-bold border rounded px-2 py-1 text-emerald-800 bg-emerald-50" placeholder="ex: 100 g" title="Contenance" />
+                            class="poster-edit-input w-20 text-xs font-bold border rounded px-2 py-1 text-emerald-800 bg-emerald-50" placeholder="ex: 100 g" />
                     </label>
                     <label class="flex items-center gap-1 text-xs font-semibold text-gray-600">
                         EAN:
                         <input type="text" data-idx="${index}" data-field="gencode" value="${item.gencode || ''}" 
                             class="poster-edit-input w-32 text-xs font-bold border rounded px-2 py-1 text-blue-800 bg-blue-50" placeholder="Code-barres" />
                     </label>
-                    <button type="button" data-idx="${index}" class="btn-save-to-library text-xs font-bold px-2.5 py-1 rounded bg-indigo-50 hover:bg-indigo-600 text-indigo-700 hover:text-white border border-indigo-200 transition" title="Enregistrer cette affiche directement dans la bibliothèque partagée">
+                    <button type="button" data-idx="${index}" class="btn-save-to-library text-xs font-bold px-2.5 py-1 rounded bg-indigo-50 hover:bg-indigo-600 text-indigo-700 hover:text-white border border-indigo-200 transition" title="Choisir le dossier et enregistrer dans Affiches générées">
                         ☁️ Biblio
                     </button>
                     <button type="button" data-idx="${index}" class="btn-delete-poster text-xs font-bold px-2.5 py-1 rounded bg-red-50 hover:bg-red-600 text-red-600 hover:text-white border border-red-200 transition" title="Supprimer">
@@ -2908,6 +3338,24 @@
                 });
             });
 
+            document.querySelectorAll('.btn-toggle-item-promo').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const idx = parseInt(this.getAttribute('data-idx'), 10);
+                    if (postersList[idx].detectedPromo && postersList[idx].detectedPromo.active) {
+                        postersList[idx].detectedPromo.active = false;
+                    } else {
+                        postersList[idx].detectedPromo = {
+                            active: true,
+                            presetKey: document.getElementById('selectMechanicPreset').value,
+                            discount: document.getElementById('inputDiscount').value.trim(),
+                            text: document.getElementById('inputDiscountText').value.trim(),
+                            unitLabel: document.getElementById('inputUnitLabel').value.trim()
+                        };
+                    }
+                    renderAllPosters();
+                });
+            });
+
             document.querySelectorAll('.btn-toggle-item-alcohol').forEach(btn => {
                 btn.addEventListener('click', function() {
                     const idx = parseInt(this.getAttribute('data-idx'), 10);
@@ -2917,19 +3365,11 @@
                 });
             });
 
-            // Bouton "☁️ Biblio" sur chaque étiquette pour l'envoyer en 1 clic dans la bibliothèque partagée R2
+            // Ouvre la modale de choix du dossier de destination ("Affiches générées")
             document.querySelectorAll('.btn-save-to-library').forEach(btn => {
-                btn.addEventListener('click', async function() {
+                btn.addEventListener('click', function() {
                     const idx = parseInt(this.getAttribute('data-idx'), 10);
-                    const c = document.getElementById(`posterCanvas_${idx}`);
-                    if (!c) return;
-                    const originalText = this.textContent;
-                    this.textContent = '⏳...';
-                    const dataUrl = c.toDataURL('image/png');
-                    const label = postersList[idx].productName || `Etiquette_${idx + 1}`;
-                    await uploadToR2OrLocal('ready_docs', label, `${label}.png`, 'IMAGE', dataUrl, dataUrl);
-                    this.textContent = '✅ Ajouté';
-                    setTimeout(() => { this.textContent = originalText; }, 2000);
+                    openSaveDestinationModal(idx);
                 });
             });
 
@@ -3041,6 +3481,7 @@
         });
 
         window.addEventListener('DOMContentLoaded', async () => {
+            await discoverFolderImagesAutomatically();
             await syncAllFromR2();
             buildVisualGallery();
             autoLoadMuseoSlabFonts();

@@ -1,5 +1,6 @@
 // functions/api.js
 const PUBLIC_R2_URL = "https://pub-06317316428d44fe94ff17808d4763df.r2.dev";
+const DELETE_PASSCODE = "Bonesink124!";
 
 export async function onRequest(context) {
   const { request, env } = context;
@@ -17,13 +18,13 @@ export async function onRequest(context) {
   const bucket = env.MY_BUCKET;
   if (!bucket) {
     return new Response(
-      JSON.stringify({ ok: false, error: "Binding R2 MY_BUCKET non configuré dans Cloudflare Pages > Settings > Functions." }),
+      JSON.stringify({ ok: false, error: "Binding R2 MY_BUCKET non configuré." }),
       { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );
   }
 
   try {
-    // 1. LISTER LES FICHIERS PARTAGÉS (GET /api?folder=...)
+    // 1. LISTER TOUS LES FICHIERS ET DOSSIERS SUR R2 (GET /api)
     if (request.method === "GET") {
       const folder = url.searchParams.get("folder") || "";
       const listed = await bucket.list({
@@ -42,10 +43,12 @@ export async function onRequest(context) {
 
           return {
             key: obj.key,
+            thumbKey: meta.thumbKey || "",
             label: meta.label || obj.key.split("/").pop(),
             fileName: meta.fileName || obj.key.split("/").pop(),
             fileType: meta.fileType || "IMAGE",
-            folder: obj.key.split("/")[0],
+            folder: meta.folder || obj.key.split("/")[0],
+            subFolder: meta.subFolder || "Général",
             uploaded: new Date(obj.uploaded).getTime(),
             url: `${PUBLIC_R2_URL}/${encodedKey}`,
             thumbUrl: `${PUBLIC_R2_URL}/${encodedThumb}`
@@ -58,12 +61,32 @@ export async function onRequest(context) {
       });
     }
 
-    // 2. ENREGISTRER UN NOUVEAU FICHIER PARTAGÉ (POST /api)
+    // 2. UPLOADER UN FICHIER OU CRÉER UN DOSSIER (POST /api)
     if (request.method === "POST") {
       const body = await request.json();
-      const { folder, label, fileName, fileType, dataUrl, previewDataUrl } = body;
 
+      // Création d'un sous-dossier virtuel
+      if (body.action === "create_folder") {
+        const safeFolder = body.folder || "ready_deposited";
+        const safeSub = (body.subFolder || "Nouveau_Dossier").trim();
+        const markerKey = `${safeFolder}/__folder__${Date.now()}_${safeSub.replace(/[^a-zA-Z0-9._-]/g, "_")}`;
+        await bucket.put(markerKey, new Uint8Array(0), {
+          customMetadata: {
+            label: safeSub,
+            fileName: ".folder",
+            fileType: "FOLDER",
+            folder: safeFolder,
+            subFolder: safeSub
+          }
+        });
+        return new Response(JSON.stringify({ ok: true, subFolder: safeSub }), {
+          headers: { ...corsHeaders, "Content-Type": "application/json" }
+        });
+      }
+
+      const { folder, subFolder, label, fileName, fileType, dataUrl, previewDataUrl } = body;
       const safeFolder = folder || "left_4";
+      const safeSubFolder = (subFolder || "Général").trim();
       const cleanFileName = (fileName || "fichier.png").replace(/[^a-zA-Z0-9._-]/g, "_");
       const timestamp = Date.now();
       const mainKey = `${safeFolder}/${timestamp}_${cleanFileName}`;
@@ -93,6 +116,8 @@ export async function onRequest(context) {
           label: label || cleanFileName,
           fileName: fileName || cleanFileName,
           fileType: fileType || "IMAGE",
+          folder: safeFolder,
+          subFolder: safeSubFolder,
           thumbKey: thumbKey
         }
       });
@@ -106,10 +131,12 @@ export async function onRequest(context) {
         ok: true,
         file: {
           key: mainKey,
+          thumbKey: thumbKey,
           label: label || cleanFileName,
           fileName: fileName || cleanFileName,
           fileType: fileType || "IMAGE",
           folder: safeFolder,
+          subFolder: safeSubFolder,
           uploaded: timestamp,
           url: `${PUBLIC_R2_URL}/${encodedKey}`,
           thumbUrl: `${PUBLIC_R2_URL}/${encodedThumb}`
@@ -119,12 +146,21 @@ export async function onRequest(context) {
       });
     }
 
-    // 3. SUPPRIMER UN FICHIER PARTAGÉ (DELETE /api?key=...&thumbKey=...)
+    // 3. SUPPRIMER UN FICHIER AVEC VÉRIFICATION DU CODE Bonesink124! (DELETE /api)
     if (request.method === "DELETE") {
+      const code = url.searchParams.get("code") || "";
+      if (code !== DELETE_PASSCODE) {
+        return new Response(
+          JSON.stringify({ ok: false, error: "Code de suppression incorrect." }),
+          { status: 403, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        );
+      }
+
       const key = url.searchParams.get("key");
       const thumbKey = url.searchParams.get("thumbKey");
       if (key) await bucket.delete(key);
       if (thumbKey) await bucket.delete(thumbKey);
+
       return new Response(JSON.stringify({ ok: true }), {
         headers: { ...corsHeaders, "Content-Type": "application/json" }
       });
