@@ -24,7 +24,7 @@ export async function onRequest(context) {
   }
 
   try {
-    // 1. LISTER TOUS LES FICHIERS ET DOSSIERS SUR R2 (GET /api)
+    // 1. LISTER TOUS LES FICHIERS, DOSSIERS ET SOUS-DOSSIERS SUR R2 (GET /api)
     if (request.method === "GET") {
       const folder = url.searchParams.get("folder") || "";
       const listed = await bucket.list({
@@ -61,14 +61,19 @@ export async function onRequest(context) {
       });
     }
 
-    // 2. UPLOADER UN FICHIER OU CRÉER UN DOSSIER (POST /api)
+    // 2. UPLOADER UN FICHIER OU CRÉER UN DOSSIER / SOUS-DOSSIER (POST /api)
     if (request.method === "POST") {
       const body = await request.json();
 
-      // Création d'un sous-dossier virtuel
+      // Création d'un dossier ou sous-dossier (ex: "Noël" ou "Noël/Chocolats")
       if (body.action === "create_folder") {
         const safeFolder = body.folder || "ready_deposited";
-        const safeSub = (body.subFolder || "Nouveau_Dossier").trim();
+        const safeSub = (body.subFolder || "Nouveau_Dossier")
+          .split("/")
+          .map(part => part.trim())
+          .filter(Boolean)
+          .join("/");
+
         const markerKey = `${safeFolder}/__folder__${Date.now()}_${safeSub.replace(/[^a-zA-Z0-9._-]/g, "_")}`;
         await bucket.put(markerKey, new Uint8Array(0), {
           customMetadata: {
@@ -86,7 +91,12 @@ export async function onRequest(context) {
 
       const { folder, subFolder, label, fileName, fileType, dataUrl, previewDataUrl } = body;
       const safeFolder = folder || "left_4";
-      const safeSubFolder = (subFolder || "Général").trim();
+      const safeSubFolder = (subFolder || "Général")
+        .split("/")
+        .map(part => part.trim())
+        .filter(Boolean)
+        .join("/");
+
       const cleanFileName = (fileName || "fichier.png").replace(/[^a-zA-Z0-9._-]/g, "_");
       const timestamp = Date.now();
       const mainKey = `${safeFolder}/${timestamp}_${cleanFileName}`;
@@ -146,7 +156,7 @@ export async function onRequest(context) {
       });
     }
 
-    // 3. SUPPRIMER UN FICHIER AVEC VÉRIFICATION DU CODE Bonesink124! (DELETE /api)
+    // 3. SUPPRIMER UN FICHIER OU UN DOSSIER/SOUS-DOSSIER COMPLET AVEC LE CODE Bonesink124! (DELETE /api)
     if (request.method === "DELETE") {
       const code = url.searchParams.get("code") || "";
       if (code !== DELETE_PASSCODE) {
@@ -156,6 +166,49 @@ export async function onRequest(context) {
         );
       }
 
+      const action = url.searchParams.get("action") || "delete_file";
+
+      // Suppression complète d'un dossier, de ses sous-dossiers et de tous leurs fichiers
+      if (action === "delete_folder") {
+        const targetFolder = url.searchParams.get("folder") || "ready_deposited";
+        const targetSubFolder = url.searchParams.get("subFolder") || "";
+
+        if (!targetSubFolder || targetSubFolder === "Général") {
+          return new Response(
+            JSON.stringify({ ok: false, error: "Le dossier principal Général ne peut pas être supprimé." }),
+            { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+          );
+        }
+
+        const listed = await bucket.list({ include: ["customMetadata"] });
+        let deletedCount = 0;
+
+        for (const obj of listed.objects) {
+          const meta = obj.customMetadata || {};
+          const objFolder = meta.folder || obj.key.split("/")[0];
+          const isMatchingTab =
+            objFolder === targetFolder ||
+            (targetFolder === "ready_deposited" && objFolder === "ready_docs");
+
+          const objSub = meta.subFolder || "";
+          const isInsideTargetSub =
+            objSub === targetSubFolder || objSub.startsWith(targetSubFolder + "/");
+
+          if (isMatchingTab && isInsideTargetSub) {
+            await bucket.delete(obj.key);
+            if (meta.thumbKey) {
+              await bucket.delete(meta.thumbKey);
+            }
+            deletedCount++;
+          }
+        }
+
+        return new Response(JSON.stringify({ ok: true, deletedCount }), {
+          headers: { ...corsHeaders, "Content-Type": "application/json" }
+        });
+      }
+
+      // Suppression d'un fichier individuel
       const key = url.searchParams.get("key");
       const thumbKey = url.searchParams.get("thumbKey");
       if (key) await bucket.delete(key);

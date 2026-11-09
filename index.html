@@ -293,7 +293,7 @@
         </div>
     </div>
 
-    <!-- FENÊTRE MODALE 2 : BIBLIOTHÈQUE PARTAGÉE (SÉPARÉE EN 2 ONGLETS + GESTION DES DOSSIERS) -->
+    <!-- FENÊTRE MODALE 2 : BIBLIOTHÈQUE PARTAGÉE (ARBORESCENCE DOSSIERS & SOUS-DOSSIERS + SUPPRESSION PROTÉGÉE) -->
     <div id="readyDocsModal" class="fixed inset-0 bg-black/65 z-50 hidden flex items-center justify-center p-4 backdrop-blur-sm">
         <div class="bg-white rounded-2xl shadow-2xl max-w-6xl w-full max-h-[92vh] flex flex-col overflow-hidden border-t-4 border-indigo-600">
             <!-- En-tête + Bouton bascule Fichiers Déposés / Affiches Générées -->
@@ -315,12 +315,21 @@
 
                 <div class="flex flex-wrap items-center gap-2">
                     <input type="text" id="inputSearchReadyDocs" placeholder="🔍 Rechercher un fichier..." 
-                        class="text-xs border rounded-lg px-3 py-1.5 w-44 focus:ring-2 focus:ring-indigo-500">
-                    <button type="button" id="btnCreateNewSubFolder" class="text-xs font-bold bg-amber-500 hover:bg-amber-600 text-white px-3 py-1.5 rounded-lg shadow-sm transition flex items-center gap-1">
-                        📁+ Nouveau dossier
+                        class="text-xs border rounded-lg px-3 py-1.5 w-40 focus:ring-2 focus:ring-indigo-500">
+                    <!-- BOUTON CRÉATION DOSSIER PRINCIPAL -->
+                    <button type="button" id="btnCreateNewRootFolder" class="text-xs font-bold bg-amber-500 hover:bg-amber-600 text-white px-2.5 py-1.5 rounded-lg shadow-sm transition flex items-center gap-1" title="Créer un nouveau dossier à la racine">
+                        📁+ Dossier
                     </button>
-                    <label class="text-xs font-bold bg-indigo-600 hover:bg-indigo-700 text-white px-3.5 py-1.5 rounded-lg cursor-pointer shadow-sm transition flex items-center gap-1.5">
-                        ☁️ Déposer dans ce dossier
+                    <!-- BOUTON CRÉATION SOUS-DOSSIER DANS LE DOSSIER ACTIF -->
+                    <button type="button" id="btnCreateNewChildSubFolder" class="text-xs font-bold bg-orange-500 hover:bg-orange-600 text-white px-2.5 py-1.5 rounded-lg shadow-sm transition flex items-center gap-1" title="Créer un sous-dossier à l'intérieur du dossier sélectionné">
+                        📂+ Sous-dossier
+                    </button>
+                    <!-- BOUTON SUPPRIMER LE DOSSIER / SOUS-DOSSIER ACTUEL (AVEC MOT DE PASSE) -->
+                    <button type="button" id="btnDeleteCurrentFolder" class="hidden text-xs font-bold bg-red-600 hover:bg-red-700 text-white px-2.5 py-1.5 rounded-lg shadow-sm transition flex items-center gap-1" title="Supprimer ce dossier, ses sous-dossiers et ses fichiers (Code Bonesink124! requis)">
+                        🗑️ Suppr. dossier
+                    </button>
+                    <label class="text-xs font-bold bg-indigo-600 hover:bg-indigo-700 text-white px-3 py-1.5 rounded-lg cursor-pointer shadow-sm transition flex items-center gap-1.5">
+                        ☁️ Déposer ici
                         <input type="file" id="inputUploadReadyDocs" accept=".pdf,.svg,.png,.jpg,.jpeg,.webp,.bmp,.gif,image/*,application/pdf,image/svg+xml" multiple class="hidden">
                     </label>
                     <button type="button" id="btnCloseReadyDocsModal" class="text-gray-500 hover:text-red-600 font-bold text-lg px-2.5 py-1 rounded-lg hover:bg-red-50 transition">
@@ -329,19 +338,32 @@
                 </div>
             </div>
 
-            <!-- BARRE DES DOSSIERS DE LA BIBLIOTHÈQUE ACTIVE -->
-            <div class="px-5 py-2.5 bg-indigo-50/70 border-b flex flex-wrap items-center gap-2">
-                <span class="text-[11px] font-extrabold uppercase text-indigo-900">📂 Dossiers :</span>
-                <div id="librarySubFoldersBar" class="flex flex-wrap items-center gap-1.5"></div>
+            <!-- BARRE DES DOSSIERS RACINES ET SOUS-DOSSIERS (HIÉRARCHIE) -->
+            <div class="px-5 py-2.5 bg-indigo-50/70 border-b space-y-2">
+                <!-- Ligne 1 : Dossiers Principaux -->
+                <div class="flex flex-wrap items-center gap-1.5">
+                    <span class="text-[11px] font-extrabold uppercase text-indigo-900 mr-1">📁 Dossiers :</span>
+                    <div id="libraryRootFoldersBar" class="flex flex-wrap items-center gap-1.5"></div>
+                </div>
+                <!-- Ligne 2 : Fil d'Ariane & Sous-dossiers du dossier actif -->
+                <div id="librarySubFoldersRow" class="flex flex-wrap items-center justify-between gap-2 pt-1.5 border-t border-indigo-100">
+                    <div class="flex flex-wrap items-center gap-1.5">
+                        <span class="text-[11px] font-bold text-indigo-700">↳ Chemin actif :</span>
+                        <div id="libraryBreadcrumbBar" class="flex flex-wrap items-center gap-1 text-xs font-extrabold text-indigo-900"></div>
+                        <span class="text-gray-300 mx-1">|</span>
+                        <span class="text-[11px] font-bold text-amber-800">📂 Sous-dossiers :</span>
+                        <div id="libraryChildSubFoldersBar" class="flex flex-wrap items-center gap-1.5"></div>
+                    </div>
+                </div>
             </div>
 
-            <!-- Grille des fichiers -->
+            <!-- Grille des sous-dossiers et fichiers -->
             <div class="p-5 overflow-y-auto flex-1 bg-gray-100/80 space-y-4">
                 <div id="readyDocsEmptyState" class="text-center py-12 bg-white rounded-xl border-2 border-dashed border-gray-300 space-y-3">
                     <div class="text-4xl">📂</div>
-                    <p class="text-sm font-bold text-gray-700">Aucun fichier dans ce dossier pour le moment.</p>
+                    <p class="text-sm font-bold text-gray-700">Ce dossier est vide pour le moment.</p>
                     <p class="text-xs text-gray-500 max-w-md mx-auto">
-                        Utilise « 📁+ Nouveau dossier » pour organiser tes fichiers ou « ☁️ Déposer dans ce dossier » pour ajouter des PDF, SVG ou Images.
+                        Utilise « 📁+ Dossier » ou « 📂+ Sous-dossier » pour structurer ta bibliothèque, ou clique sur « ☁️ Déposer ici » pour ajouter des fichiers.
                     </p>
                 </div>
                 <div id="readyDocsGrid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4"></div>
@@ -356,7 +378,7 @@
         </div>
     </div>
 
-    <!-- FENÊTRE MODALE 3 : CHOIX DU DOSSIER DE DESTINATION LORS DE L'ENREGISTREMENT D'UNE AFFICHE GÉNÉRÉE -->
+    <!-- FENÊTRE MODALE 3 : CHOIX DU DOSSIER / SOUS-DOSSIER DE DESTINATION LORS DE L'ENREGISTREMENT D'UNE AFFICHE -->
     <div id="saveDestinationModal" class="fixed inset-0 bg-black/65 z-[55] hidden flex items-center justify-center p-4 backdrop-blur-sm">
         <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full p-5 space-y-4 border-t-4 border-indigo-600">
             <div class="flex justify-between items-center border-b pb-2.5">
@@ -371,12 +393,14 @@
                     <input type="text" id="inputSavePosterName" class="w-full p-2 border rounded-lg text-xs font-bold text-gray-800">
                 </div>
                 <div>
-                    <label class="block text-xs font-bold text-gray-700 uppercase mb-1">Choisir le dossier de destination (Affiches générées) :</label>
+                    <label class="block text-xs font-bold text-gray-700 uppercase mb-1">Dossier / Sous-dossier de destination :</label>
                     <select id="selectSaveDestinationFolder" class="w-full p-2 border rounded-lg text-xs font-bold text-indigo-900 bg-indigo-50"></select>
                 </div>
                 <div>
-                    <label class="block text-[11px] font-semibold text-gray-500 mb-1">Ou créer un nouveau dossier directement :</label>
-                    <input type="text" id="inputNewDestFolder" placeholder="Ex: Promo Semaine 46, Boissons, Foire aux vins..." class="w-full p-2 border rounded-lg text-xs">
+                    <label class="block text-[11px] font-semibold text-gray-500 mb-1">
+                        Ou créer un nouveau dossier / sous-dossier (utilise <code class="bg-gray-100 px-1 rounded">/</code> pour un sous-dossier, ex: <code class="bg-gray-100 px-1 rounded">Liquides/Vins</code>) :
+                    </label>
+                    <input type="text" id="inputNewDestFolder" placeholder="Ex: Foire aux vins/Rouges ou Promo Semaine 46" class="w-full p-2 border rounded-lg text-xs">
                 </div>
             </div>
             <div class="flex justify-end gap-2 pt-2 border-t">
@@ -452,7 +476,6 @@
         const GITHUB_REPO_API = 'https://api.github.com/repos/LeeLooVF/Super_App/contents';
         const REQUIRED_DELETE_CODE = 'Bonesink124!';
 
-        // Vérification du mot de passe de suppression (Bonesink124!)
         function askDeletePasscode(itemName = 'cet élément') {
             const code = prompt(`🔒 Sécurité : Entre le code pour supprimer "${itemName}" :`);
             if (code === null) return null;
@@ -463,7 +486,35 @@
             return code;
         }
 
-        // Liste des fichiers masqués/supprimés (stockée sur R2 ou localement pour permettre de masquer même un fichier issu de GitHub sans toucher au code)
+        function normalizeFolderPath(rawPath) {
+            if (!rawPath) return 'Général';
+            const cleaned = rawPath
+                .split('/')
+                .map(s => s.trim())
+                .filter(Boolean)
+                .join('/');
+            return cleaned || 'Général';
+        }
+
+        // Développe tous les chemins parents d'un sous-dossier (ex: "Fêtes/Noël/Chocolats" -> ajoute "Fêtes", "Fêtes/Noël", "Fêtes/Noël/Chocolats")
+        function expandFolderHierarchy(folderSet) {
+            const out = new Set(['Général']);
+            folderSet.forEach(pathStr => {
+                const norm = normalizeFolderPath(pathStr);
+                const parts = norm.split('/');
+                let cur = '';
+                for (const p of parts) {
+                    cur = cur ? `${cur}/${p}` : p;
+                    out.add(cur);
+                }
+            });
+            return Array.from(out).sort((a, b) => {
+                if (a === 'Général') return -1;
+                if (b === 'Général') return 1;
+                return a.localeCompare(b);
+            });
+        }
+
         let deletedStaticFiles = JSON.parse(localStorage.getItem('superu_deleted_static_files') || '[]');
         let dynamicPresets4PerPage = [];
         let dynamicPresetsA4Portrait = [];
@@ -480,7 +531,6 @@
             return fileName.split('/').map(part => encodeURIComponent(part)).join('/');
         }
 
-        // DÉTECTION AUTOMATIQUE DYNAMIQUE DES IMAGES DANS "Images Gauche" ET "Images A4" (sans les figer dans le code)
         async function discoverFolderImagesAutomatically() {
             const loadGithubFolder = async (folderName) => {
                 try {
@@ -506,7 +556,6 @@
                 loadGithubFolder('Images A4')
             ]);
 
-            // Tri pour mettre "Les Prix Bas" en premier s'il est présent dans le dossier
             const sortPrixBasFirst = (list) => {
                 return list.sort((a, b) => {
                     const aPB = /prix[\s_]*bas/i.test(a.label) ? -1 : 0;
@@ -567,7 +616,7 @@
                 customTrimmedImg: null,
                 customImageLabel: '',
                 showAlcohol18: null,
-                detectedPromo: null // Si une promo est détectée sur l'étiquette importée, elle s'active automatiquement !
+                detectedPromo: null
             }
         ];
 
@@ -587,14 +636,13 @@
         let currentGalleryTarget = 'global';
 
         let savedUserImages = [];
-        let readyDepositedDocs = []; // Onglet 1 : Fichiers déposés
-        let readyGeneratedDocs = []; // Onglet 2 : Affiches générées
+        let readyDepositedDocs = [];
+        let readyGeneratedDocs = [];
         let customSubFolders = { ready_deposited: ['Général'], ready_generated: ['Général'] };
-        let activeLibraryTab = 'ready_deposited'; // 'ready_deposited' ou 'ready_generated'
+        let activeLibraryTab = 'ready_deposited';
         let activeLibrarySubFolder = 'Général';
         let pendingSavePosterIndex = null;
 
-        // Polices d'écriture (Museo Slab par défaut + polices déposées sur R2)
         let activeFontFamilyName = 'Museo Slab';
         let availableFontsList = [
             { id: 'default_museo', name: 'Museo Slab', isSystem: true },
@@ -634,6 +682,7 @@
         }
 
         async function uploadToR2OrLocal(folder, label, fileName, fileType, dataUrl, previewDataUrl, subFolder = 'Général') {
+            const normSub = normalizeFolderPath(subFolder);
             const badge = document.getElementById('r2SyncBadge');
             try {
                 if (badge) badge.textContent = '⏳ Envoi R2...';
@@ -642,7 +691,7 @@
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
                         folder,
-                        subFolder,
+                        subFolder: normSub,
                         label,
                         fileName,
                         fileType,
@@ -663,7 +712,7 @@
             if (folder === 'ready_deposited' || folder === 'ready_generated' || folder === 'ready_docs') {
                 await saveReadyDocLocal({
                     folder: folder === 'ready_docs' ? 'ready_deposited' : folder,
-                    subFolder: subFolder || 'Général',
+                    subFolder: normSub,
                     name: label,
                     fileName: fileName,
                     fileType: fileType,
@@ -676,12 +725,17 @@
             }
         }
 
-        async function createSubFolderOnR2(tabFolder, subFolderName) {
-            const cleanSub = subFolderName.trim();
+        async function createSubFolderOnR2(tabFolder, subFolderPath) {
+            const cleanSub = normalizeFolderPath(subFolderPath);
             if (!cleanSub) return;
-            if (!customSubFolders[tabFolder].includes(cleanSub)) {
-                customSubFolders[tabFolder].push(cleanSub);
-            }
+
+            const currentSet = new Set(customSubFolders[tabFolder] || ['Général']);
+            currentSet.add(cleanSub);
+            customSubFolders[tabFolder] = expandFolderHierarchy(currentSet);
+
+            // Mémorise aussi localement au cas où
+            localStorage.setItem('superu_custom_subfolders', JSON.stringify(customSubFolders));
+
             try {
                 await fetch(R2_API_ENDPOINT, {
                     method: 'POST',
@@ -696,15 +750,78 @@
             await syncAllFromR2();
         }
 
+        // SUPPRESSION COMPLÈTE D'UN DOSSIER OU SOUS-DOSSIER (ET DE SON CONTENU) AVEC MOT DE PASSE Bonesink124!
+        async function deleteFolderAndSubfoldersWithPassword(tabFolder, targetSubFolder) {
+            if (!targetSubFolder || targetSubFolder === 'Général') {
+                alert("Le dossier principal 'Général' ne peut pas être supprimé.");
+                return false;
+            }
+
+            const code = askDeletePasscode(`le dossier "${targetSubFolder}" (ainsi que tous ses sous-dossiers et fichiers)`);
+            if (!code) return false;
+
+            const statusEl = document.getElementById('readyDocsUploadStatus');
+            if (statusEl) statusEl.textContent = `⏳ Suppression du dossier "${targetSubFolder}" sur R2...`;
+
+            try {
+                const res = await fetch(
+                    `${R2_API_ENDPOINT}?action=delete_folder&folder=${encodeURIComponent(tabFolder)}&subFolder=${encodeURIComponent(targetSubFolder)}&code=${encodeURIComponent(code)}`,
+                    { method: 'DELETE' }
+                );
+                const json = await res.json();
+                if (!json.ok) {
+                    alert("Erreur serveur : " + (json.error || "Suppression refusée"));
+                    if (statusEl) statusEl.textContent = '';
+                    return false;
+                }
+            } catch (e) {}
+
+            // Nettoyage local également
+            customSubFolders[tabFolder] = (customSubFolders[tabFolder] || ['Général']).filter(
+                f => f !== targetSubFolder && !f.startsWith(targetSubFolder + '/')
+            );
+            localStorage.setItem('superu_custom_subfolders', JSON.stringify(customSubFolders));
+
+            try {
+                const db = await openImageDB();
+                const allLocal = await getLocalReadyDocs();
+                for (const doc of allLocal) {
+                    const docSub = normalizeFolderPath(doc.subFolder);
+                    if (doc.folder === tabFolder && (docSub === targetSubFolder || docSub.startsWith(targetSubFolder + '/'))) {
+                        await new Promise(resolve => {
+                            const tx = db.transaction(READY_DOCS_STORE, 'readwrite');
+                            tx.objectStore(READY_DOCS_STORE).delete(doc.id);
+                            tx.oncomplete = resolve;
+                        });
+                    }
+                }
+            } catch (e) {}
+
+            // Si on se trouvait dans le dossier supprimé, on remonte au dossier parent ou à Général
+            if (activeLibrarySubFolder === targetSubFolder || activeLibrarySubFolder.startsWith(targetSubFolder + '/')) {
+                const parts = targetSubFolder.split('/');
+                parts.pop();
+                activeLibrarySubFolder = parts.length > 0 ? parts.join('/') : 'Général';
+            }
+
+            await syncAllFromR2();
+            if (statusEl) {
+                statusEl.textContent = `✅ Dossier "${targetSubFolder}" supprimé !`;
+                setTimeout(() => { statusEl.textContent = ''; }, 3500);
+            }
+            return true;
+        }
+
         async function syncAllFromR2() {
             const badge = document.getElementById('r2SyncBadge');
+            const savedLocalFolders = JSON.parse(localStorage.getItem('superu_custom_subfolders') || '{"ready_deposited":["Général"],"ready_generated":["Général"]}');
+
             try {
                 const res = await fetch(R2_API_ENDPOINT);
                 const json = await res.json();
                 if (json && json.ok && Array.isArray(json.files)) {
                     if (badge) badge.textContent = '☁️ R2 Connecté';
 
-                    // 1. Images Gauche (left_4) & Images A4 (top_a4) déposées sur R2
                     const r2LeftAndA4 = json.files
                         .filter(f => (f.folder === 'left_4' || f.folder === 'top_a4') && f.fileType !== 'FOLDER')
                         .map(f => ({
@@ -717,20 +834,18 @@
                             date: f.uploaded
                         }));
 
-                    // 2. Dossiers personnalisés dans les 2 bibliothèques
-                    const depFolders = new Set(['Général']);
-                    const genFolders = new Set(['Général']);
+                    const depFolders = new Set(['Général', ...(savedLocalFolders.ready_deposited || [])]);
+                    const genFolders = new Set(['Général', ...(savedLocalFolders.ready_generated || [])]);
 
                     json.files.forEach(f => {
-                        const sub = f.subFolder || 'Général';
+                        const sub = normalizeFolderPath(f.subFolder);
                         if (f.folder === 'ready_deposited' || f.folder === 'ready_docs') depFolders.add(sub);
                         if (f.folder === 'ready_generated') genFolders.add(sub);
                     });
 
-                    customSubFolders.ready_deposited = Array.from(depFolders);
-                    customSubFolders.ready_generated = Array.from(genFolders);
+                    customSubFolders.ready_deposited = expandFolderHierarchy(depFolders);
+                    customSubFolders.ready_generated = expandFolderHierarchy(genFolders);
 
-                    // 3. Fichiers déposés vs Affiches générées
                     const r2Deposited = json.files
                         .filter(f => (f.folder === 'ready_deposited' || f.folder === 'ready_docs') && f.fileType !== 'FOLDER')
                         .map(f => ({
@@ -738,7 +853,7 @@
                             r2Key: f.key,
                             thumbKey: f.thumbKey || '',
                             folder: 'ready_deposited',
-                            subFolder: f.subFolder || 'Général',
+                            subFolder: normalizeFolderPath(f.subFolder),
                             name: f.label,
                             fileName: f.fileName,
                             fileType: f.fileType,
@@ -754,7 +869,7 @@
                             r2Key: f.key,
                             thumbKey: f.thumbKey || '',
                             folder: 'ready_generated',
-                            subFolder: f.subFolder || 'Général',
+                            subFolder: normalizeFolderPath(f.subFolder),
                             name: f.label,
                             fileName: f.fileName,
                             fileType: f.fileType,
@@ -763,7 +878,6 @@
                             date: f.uploaded
                         }));
 
-                    // 4. Polices d'écriture déposées sur R2 (folder === 'fonts')
                     const r2Fonts = json.files.filter(f => f.folder === 'fonts' && f.fileType !== 'FOLDER');
                     for (const fObj of r2Fonts) {
                         const cleanFontName = fObj.label.replace(/\.[^.]+$/, '');
@@ -803,6 +917,9 @@
                 if (badge) badge.textContent = '💾 Stockage Local';
             }
 
+            customSubFolders.ready_deposited = expandFolderHierarchy(new Set(savedLocalFolders.ready_deposited || ['Général']));
+            customSubFolders.ready_generated = expandFolderHierarchy(new Set(savedLocalFolders.ready_generated || ['Général']));
+
             savedUserImages = await getLocalImages();
             const localDocs = await getLocalReadyDocs();
             readyDepositedDocs = localDocs.filter(d => d.folder !== 'ready_generated');
@@ -817,7 +934,7 @@
             document.getElementById('readyDocsCountBadge').textContent = total;
             document.getElementById('countDepositedBadge').textContent = readyDepositedDocs.length;
             document.getElementById('countGeneratedBadge').textContent = readyGeneratedDocs.length;
-            renderLibrarySubFoldersBar();
+            renderLibraryFoldersHierarchy();
             renderReadyDocsGrid(document.getElementById('inputSearchReadyDocs')?.value || '');
         }
 
@@ -867,7 +984,6 @@
             } catch (e) { return []; }
         }
 
-        // SUPPRESSION PROTÉGÉE PAR LE CODE Bonesink124!
         async function deleteSharedOrLocalItemWithPassword(item, storeName, displayName) {
             const code = askDeletePasscode(displayName || item.label || item.name);
             if (!code) return false;
@@ -899,7 +1015,7 @@
         }
 
         // ============================================================================
-        // GESTIONNAIRE DE POLICES (.OTF / R2) AVEC SUPPRESSION PAR MOT DE PASSE
+        // GESTIONNAIRE DE POLICES (.OTF / R2)
         // ============================================================================
         const fontManagerModal = document.getElementById('fontManagerModal');
         const fontListContainer = document.getElementById('fontListContainer');
@@ -1086,7 +1202,7 @@
         });
 
         // ============================================================================
-        // BIBLIOTHÈQUE PARTAGÉE : 2 ONGLETS (DÉPOSÉS / GÉNÉRÉS) + SOUS-DOSSIERS
+        // BIBLIOTHÈQUE PARTAGÉE : ARBORESCENCE DOSSIERS & SOUS-DOSSIERS + SUPPRESSION
         // ============================================================================
         function readFileAsDataURL(file) {
             return new Promise((resolve) => {
@@ -1103,7 +1219,10 @@
         const readyDocsUploadStatus = document.getElementById('readyDocsUploadStatus');
         const btnTabDeposited = document.getElementById('btnTabDeposited');
         const btnTabGenerated = document.getElementById('btnTabGenerated');
-        const librarySubFoldersBar = document.getElementById('librarySubFoldersBar');
+        const libraryRootFoldersBar = document.getElementById('libraryRootFoldersBar');
+        const libraryBreadcrumbBar = document.getElementById('libraryBreadcrumbBar');
+        const libraryChildSubFoldersBar = document.getElementById('libraryChildSubFoldersBar');
+        const btnDeleteCurrentFolder = document.getElementById('btnDeleteCurrentFolder');
 
         function setLibraryActiveTab(tab) {
             activeLibraryTab = tab;
@@ -1115,43 +1234,166 @@
                 btnTabGenerated.className = 'text-xs font-extrabold px-3.5 py-1.5 rounded-lg bg-indigo-600 text-white shadow transition flex items-center gap-1.5';
                 btnTabDeposited.className = 'text-xs font-extrabold px-3.5 py-1.5 rounded-lg text-gray-700 hover:text-indigo-800 transition flex items-center gap-1.5';
             }
-            renderLibrarySubFoldersBar();
+            renderLibraryFoldersHierarchy();
             renderReadyDocsGrid(inputSearchReadyDocs.value);
         }
 
         btnTabDeposited.addEventListener('click', () => setLibraryActiveTab('ready_deposited'));
         btnTabGenerated.addEventListener('click', () => setLibraryActiveTab('ready_generated'));
 
-        function renderLibrarySubFoldersBar() {
-            librarySubFoldersBar.innerHTML = '';
-            const folders = customSubFolders[activeLibraryTab] || ['Général'];
+        // Affiche les dossiers principaux, le fil d'Ariane et les sous-dossiers directs avec bouton de suppression "✕"
+        function renderLibraryFoldersHierarchy() {
+            const allPaths = customSubFolders[activeLibraryTab] || ['Général'];
+            const currentRoot = activeLibrarySubFolder.split('/')[0];
 
-            folders.forEach(folderName => {
-                const isAct = activeLibrarySubFolder === folderName;
-                const btn = document.createElement('button');
-                btn.type = 'button';
-                btn.className = `text-xs font-bold px-3 py-1 rounded-lg border transition flex items-center gap-1 ${
-                    isAct
+            // 1. Dossiers racines (sans "/")
+            const rootFolders = allPaths.filter(p => !p.includes('/'));
+            libraryRootFoldersBar.innerHTML = '';
+
+            rootFolders.forEach(rootName => {
+                const isActRoot = currentRoot === rootName;
+                const wrap = document.createElement('div');
+                wrap.className = `inline-flex items-center rounded-lg border transition overflow-hidden ${
+                    isActRoot
                         ? 'bg-indigo-600 text-white border-indigo-700 shadow-sm'
                         : 'bg-white text-gray-700 border-gray-300 hover:bg-indigo-100'
                 }`;
-                btn.innerHTML = `<span>📁 ${folderName}</span>`;
-                btn.addEventListener('click', () => {
-                    activeLibrarySubFolder = folderName;
-                    renderLibrarySubFoldersBar();
+
+                const selectBtn = document.createElement('button');
+                selectBtn.type = 'button';
+                selectBtn.className = 'text-xs font-bold px-2.5 py-1 flex items-center gap-1';
+                selectBtn.innerHTML = `<span>📁 ${rootName}</span>`;
+                selectBtn.addEventListener('click', () => {
+                    activeLibrarySubFolder = rootName;
+                    renderLibraryFoldersHierarchy();
                     renderReadyDocsGrid(inputSearchReadyDocs.value);
                 });
-                librarySubFoldersBar.appendChild(btn);
+                wrap.appendChild(selectBtn);
+
+                // Bouton de suppression avec mot de passe sur chaque dossier (sauf Général)
+                if (rootName !== 'Général') {
+                    const delBtn = document.createElement('button');
+                    delBtn.type = 'button';
+                    delBtn.className = `text-[10px] font-black px-1.5 py-1 border-l transition ${
+                        isActRoot
+                            ? 'border-indigo-500 text-indigo-200 hover:bg-red-600 hover:text-white'
+                            : 'border-gray-200 text-gray-400 hover:bg-red-600 hover:text-white'
+                    }`;
+                    delBtn.title = `Supprimer le dossier "${rootName}" et ses sous-dossiers (Code Bonesink124! requis)`;
+                    delBtn.textContent = '✕';
+                    delBtn.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        deleteFolderAndSubfoldersWithPassword(activeLibraryTab, rootName);
+                    });
+                    wrap.appendChild(delBtn);
+                }
+
+                libraryRootFoldersBar.appendChild(wrap);
             });
+
+            // 2. Fil d'Ariane (Breadcrumb) cliquable pour remonter dans les dossiers parents
+            libraryBreadcrumbBar.innerHTML = '';
+            const parts = activeLibrarySubFolder.split('/');
+            let accumPath = '';
+            parts.forEach((part, idx) => {
+                accumPath = accumPath ? `${accumPath}/${part}` : part;
+                const targetPath = accumPath;
+
+                if (idx > 0) {
+                    const sep = document.createElement('span');
+                    sep.className = 'text-gray-400 font-bold mx-0.5';
+                    sep.textContent = '/';
+                    libraryBreadcrumbBar.appendChild(sep);
+                }
+
+                const crumbBtn = document.createElement('button');
+                crumbBtn.type = 'button';
+                crumbBtn.className = `px-1.5 py-0.5 rounded hover:bg-indigo-200 transition ${idx === parts.length - 1 ? 'bg-indigo-100 text-indigo-900 underline' : 'text-indigo-700'}`;
+                crumbBtn.textContent = part;
+                crumbBtn.addEventListener('click', () => {
+                    activeLibrarySubFolder = targetPath;
+                    renderLibraryFoldersHierarchy();
+                    renderReadyDocsGrid(inputSearchReadyDocs.value);
+                });
+                libraryBreadcrumbBar.appendChild(crumbBtn);
+            });
+
+            // 3. Sous-dossiers directs du dossier actif
+            libraryChildSubFoldersBar.innerHTML = '';
+            const directChildren = allPaths.filter(p => {
+                if (!p.startsWith(activeLibrarySubFolder + '/')) return false;
+                const remainder = p.slice(activeLibrarySubFolder.length + 1);
+                return remainder.length > 0 && !remainder.includes('/');
+            });
+
+            if (directChildren.length === 0) {
+                const noneSpan = document.createElement('span');
+                noneSpan.className = 'text-[11px] text-gray-400 italic';
+                noneSpan.textContent = 'Aucun sous-dossier (clique sur « 📂+ Sous-dossier » pour en ajouter un)';
+                libraryChildSubFoldersBar.appendChild(noneSpan);
+            } else {
+                directChildren.forEach(childFullPath => {
+                    const childName = childFullPath.split('/').pop();
+                    const wrap = document.createElement('div');
+                    wrap.className = 'inline-flex items-center rounded-lg border border-amber-300 bg-amber-50 hover:bg-amber-100 text-amber-900 transition overflow-hidden shadow-sm';
+
+                    const openBtn = document.createElement('button');
+                    openBtn.type = 'button';
+                    openBtn.className = 'text-xs font-extrabold px-2.5 py-0.5 flex items-center gap-1';
+                    openBtn.innerHTML = `<span>📂 ${childName}</span>`;
+                    openBtn.addEventListener('click', () => {
+                        activeLibrarySubFolder = childFullPath;
+                        renderLibraryFoldersHierarchy();
+                        renderReadyDocsGrid(inputSearchReadyDocs.value);
+                    });
+
+                    const delBtn = document.createElement('button');
+                    delBtn.type = 'button';
+                    delBtn.className = 'text-[10px] font-black px-1.5 py-0.5 border-l border-amber-200 text-amber-700 hover:bg-red-600 hover:text-white transition';
+                    delBtn.title = `Supprimer le sous-dossier "${childFullPath}" (Code Bonesink124! requis)`;
+                    delBtn.textContent = '✕';
+                    delBtn.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        deleteFolderAndSubfoldersWithPassword(activeLibraryTab, childFullPath);
+                    });
+
+                    wrap.appendChild(openBtn);
+                    wrap.appendChild(delBtn);
+                    libraryChildSubFoldersBar.appendChild(wrap);
+                });
+            }
+
+            // 4. Affiche ou masque le bouton "🗑️ Suppr. dossier" pour le dossier actif
+            if (activeLibrarySubFolder !== 'Général') {
+                btnDeleteCurrentFolder.classList.remove('hidden');
+            } else {
+                btnDeleteCurrentFolder.classList.add('hidden');
+            }
         }
 
-        document.getElementById('btnCreateNewSubFolder').addEventListener('click', async () => {
+        // Créer un nouveau dossier racine
+        document.getElementById('btnCreateNewRootFolder').addEventListener('click', async () => {
             const tabName = activeLibraryTab === 'ready_deposited' ? 'Fichiers déposés' : 'Affiches générées';
-            const folderName = prompt(`📁 Nom du nouveau dossier dans "${tabName}" :`);
+            const folderName = prompt(`📁 Nom du nouveau dossier principal dans "${tabName}" :`);
             if (!folderName || !folderName.trim()) return;
-            const clean = folderName.trim();
+            const clean = normalizeFolderPath(folderName.replace(/\//g, '-'));
             activeLibrarySubFolder = clean;
             await createSubFolderOnR2(activeLibraryTab, clean);
+        });
+
+        // Créer un sous-dossier à l'intérieur du dossier actif
+        document.getElementById('btnCreateNewChildSubFolder').addEventListener('click', async () => {
+            const subName = prompt(`📂 Créer un nouveau sous-dossier à l'intérieur de "${activeLibrarySubFolder}" :`);
+            if (!subName || !subName.trim()) return;
+            const cleanChild = subName.trim().replace(/\//g, '-');
+            const fullPath = `${activeLibrarySubFolder}/${cleanChild}`;
+            activeLibrarySubFolder = fullPath;
+            await createSubFolderOnR2(activeLibraryTab, fullPath);
+        });
+
+        // Bouton pour supprimer le dossier ou sous-dossier actuellement ouvert
+        btnDeleteCurrentFolder.addEventListener('click', () => {
+            deleteFolderAndSubfoldersWithPassword(activeLibraryTab, activeLibrarySubFolder);
         });
 
         document.getElementById('btnOpenReadyDocsModal').addEventListener('click', () => {
@@ -1203,20 +1445,66 @@
         function renderReadyDocsGrid(filterText = '') {
             const q = filterText.trim().toLowerCase();
             const sourceList = activeLibraryTab === 'ready_deposited' ? readyDepositedDocs : readyGeneratedDocs;
-            const filtered = sourceList.filter(doc =>
-                (doc.subFolder || 'Général') === activeLibrarySubFolder &&
+            const allPaths = customSubFolders[activeLibraryTab] || ['Général'];
+
+            // Sous-dossiers directs à afficher sous forme de cartes dossiers dans la grille
+            const directSubFolders = allPaths.filter(p => {
+                if (!p.startsWith(activeLibrarySubFolder + '/')) return false;
+                const remainder = p.slice(activeLibrarySubFolder.length + 1);
+                return remainder.length > 0 && !remainder.includes('/') && (!q || remainder.toLowerCase().includes(q));
+            });
+
+            const filteredDocs = sourceList.filter(doc =>
+                normalizeFolderPath(doc.subFolder) === activeLibrarySubFolder &&
                 (!q || (doc.name || '').toLowerCase().includes(q) || (doc.fileType || '').toLowerCase().includes(q))
             );
 
             readyDocsGrid.innerHTML = '';
 
-            if (filtered.length === 0) {
+            if (directSubFolders.length === 0 && filteredDocs.length === 0) {
                 readyDocsEmptyState.classList.remove('hidden');
                 return;
             }
             readyDocsEmptyState.classList.add('hidden');
 
-            filtered.forEach(doc => {
+            // 1. Cartes des Sous-dossiers présents dans ce dossier
+            directSubFolders.forEach(subFullPath => {
+                const subName = subFullPath.split('/').pop();
+                const filesInsideCount = sourceList.filter(d => {
+                    const s = normalizeFolderPath(d.subFolder);
+                    return s === subFullPath || s.startsWith(subFullPath + '/');
+                }).length;
+
+                const folderCard = document.createElement('div');
+                folderCard.className = 'relative bg-amber-50/80 border-2 border-amber-300 hover:border-amber-600 rounded-xl p-3 flex flex-col justify-between gap-2 shadow-sm hover:shadow-md transition group cursor-pointer';
+                folderCard.innerHTML = `
+                    <div class="flex justify-between items-center">
+                        <span class="text-[10px] font-black uppercase px-2 py-0.5 rounded bg-amber-500 text-white">SOUS-DOSSIER</span>
+                        <button type="button" class="btn-del-subfolder-card text-gray-400 hover:text-red-600 font-bold text-xs px-1.5 py-0.5 rounded hover:bg-red-50 transition" title="Supprimer ce sous-dossier et son contenu (Code Bonesink124! requis)">✕</button>
+                    </div>
+                    <div class="w-full h-36 bg-white/80 rounded-lg flex flex-col items-center justify-center border border-amber-200 p-2 group-hover:scale-105 transition">
+                        <span class="text-5xl mb-1">📂</span>
+                        <span class="text-[11px] font-bold text-amber-800">${filesInsideCount} fichier${filesInsideCount > 1 ? 's' : ''}</span>
+                    </div>
+                    <p class="text-xs font-extrabold text-amber-950 truncate text-center" title="${subName}">${subName}</p>
+                `;
+
+                folderCard.addEventListener('click', (e) => {
+                    if (e.target.closest('.btn-del-subfolder-card')) {
+                        e.stopPropagation();
+                        deleteFolderAndSubfoldersWithPassword(activeLibraryTab, subFullPath);
+                        return;
+                    }
+                    activeLibrarySubFolder = subFullPath;
+                    renderLibraryFoldersHierarchy();
+                    renderReadyDocsGrid(inputSearchReadyDocs.value);
+                });
+
+                readyDocsGrid.appendChild(folderCard);
+            });
+
+            // 2. Cartes des Fichiers présents dans ce dossier
+            filteredDocs.forEach(doc => {
                 const badgeColor = doc.fileType === 'PDF' ? 'bg-red-600 text-white' : (doc.fileType === 'SVG' ? 'bg-amber-500 text-white' : 'bg-indigo-600 text-white');
                 const card = document.createElement('div');
                 card.className = 'relative bg-white border-2 border-gray-200 hover:border-indigo-600 rounded-xl p-2.5 flex flex-col justify-between gap-2 shadow-sm hover:shadow-lg transition group cursor-pointer';
@@ -1265,7 +1553,7 @@
         }
 
         // ============================================================================
-        // MODALE DE CHOIX DU DOSSIER DE DESTINATION LORS DU CLIC SUR "☁️ BIBLIO"
+        // MODALE DE CHOIX DU DOSSIER / SOUS-DOSSIER LORS DU CLIC SUR "☁️ BIBLIO"
         // ============================================================================
         const saveDestinationModal = document.getElementById('saveDestinationModal');
         const inputSavePosterName = document.getElementById('inputSavePosterName');
@@ -1283,7 +1571,9 @@
             genFolders.forEach(f => {
                 const opt = document.createElement('option');
                 opt.value = f;
-                opt.textContent = `📁 ${f}`;
+                const depth = f.split('/').length - 1;
+                const prefix = depth > 0 ? `${'—'.repeat(depth)} 📂 ` : '📁 ';
+                opt.textContent = `${prefix}${f}`;
                 selectSaveDestinationFolder.appendChild(opt);
             });
 
@@ -1304,15 +1594,16 @@
             if (!c) return;
 
             const chosenName = inputSavePosterName.value.trim() || `Affiche_${pendingSavePosterIndex + 1}`;
-            const newFolderTyped = inputNewDestFolder.value.trim();
-            const targetSubFolder = newFolderTyped || selectSaveDestinationFolder.value || 'Général';
+            const newFolderTyped = normalizeFolderPath(inputNewDestFolder.value.trim());
+            const hasTypedNew = inputNewDestFolder.value.trim().length > 0;
+            const targetSubFolder = hasTypedNew ? newFolderTyped : (selectSaveDestinationFolder.value || 'Général');
 
             const originalText = this.textContent;
             this.textContent = '⏳ Enregistrement R2...';
             this.disabled = true;
 
-            if (newFolderTyped && !customSubFolders.ready_generated.includes(newFolderTyped)) {
-                await createSubFolderOnR2('ready_generated', newFolderTyped);
+            if (hasTypedNew && !customSubFolders.ready_generated.includes(targetSubFolder)) {
+                await createSubFolderOnR2('ready_generated', targetSubFolder);
             }
 
             const dataUrl = c.toDataURL('image/png');
@@ -1595,7 +1886,7 @@
         }
 
         // ============================================================================
-        // GALERIES IMAGES GAUCHE & IMAGES A4 (DÉTECTION DYNAMIQUE + SUPPRESSION AVEC MOT DE PASSE)
+        // GALERIES IMAGES GAUCHE & IMAGES A4
         // ============================================================================
         const visualGalleryModal = document.getElementById('visualGalleryModal');
         const galleryGrid = document.getElementById('galleryGrid');
@@ -1660,7 +1951,6 @@
                 const card = document.createElement('div');
                 card.className = 'relative bg-white border-2 border-gray-200 hover:border-red-600 rounded-xl p-2 flex flex-col items-center gap-1.5 shadow-sm hover:shadow-md transition group cursor-pointer';
 
-                // Bouton de suppression avec mot de passe également sur les images détectées dans Images Gauche / Images A4
                 const delBtn = document.createElement('button');
                 delBtn.type = 'button';
                 delBtn.className = 'absolute top-1 right-1 bg-red-600 text-white text-[10px] font-bold w-5 h-5 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-90 hover:!opacity-100 z-10 transition';
@@ -1694,7 +1984,6 @@
                         resolvedUrl = candidates[tryIndex];
                         thumbImg.src = resolvedUrl;
                     } else {
-                        // Si un fichier a été supprimé physiquement du dossier, on le retire automatiquement sans erreur !
                         card.remove();
                     }
                 };
@@ -1912,7 +2201,7 @@
         document.getElementById('chkAutoTrim').addEventListener('change', renderAllPosters);
 
         // ============================================================================
-        // DÉTECTION AUTOMATIQUE DES PROMOS ET EXTRACTION EAN-13 SUR LES ÉTIQUETTES IMPORTÉES
+        // DÉTECTION AUTOMATIQUE DES PROMOS ET EXTRACTION EAN-13
         // ============================================================================
         function isValidEAN13Checksum(code13) {
             if (!/^\d{13}$/.test(code13)) return false;
@@ -2002,12 +2291,9 @@
             return candidates[0].code;
         }
 
-        // Détecte si l'étiquette importée contient une promotion explicite (-X%, 2+1, 1+1, 2ème à -50%, ou 2 prix distincts)
         function detectLabelPromotion(fullText, productName) {
-            // Retourne le texte sans le nom du produit (pour ne pas confondre "30%MG" avec une remise de -30%)
             const textWithoutTitle = fullText.replace(productName, '');
 
-            // 1. Offre 2+1 ou 1+1
             if (/\b2\s*\+\s*1\b/i.test(textWithoutTitle) || /\b2\s*achet[eé]s?\s*1\s*(?:offert|gratuit)/i.test(textWithoutTitle)) {
                 return { active: true, presetKey: '2_plus_1', discount: '2+1', text: 'OFFERT', unitLabel: 'LES 3 PRODUITS' };
             }
@@ -2015,7 +2301,6 @@
                 return { active: true, presetKey: '1_plus_1', discount: '1+1', text: 'GRATUIT', unitLabel: 'LE LOT DE 2' };
             }
 
-            // 2. Offre sur le 2ème produit (ex: -50% sur le 2ème, -68% sur le 2ème)
             const secondMatch = textWithoutTitle.match(/-\s*(\d{1,2})\s*%\s*(?:sur\s*le\s*2|2[eè]me)/i)
                              || textWithoutTitle.match(/2[eè]me\s*(?:produit\s*)?[aà]\s*-\s*(\d{1,2})\s*%/i);
             if (secondMatch) {
@@ -2023,7 +2308,6 @@
                 return { active: true, presetKey: '2eme_50', discount: `-${pct}%`, text: 'SUR LE 2ÈME|PRODUIT', unitLabel: 'LE 2ÈME PRODUIT' };
             }
 
-            // 3. Remise immédiate en % (en ignorant "% MG" ou "% vol")
             const pctRemiseMatch = textWithoutTitle.match(/-\s*(\d{1,2})\s*%(?!\s*(?:MG|M\.G|VOL))/i)
                                 || textWithoutTitle.match(/(\d{1,2})\s*%\s*(?:de\s*)?remise/i);
             if (pctRemiseMatch) {
@@ -2033,7 +2317,6 @@
                 }
             }
 
-            // 4. Remise immédiate en €
             const euroRemiseMatch = textWithoutTitle.match(/-\s*(\d{1,2}(?:[.,]\d{1,2})?)\s*€\s*(?:de\s*remise)?/i);
             if (euroRemiseMatch) {
                 const val = euroRemiseMatch[1].replace('.', ',');
@@ -3008,7 +3291,6 @@
         function drawSinglePoster(canvas, item) {
             const FONT_SLAB = getActiveFontSlab();
 
-            // Si une promo a été détectée sur l'étiquette importée, on l'active pour cette étiquette ; sinon on garde l'affichage de base (global)
             const hasAutoPromo = Boolean(item.detectedPromo && item.detectedPromo.active);
             const isItemMechanicShown = hasAutoPromo ? true : showMechanic;
             const discountInput = hasAutoPromo ? item.detectedPromo.discount : document.getElementById('inputDiscount').value.trim();
@@ -3287,7 +3569,7 @@
                         <input type="text" data-idx="${index}" data-field="gencode" value="${item.gencode || ''}" 
                             class="poster-edit-input w-32 text-xs font-bold border rounded px-2 py-1 text-blue-800 bg-blue-50" placeholder="Code-barres" />
                     </label>
-                    <button type="button" data-idx="${index}" class="btn-save-to-library text-xs font-bold px-2.5 py-1 rounded bg-indigo-50 hover:bg-indigo-600 text-indigo-700 hover:text-white border border-indigo-200 transition" title="Choisir le dossier et enregistrer dans Affiches générées">
+                    <button type="button" data-idx="${index}" class="btn-save-to-library text-xs font-bold px-2.5 py-1 rounded bg-indigo-50 hover:bg-indigo-600 text-indigo-700 hover:text-white border border-indigo-200 transition" title="Choisir le dossier ou sous-dossier et enregistrer dans Affiches générées">
                         ☁️ Biblio
                     </button>
                     <button type="button" data-idx="${index}" class="btn-delete-poster text-xs font-bold px-2.5 py-1 rounded bg-red-50 hover:bg-red-600 text-red-600 hover:text-white border border-red-200 transition" title="Supprimer">
@@ -3365,7 +3647,6 @@
                 });
             });
 
-            // Ouvre la modale de choix du dossier de destination ("Affiches générées")
             document.querySelectorAll('.btn-save-to-library').forEach(btn => {
                 btn.addEventListener('click', function() {
                     const idx = parseInt(this.getAttribute('data-idx'), 10);
