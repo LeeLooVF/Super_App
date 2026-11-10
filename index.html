@@ -152,12 +152,18 @@
                 </div>
             </div>
 
-            <!-- LIGNE 2 DE CONFIGURATION : MENU DÉROULANT DES MÉCANIQUES PROMO -->
+            <!-- LIGNE 2 DE CONFIGURATION : MENU DÉROULANT DES MÉCANIQUES PROMO + BOUTON CALCUL PRIX ACTIVÉ/DÉSACTIVÉ -->
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 items-end pt-3 border-t border-gray-100">
                 <div>
-                    <label class="block text-xs font-bold text-gray-700 uppercase mb-1.5">
-                        ⚙️ TYPE DE MÉCANIQUE & VALEUR
-                    </label>
+                    <div class="flex justify-between items-center mb-1.5">
+                        <label class="block text-xs font-bold text-gray-700 uppercase">
+                            ⚙️ MÉCANIQUE & VALEUR
+                        </label>
+                        <!-- BOUTON ACTIVÉ / DÉSACTIVÉ MODIFICATION DU PRIX PAR LA MÉCANIQUE -->
+                        <button type="button" id="btnTogglePriceCalc" class="text-[11px] font-bold px-2.5 py-0.5 rounded bg-green-100 text-green-800 border border-green-300 hover:bg-green-200 transition" title="Quand Désactivé : aucun prix n'est modifié ni barré par la mécanique, seul le cercle rouge est visible">
+                            Calcul prix : Activé
+                        </button>
+                    </div>
                     <div class="flex gap-1.5">
                         <select id="selectMechanicPreset" disabled class="w-2/3 p-2 border rounded-lg text-xs font-bold text-gray-800 bg-gray-100 opacity-50 focus:ring-2 focus:ring-red-500 cursor-pointer">
                             <optgroup label="Remise immédiate">
@@ -234,7 +240,7 @@
 
     </div>
 
-    <!-- FENÊTRE MODALE 1 : GALERIE VISUELLE PARTAGÉE (IMAGES GAUCHE & IMAGES A4 DÉTECTÉES AUTOMATIQUEMENT + SYNCHRO R2 DES SUPPRESSIONS) -->
+    <!-- FENÊTRE MODALE 1 : GALERIE VISUELLE PARTAGÉE -->
     <div id="visualGalleryModal" class="fixed inset-0 bg-black/60 z-50 hidden flex items-center justify-center p-4 backdrop-blur-sm">
         <div class="bg-white rounded-2xl shadow-2xl max-w-5xl w-full max-h-[90vh] flex flex-col overflow-hidden border-t-4 border-red-600">
             <div class="flex flex-wrap justify-between items-center px-5 py-3.5 border-b bg-gray-50 gap-3">
@@ -243,7 +249,7 @@
                         🖼️ Choisir un visuel
                     </h2>
                     <p class="text-[11px] text-gray-500">
-                        Compression WebP auto & Synchronisation R2 des suppressions pour toute l'équipe (Code : Bonesink124!)
+                        Compression WebP automatique & Synchronisation R2 pour toute l'équipe
                     </p>
                 </div>
                 <div class="flex flex-wrap items-center gap-2">
@@ -293,7 +299,7 @@
         </div>
     </div>
 
-    <!-- FENÊTRE MODALE 2 : BIBLIOTHÈQUE PARTAGÉE (ARBORESCENCE + RENOMMER/DÉPLACER + SUPPRESSION PROTÉGÉE) -->
+    <!-- FENÊTRE MODALE 2 : BIBLIOTHÈQUE PARTAGÉE (GÉNÉRAL COMME RACINE CONTENANT TOUS LES DOSSIERS) -->
     <div id="readyDocsModal" class="fixed inset-0 bg-black/65 z-50 hidden flex items-center justify-center p-4 backdrop-blur-sm">
         <div class="bg-white rounded-2xl shadow-2xl max-w-6xl w-full max-h-[92vh] flex flex-col overflow-hidden border-t-4 border-indigo-600">
             <!-- En-tête + Bouton bascule Fichiers Déposés / Affiches Générées -->
@@ -315,7 +321,7 @@
                 <div class="flex flex-wrap items-center gap-2">
                     <input type="text" id="inputSearchReadyDocs" placeholder="🔍 Rechercher un fichier..." 
                         class="text-xs border rounded-lg px-3 py-1.5 w-40 focus:ring-2 focus:ring-indigo-500">
-                    <!-- BOUTON CRÉATION DOSSIER PRINCIPAL -->
+                    <!-- BOUTON CRÉATION DOSSIER DANS GÉNÉRAL -->
                     <button type="button" id="btnCreateNewRootFolder" class="text-xs font-bold bg-amber-500 hover:bg-amber-600 text-white px-2.5 py-1.5 rounded-lg shadow-sm transition flex items-center gap-1">
                         📁+ Dossier
                     </button>
@@ -323,12 +329,12 @@
                     <button type="button" id="btnCreateNewChildSubFolder" class="text-xs font-bold bg-orange-500 hover:bg-orange-600 text-white px-2.5 py-1.5 rounded-lg shadow-sm transition flex items-center gap-1">
                         📂+ Sous-dossier
                     </button>
-                    <!-- BOUTON RENOMMER LE DOSSIER ACTIF (AVEC MOT DE PASSE) -->
-                    <button type="button" id="btnRenameCurrentFolder" class="hidden text-xs font-bold bg-blue-600 hover:bg-blue-700 text-white px-2.5 py-1.5 rounded-lg shadow-sm transition flex items-center gap-1" title="Renommer ou déplacer ce dossier (Code Bonesink124! requis)">
+                    <!-- BOUTON RENOMMER LE DOSSIER ACTIF -->
+                    <button type="button" id="btnRenameCurrentFolder" class="hidden text-xs font-bold bg-blue-600 hover:bg-blue-700 text-white px-2.5 py-1.5 rounded-lg shadow-sm transition flex items-center gap-1" title="Renommer ou déplacer ce dossier (Code requis)">
                         ✏️ Renommer dossier
                     </button>
-                    <!-- BOUTON SUPPRIMER LE DOSSIER ACTIF (AVEC MOT DE PASSE) -->
-                    <button type="button" id="btnDeleteCurrentFolder" class="hidden text-xs font-bold bg-red-600 hover:bg-red-700 text-white px-2.5 py-1.5 rounded-lg shadow-sm transition flex items-center gap-1" title="Supprimer ce dossier, ses sous-dossiers et ses fichiers (Code Bonesink124! requis)">
+                    <!-- BOUTON SUPPRIMER LE DOSSIER ACTIF -->
+                    <button type="button" id="btnDeleteCurrentFolder" class="hidden text-xs font-bold bg-red-600 hover:bg-red-700 text-white px-2.5 py-1.5 rounded-lg shadow-sm transition flex items-center gap-1" title="Supprimer ce dossier, ses sous-dossiers et ses fichiers (Code requis)">
                         🗑️ Suppr. dossier
                     </button>
                     <label class="text-xs font-bold bg-indigo-600 hover:bg-indigo-700 text-white px-3 py-1.5 rounded-lg cursor-pointer shadow-sm transition flex items-center gap-1.5">
@@ -352,7 +358,7 @@
                         <span class="text-[11px] font-bold text-indigo-700">↳ Chemin actif :</span>
                         <div id="libraryBreadcrumbBar" class="flex flex-wrap items-center gap-1 text-xs font-extrabold text-indigo-900"></div>
                         <span class="text-gray-300 mx-1">|</span>
-                        <span class="text-[11px] font-bold text-amber-800">📂 Sous-dossiers :</span>
+                        <span class="text-[11px] font-bold text-amber-800">📂 Contenu (Dossiers) :</span>
                         <div id="libraryChildSubFoldersBar" class="flex flex-wrap items-center gap-1.5"></div>
                     </div>
                 </div>
@@ -379,7 +385,7 @@
         </div>
     </div>
 
-    <!-- FENÊTRE MODALE 3 : DÉPLACER / RENOMMER UN FICHIER DANS LA BIBLIOTHÈQUE R2 (AVEC CODE Bonesink124!) -->
+    <!-- FENÊTRE MODALE 3 : DÉPLACER / RENOMMER UN FICHIER DANS LA BIBLIOTHÈQUE R2 (CODE MASQUÉ) -->
     <div id="moveRenameFileModal" class="fixed inset-0 bg-black/65 z-[58] hidden flex items-center justify-center p-4 backdrop-blur-sm">
         <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full p-5 space-y-4 border-t-4 border-blue-600">
             <div class="flex justify-between items-center border-b pb-2.5">
@@ -410,7 +416,7 @@
                 </div>
                 <div class="pt-1">
                     <label class="block text-xs font-extrabold text-red-700 uppercase mb-1">🔒 Code de sécurité requis :</label>
-                    <input type="password" id="inputMovePasscode" placeholder="Saisir le code (Bonesink124!)" class="w-full p-2 border-2 border-red-200 rounded-lg text-xs font-bold focus:border-red-500">
+                    <input type="password" id="inputMovePasscode" placeholder="Saisir le code administrateur" autocomplete="off" class="w-full p-2 border-2 border-red-200 rounded-lg text-xs font-bold focus:border-red-500">
                 </div>
             </div>
             <div class="flex justify-end gap-2 pt-2 border-t">
@@ -521,7 +527,7 @@
         const REQUIRED_DELETE_CODE = 'Bonesink124!';
 
         function askDeletePasscode(actionDescription = 'effectuer cette action') {
-            const code = prompt(`🔒 Sécurité : Entre le code pour ${actionDescription} :`);
+            const code = prompt(`🔒 Sécurité : Entre le code administrateur pour ${actionDescription} :`);
             if (code === null) return null;
             if (code !== REQUIRED_DELETE_CODE) {
                 alert("❌ Code incorrect ! Opération annulée.");
@@ -562,11 +568,15 @@
 
         function normalizeFolderPath(rawPath) {
             if (!rawPath) return 'Général';
-            const cleaned = rawPath
+            const parts = rawPath
                 .split('/')
                 .map(s => s.trim())
-                .filter(Boolean)
-                .join('/');
+                .filter(Boolean);
+            // Si le chemin commence par "Général/...", on retire le préfixe redondant car "Général" est la racine globale
+            if (parts.length > 1 && parts[0].toLowerCase() === 'général') {
+                parts.shift();
+            }
+            const cleaned = parts.join('/');
             return cleaned || 'Général';
         }
 
@@ -574,6 +584,7 @@
             const out = new Set(['Général']);
             folderSet.forEach(pathStr => {
                 const norm = normalizeFolderPath(pathStr);
+                if (norm === 'Général') return;
                 const parts = norm.split('/');
                 let cur = '';
                 for (const p of parts) {
@@ -588,7 +599,18 @@
             });
         }
 
-        // Liste synchronisée sur R2 des fichiers GitHub supprimés/masqués
+        // Retourne les sous-dossiers directs d'un dossier donné (quand parentPath === 'Général', retourne tous les dossiers de 1er niveau comme Contenu, Utilisateurs...)
+        function getDirectSubFoldersOf(parentPath, allPaths) {
+            if (parentPath === 'Général') {
+                return allPaths.filter(p => p !== 'Général' && !p.includes('/'));
+            }
+            return allPaths.filter(p => {
+                if (!p.startsWith(parentPath + '/')) return false;
+                const remainder = p.slice(parentPath.length + 1);
+                return remainder.length > 0 && !remainder.includes('/');
+            });
+        }
+
         let deletedStaticFiles = JSON.parse(localStorage.getItem('superu_deleted_static_files') || '[]');
         let rawGithubLeftItems = [];
         let rawGithubA4Items = [];
@@ -714,6 +736,7 @@
         let dateColor = '#FFFFFF';
         let showDate = false;
         let showMechanic = false;
+        let applyMechanicPriceCalc = true; // Quand false : aucun prix n'est modifié par la mécanique, seul le cercle rouge est visible
         let showAlcoholGlobal = false;
         let isA4PortraitMode = false;
         let currentGalleryTarget = 'global';
@@ -769,7 +792,6 @@
             const normSub = normalizeFolderPath(subFolder);
             const badge = document.getElementById('r2SyncBadge');
 
-            // Compression automatique en WebP si le fichier est une image (.png / .jpg / .bmp)
             let finalDataUrl = dataUrl;
             let finalPreviewUrl = previewDataUrl || dataUrl;
             let finalFileName = fileName;
@@ -846,10 +868,9 @@
             await syncAllFromR2();
         }
 
-        // RENOMMER / DÉPLACER UN DOSSIER OU SOUS-DOSSIER SUR R2 (Protégé par Bonesink124!)
         async function renameOrMoveFolderWithPassword(tabFolder, oldSubFolder) {
             if (!oldSubFolder || oldSubFolder === 'Général') {
-                alert("Le dossier principal 'Général' ne peut pas être renommé.");
+                alert("Le dossier racine 'Général' ne peut pas être renommé.");
                 return false;
             }
 
@@ -886,7 +907,6 @@
                 }
             } catch (e) {}
 
-            // Mise à jour locale également
             customSubFolders[tabFolder] = (customSubFolders[tabFolder] || ['Général']).map(f => {
                 if (f === oldSubFolder || f.startsWith(oldSubFolder + '/')) {
                     return cleanNewSub + f.slice(oldSubFolder.length);
@@ -906,10 +926,9 @@
             return true;
         }
 
-        // SUPPRESSION COMPLÈTE D'UN DOSSIER OU SOUS-DOSSIER (Protégé par Bonesink124!)
         async function deleteFolderAndSubfoldersWithPassword(tabFolder, targetSubFolder) {
             if (!targetSubFolder || targetSubFolder === 'Général') {
-                alert("Le dossier principal 'Général' ne peut pas être supprimé.");
+                alert("Le dossier racine 'Général' ne peut pas être supprimé.");
                 return false;
             }
 
@@ -966,7 +985,6 @@
             return true;
         }
 
-        // SYNCHRONISATION SUR R2 DE LA SUPPRESSION D'UNE IMAGE GITHUB ("Images Gauche" / "Images A4")
         async function hideStaticGithubFileOnR2(filePath, labelName) {
             const code = askDeletePasscode(`supprimer le visuel "${labelName}" pour tous les utilisateurs`);
             if (!code) return false;
@@ -1008,7 +1026,6 @@
                 if (json && json.ok && Array.isArray(json.files)) {
                     if (badge) badge.textContent = '☁️ R2 Connecté';
 
-                    // Synchronise la liste noire des images GitHub supprimées pour tout le monde
                     if (Array.isArray(json.deletedStaticFiles)) {
                         const mergedDeleted = Array.from(new Set([...deletedStaticFiles, ...json.deletedStaticFiles]));
                         deletedStaticFiles = mergedDeleted;
@@ -1209,7 +1226,7 @@
         }
 
         // ============================================================================
-        // MODALE POUR DÉPLACER ET RENOMMER UN FICHIER SUR R2 (Code Bonesink124!)
+        // MODALE POUR DÉPLACER ET RENOMMER UN FICHIER SUR R2 (CODE MASQUÉ)
         // ============================================================================
         const moveRenameFileModal = document.getElementById('moveRenameFileModal');
         const inputMoveRenameLabel = document.getElementById('inputMoveRenameLabel');
@@ -1224,9 +1241,13 @@
             folders.forEach(f => {
                 const opt = document.createElement('option');
                 opt.value = f;
-                const depth = f.split('/').length - 1;
-                const prefix = depth > 0 ? `${'—'.repeat(depth)} 📂 ` : '📁 ';
-                opt.textContent = `${prefix}${f}`;
+                if (f === 'Général') {
+                    opt.textContent = '📁 Général (Racine)';
+                } else {
+                    const depth = f.split('/').length;
+                    const prefix = `${'—'.repeat(depth)} 📂 `;
+                    opt.textContent = `${prefix}${f}`;
+                }
                 if (f === selectedSub) opt.selected = true;
                 selectMoveTargetSubFolder.appendChild(opt);
             });
@@ -1259,7 +1280,7 @@
             if (!pendingMoveRenameDoc) return;
             const code = inputMovePasscode.value;
             if (code !== REQUIRED_DELETE_CODE) {
-                alert("❌ Code de sécurité incorrect ! Saisis Bonesink124! avec un B majuscule.");
+                alert("❌ Code de sécurité incorrect !");
                 return;
             }
 
@@ -1421,7 +1442,7 @@
         });
 
         // ============================================================================
-        // BOUTONS GLOBAUX (ALCOOL -18, MODE A4 PORTRAIT, MÉCANIQUE, DATES)
+        // BOUTONS GLOBAUX (ALCOOL -18, MODE A4 PORTRAIT, MÉCANIQUE, CALCUL PRIX, DATES)
         // ============================================================================
         const btnToggleAlcohol18 = document.getElementById('btnToggleAlcohol18');
         const alcoholBtnLabel = document.getElementById('alcoholBtnLabel');
@@ -1433,6 +1454,20 @@
             } else {
                 btnToggleAlcohol18.className = 'text-xs font-extrabold px-3 py-1.5 rounded-lg border-2 border-orange-300 bg-orange-50 text-orange-800 hover:bg-orange-100 transition flex items-center gap-1.5 shadow-sm';
                 alcoholBtnLabel.textContent = 'Alcool : Masqué';
+            }
+            renderAllPosters();
+        });
+
+        // Bouton Activé / Désactivé pour le calcul de prix de la mécanique (valable en 4/page et 1/A4)
+        const btnTogglePriceCalc = document.getElementById('btnTogglePriceCalc');
+        btnTogglePriceCalc.addEventListener('click', () => {
+            applyMechanicPriceCalc = !applyMechanicPriceCalc;
+            if (applyMechanicPriceCalc) {
+                btnTogglePriceCalc.textContent = 'Calcul prix : Activé';
+                btnTogglePriceCalc.className = 'text-[11px] font-bold px-2.5 py-0.5 rounded bg-green-100 text-green-800 border border-green-300 hover:bg-green-200 transition';
+            } else {
+                btnTogglePriceCalc.textContent = 'Calcul prix : Désactivé';
+                btnTogglePriceCalc.className = 'text-[11px] font-bold px-2.5 py-0.5 rounded bg-amber-100 text-amber-900 border border-amber-400 hover:bg-amber-200 transition';
             }
             renderAllPosters();
         });
@@ -1505,7 +1540,7 @@
         });
 
         // ============================================================================
-        // BIBLIOTHÈQUE PARTAGÉE : ARBORESCENCE DOSSIERS & SOUS-DOSSIERS + DÉPLACER/RENOMMER
+        // BIBLIOTHÈQUE PARTAGÉE : "GÉNÉRAL" COMME DOSSIER RACINE CONTENANT TOUS LES DOSSIERS
         // ============================================================================
         function readFileAsDataURL(file) {
             return new Promise((resolve) => {
@@ -1547,8 +1582,9 @@
 
         function renderLibraryFoldersHierarchy() {
             const allPaths = customSubFolders[activeLibraryTab] || ['Général'];
-            const currentRoot = activeLibrarySubFolder.split('/')[0];
+            const currentRoot = activeLibrarySubFolder === 'Général' ? 'Général' : activeLibrarySubFolder.split('/')[0];
 
+            // 1. Barre supérieure : Général (Racine) + accès rapide aux dossiers de 1er niveau (Contenu, Utilisateurs...)
             const rootFolders = allPaths.filter(p => !p.includes('/'));
             libraryRootFoldersBar.innerHTML = '';
 
@@ -1564,7 +1600,7 @@
                 const selectBtn = document.createElement('button');
                 selectBtn.type = 'button';
                 selectBtn.className = 'text-xs font-bold px-2.5 py-1 flex items-center gap-1';
-                selectBtn.innerHTML = `<span>📁 ${rootName}</span>`;
+                selectBtn.innerHTML = `<span>${rootName === 'Général' ? '🏠 Général (Racine)' : '📁 ' + rootName}</span>`;
                 selectBtn.addEventListener('click', () => {
                     activeLibrarySubFolder = rootName;
                     renderLibraryFoldersHierarchy();
@@ -1573,7 +1609,6 @@
                 wrap.appendChild(selectBtn);
 
                 if (rootName !== 'Général') {
-                    // Bouton renommer dossier
                     const editBtn = document.createElement('button');
                     editBtn.type = 'button';
                     editBtn.className = `text-[10px] font-bold px-1.5 py-1 border-l transition ${
@@ -1581,7 +1616,7 @@
                             ? 'border-indigo-500 text-indigo-200 hover:bg-blue-500 hover:text-white'
                             : 'border-gray-200 text-gray-400 hover:bg-blue-600 hover:text-white'
                     }`;
-                    editBtn.title = `Renommer le dossier "${rootName}" (Code Bonesink124! requis)`;
+                    editBtn.title = `Renommer le dossier "${rootName}" (Code requis)`;
                     editBtn.textContent = '✏️';
                     editBtn.addEventListener('click', (e) => {
                         e.stopPropagation();
@@ -1589,7 +1624,6 @@
                     });
                     wrap.appendChild(editBtn);
 
-                    // Bouton supprimer dossier
                     const delBtn = document.createElement('button');
                     delBtn.type = 'button';
                     delBtn.className = `text-[10px] font-black px-1.5 py-1 border-l transition ${
@@ -1597,7 +1631,7 @@
                             ? 'border-indigo-500 text-indigo-200 hover:bg-red-600 hover:text-white'
                             : 'border-gray-200 text-gray-400 hover:bg-red-600 hover:text-white'
                     }`;
-                    delBtn.title = `Supprimer le dossier "${rootName}" (Code Bonesink124! requis)`;
+                    delBtn.title = `Supprimer le dossier "${rootName}" (Code requis)`;
                     delBtn.textContent = '✕';
                     delBtn.addEventListener('click', (e) => {
                         e.stopPropagation();
@@ -1609,38 +1643,47 @@
                 libraryRootFoldersBar.appendChild(wrap);
             });
 
+            // 2. Fil d'Ariane commençant toujours par "Général" (ex: Général / Contenu / Corbeilles Pains)
             libraryBreadcrumbBar.innerHTML = '';
-            const parts = activeLibrarySubFolder.split('/');
-            let accumPath = '';
-            parts.forEach((part, idx) => {
-                accumPath = accumPath ? `${accumPath}/${part}` : part;
-                const targetPath = accumPath;
+            const rootCrumbBtn = document.createElement('button');
+            rootCrumbBtn.type = 'button';
+            rootCrumbBtn.className = `px-1.5 py-0.5 rounded hover:bg-indigo-200 transition ${activeLibrarySubFolder === 'Général' ? 'bg-indigo-100 text-indigo-900 underline' : 'text-indigo-700'}`;
+            rootCrumbBtn.textContent = 'Général';
+            rootCrumbBtn.addEventListener('click', () => {
+                activeLibrarySubFolder = 'Général';
+                renderLibraryFoldersHierarchy();
+                renderReadyDocsGrid(inputSearchReadyDocs.value);
+            });
+            libraryBreadcrumbBar.appendChild(rootCrumbBtn);
 
-                if (idx > 0) {
+            if (activeLibrarySubFolder !== 'Général') {
+                const parts = activeLibrarySubFolder.split('/');
+                let accumPath = '';
+                parts.forEach((part, idx) => {
+                    accumPath = accumPath ? `${accumPath}/${part}` : part;
+                    const targetPath = accumPath;
+
                     const sep = document.createElement('span');
                     sep.className = 'text-gray-400 font-bold mx-0.5';
                     sep.textContent = '/';
                     libraryBreadcrumbBar.appendChild(sep);
-                }
 
-                const crumbBtn = document.createElement('button');
-                crumbBtn.type = 'button';
-                crumbBtn.className = `px-1.5 py-0.5 rounded hover:bg-indigo-200 transition ${idx === parts.length - 1 ? 'bg-indigo-100 text-indigo-900 underline' : 'text-indigo-700'}`;
-                crumbBtn.textContent = part;
-                crumbBtn.addEventListener('click', () => {
-                    activeLibrarySubFolder = targetPath;
-                    renderLibraryFoldersHierarchy();
-                    renderReadyDocsGrid(inputSearchReadyDocs.value);
+                    const crumbBtn = document.createElement('button');
+                    crumbBtn.type = 'button';
+                    crumbBtn.className = `px-1.5 py-0.5 rounded hover:bg-indigo-200 transition ${idx === parts.length - 1 ? 'bg-indigo-100 text-indigo-900 underline' : 'text-indigo-700'}`;
+                    crumbBtn.textContent = part;
+                    crumbBtn.addEventListener('click', () => {
+                        activeLibrarySubFolder = targetPath;
+                        renderLibraryFoldersHierarchy();
+                        renderReadyDocsGrid(inputSearchReadyDocs.value);
+                    });
+                    libraryBreadcrumbBar.appendChild(crumbBtn);
                 });
-                libraryBreadcrumbBar.appendChild(crumbBtn);
-            });
+            }
 
+            // 3. Sous-dossiers directs du dossier actif (quand on est dans Général, affiche Contenu, Utilisateurs, etc.)
             libraryChildSubFoldersBar.innerHTML = '';
-            const directChildren = allPaths.filter(p => {
-                if (!p.startsWith(activeLibrarySubFolder + '/')) return false;
-                const remainder = p.slice(activeLibrarySubFolder.length + 1);
-                return remainder.length > 0 && !remainder.includes('/');
-            });
+            const directChildren = getDirectSubFoldersOf(activeLibrarySubFolder, allPaths);
 
             if (directChildren.length === 0) {
                 const noneSpan = document.createElement('span');
@@ -1666,7 +1709,7 @@
                     const editBtn = document.createElement('button');
                     editBtn.type = 'button';
                     editBtn.className = 'text-[10px] font-bold px-1.5 py-0.5 border-l border-amber-200 text-amber-700 hover:bg-blue-600 hover:text-white transition';
-                    editBtn.title = `Renommer/Déplacer "${childFullPath}" (Code Bonesink124! requis)`;
+                    editBtn.title = `Renommer/Déplacer "${childFullPath}" (Code requis)`;
                     editBtn.textContent = '✏️';
                     editBtn.addEventListener('click', (e) => {
                         e.stopPropagation();
@@ -1676,7 +1719,7 @@
                     const delBtn = document.createElement('button');
                     delBtn.type = 'button';
                     delBtn.className = 'text-[10px] font-black px-1.5 py-0.5 border-l border-amber-200 text-amber-700 hover:bg-red-600 hover:text-white transition';
-                    delBtn.title = `Supprimer "${childFullPath}" (Code Bonesink124! requis)`;
+                    delBtn.title = `Supprimer "${childFullPath}" (Code requis)`;
                     delBtn.textContent = '✕';
                     delBtn.addEventListener('click', (e) => {
                         e.stopPropagation();
@@ -1699,20 +1742,21 @@
             }
         }
 
+        // Créer un dossier dans Général
         document.getElementById('btnCreateNewRootFolder').addEventListener('click', async () => {
-            const tabName = activeLibraryTab === 'ready_deposited' ? 'Fichiers déposés' : 'Affiches générées';
-            const folderName = prompt(`📁 Nom du nouveau dossier principal dans "${tabName}" :`);
+            const folderName = prompt(`📁 Nom du nouveau dossier à créer dans "Général" :`);
             if (!folderName || !folderName.trim()) return;
             const clean = normalizeFolderPath(folderName.replace(/\//g, '-'));
             activeLibrarySubFolder = clean;
             await createSubFolderOnR2(activeLibraryTab, clean);
         });
 
+        // Créer un sous-dossier dans le dossier actif (si actif = Général, crée un dossier dans Général)
         document.getElementById('btnCreateNewChildSubFolder').addEventListener('click', async () => {
-            const subName = prompt(`📂 Créer un nouveau sous-dossier à l'intérieur de "${activeLibrarySubFolder}" :`);
+            const subName = prompt(`📂 Créer un sous-dossier à l'intérieur de "${activeLibrarySubFolder}" :`);
             if (!subName || !subName.trim()) return;
             const cleanChild = subName.trim().replace(/\//g, '-');
-            const fullPath = `${activeLibrarySubFolder}/${cleanChild}`;
+            const fullPath = activeLibrarySubFolder === 'Général' ? cleanChild : `${activeLibrarySubFolder}/${cleanChild}`;
             activeLibrarySubFolder = fullPath;
             await createSubFolderOnR2(activeLibraryTab, fullPath);
         });
@@ -1778,10 +1822,10 @@
             const sourceList = activeLibraryTab === 'ready_deposited' ? readyDepositedDocs : readyGeneratedDocs;
             const allPaths = customSubFolders[activeLibraryTab] || ['Général'];
 
-            const directSubFolders = allPaths.filter(p => {
-                if (!p.startsWith(activeLibrarySubFolder + '/')) return false;
-                const remainder = p.slice(activeLibrarySubFolder.length + 1);
-                return remainder.length > 0 && !remainder.includes('/') && (!q || remainder.toLowerCase().includes(q));
+            // Quand activeLibrarySubFolder === 'Général', affiche directement les dossiers Contenu, Utilisateurs, etc. dans la grille !
+            const directSubFolders = getDirectSubFoldersOf(activeLibrarySubFolder, allPaths).filter(p => {
+                const nameOnly = p.split('/').pop();
+                return !q || nameOnly.toLowerCase().includes(q);
             });
 
             const filteredDocs = sourceList.filter(doc =>
@@ -1797,7 +1841,7 @@
             }
             readyDocsEmptyState.classList.add('hidden');
 
-            // 1. Cartes des Sous-dossiers
+            // 1. Cartes des Dossiers / Sous-dossiers (Contenu, Utilisateurs...)
             directSubFolders.forEach(subFullPath => {
                 const subName = subFullPath.split('/').pop();
                 const filesInsideCount = sourceList.filter(d => {
@@ -1805,19 +1849,23 @@
                     return s === subFullPath || s.startsWith(subFullPath + '/');
                 }).length;
 
+                const subFoldersInsideCount = getDirectSubFoldersOf(subFullPath, allPaths).length;
+
                 const folderCard = document.createElement('div');
                 folderCard.className = 'relative bg-amber-50/80 border-2 border-amber-300 hover:border-amber-600 rounded-xl p-3 flex flex-col justify-between gap-2 shadow-sm hover:shadow-md transition group cursor-pointer';
                 folderCard.innerHTML = `
                     <div class="flex justify-between items-center">
-                        <span class="text-[10px] font-black uppercase px-2 py-0.5 rounded bg-amber-500 text-white">SOUS-DOSSIER</span>
+                        <span class="text-[10px] font-black uppercase px-2 py-0.5 rounded bg-amber-500 text-white">DOSSIER</span>
                         <div class="flex items-center gap-1">
-                            <button type="button" class="btn-edit-subfolder-card text-gray-500 hover:text-blue-600 font-bold text-xs px-1.5 py-0.5 rounded hover:bg-blue-50 transition" title="Renommer / Déplacer ce sous-dossier (Code Bonesink124!)">✏️</button>
-                            <button type="button" class="btn-del-subfolder-card text-gray-400 hover:text-red-600 font-bold text-xs px-1.5 py-0.5 rounded hover:bg-red-50 transition" title="Supprimer ce sous-dossier (Code Bonesink124!)">✕</button>
+                            <button type="button" class="btn-edit-subfolder-card text-gray-500 hover:text-blue-600 font-bold text-xs px-1.5 py-0.5 rounded hover:bg-blue-50 transition" title="Renommer / Déplacer ce dossier (Code requis)">✏️</button>
+                            <button type="button" class="btn-del-subfolder-card text-gray-400 hover:text-red-600 font-bold text-xs px-1.5 py-0.5 rounded hover:bg-red-50 transition" title="Supprimer ce dossier (Code requis)">✕</button>
                         </div>
                     </div>
                     <div class="w-full h-36 bg-white/80 rounded-lg flex flex-col items-center justify-center border border-amber-200 p-2 group-hover:scale-105 transition">
                         <span class="text-5xl mb-1">📂</span>
-                        <span class="text-[11px] font-bold text-amber-800">${filesInsideCount} fichier${filesInsideCount > 1 ? 's' : ''}</span>
+                        <span class="text-[11px] font-bold text-amber-800">
+                            ${subFoldersInsideCount > 0 ? `${subFoldersInsideCount} sous-dossier${subFoldersInsideCount > 1 ? 's' : ''} • ` : ''}${filesInsideCount} fichier${filesInsideCount > 1 ? 's' : ''}
+                        </span>
                     </div>
                     <p class="text-xs font-extrabold text-amber-950 truncate text-center" title="${subName}">${subName}</p>
                 `;
@@ -1841,7 +1889,7 @@
                 readyDocsGrid.appendChild(folderCard);
             });
 
-            // 2. Cartes des Fichiers (avec bouton ✏️ Renommer/Déplacer et bouton ✕ Supprimer)
+            // 2. Cartes des Fichiers
             filteredDocs.forEach(doc => {
                 const badgeColor = doc.fileType === 'PDF' ? 'bg-red-600 text-white' : (doc.fileType === 'SVG' ? 'bg-amber-500 text-white' : 'bg-indigo-600 text-white');
                 const card = document.createElement('div');
@@ -1850,8 +1898,8 @@
                     <div class="flex justify-between items-center">
                         <span class="text-[10px] font-black uppercase px-2 py-0.5 rounded ${badgeColor}">${doc.fileType}</span>
                         <div class="flex items-center gap-1">
-                            <button type="button" class="btn-move-rename-doc text-gray-500 hover:text-blue-600 font-bold text-xs px-1.5 py-0.5 rounded hover:bg-blue-50 transition" title="Renommer ou déplacer vers un autre dossier (Code Bonesink124!)">✏️</button>
-                            <button type="button" class="btn-del-ready-doc text-gray-400 hover:text-red-600 font-bold text-xs px-1.5 py-0.5 rounded hover:bg-red-50 transition" title="Supprimer (Code Bonesink124! requis)">✕</button>
+                            <button type="button" class="btn-move-rename-doc text-gray-500 hover:text-blue-600 font-bold text-xs px-1.5 py-0.5 rounded hover:bg-blue-50 transition" title="Renommer ou déplacer vers un autre dossier (Code requis)">✏️</button>
+                            <button type="button" class="btn-del-ready-doc text-gray-400 hover:text-red-600 font-bold text-xs px-1.5 py-0.5 rounded hover:bg-red-50 transition" title="Supprimer (Code requis)">✕</button>
                         </div>
                     </div>
                     <div class="w-full h-40 bg-gray-50 rounded-lg overflow-hidden flex items-center justify-center border border-gray-100 p-1">
@@ -1917,9 +1965,13 @@
             genFolders.forEach(f => {
                 const opt = document.createElement('option');
                 opt.value = f;
-                const depth = f.split('/').length - 1;
-                const prefix = depth > 0 ? `${'—'.repeat(depth)} 📂 ` : '📁 ';
-                opt.textContent = `${prefix}${f}`;
+                if (f === 'Général') {
+                    opt.textContent = '📁 Général (Racine)';
+                } else {
+                    const depth = f.split('/').length;
+                    const prefix = `${'—'.repeat(depth)} 📂 `;
+                    opt.textContent = `${prefix}${f}`;
+                }
                 selectSaveDestinationFolder.appendChild(opt);
             });
 
@@ -2263,7 +2315,7 @@
                 const wrapper = document.createElement('div');
                 wrapper.className = 'relative bg-white border-2 border-blue-300 hover:border-red-600 rounded-xl p-2 flex flex-col items-center gap-1.5 shadow-sm hover:shadow-md transition group cursor-pointer';
                 wrapper.innerHTML = `
-                    <button type="button" class="btn-del-saved absolute top-1 right-1 bg-red-600 text-white text-[10px] font-bold w-5 h-5 rounded-full flex items-center justify-center opacity-80 hover:opacity-100 z-10" title="Supprimer de R2 (Code Bonesink124! requis)">✕</button>
+                    <button type="button" class="btn-del-saved absolute top-1 right-1 bg-red-600 text-white text-[10px] font-bold w-5 h-5 rounded-full flex items-center justify-center opacity-80 hover:opacity-100 z-10" title="Supprimer de R2 (Code requis)">✕</button>
                     <div class="w-full h-24 bg-gray-50 rounded-lg overflow-hidden flex items-center justify-center border border-gray-100">
                         <img src="${saved.dataUrl}" alt="${saved.label}" class="max-w-full max-h-full object-contain group-hover:scale-105 transition duration-200">
                     </div>
@@ -2297,11 +2349,10 @@
                 const card = document.createElement('div');
                 card.className = 'relative bg-white border-2 border-gray-200 hover:border-red-600 rounded-xl p-2 flex flex-col items-center gap-1.5 shadow-sm hover:shadow-md transition group cursor-pointer';
 
-                // Suppression synchronisée sur R2 pour tous les utilisateurs
                 const delBtn = document.createElement('button');
                 delBtn.type = 'button';
                 delBtn.className = 'absolute top-1 right-1 bg-red-600 text-white text-[10px] font-bold w-5 h-5 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-90 hover:!opacity-100 z-10 transition';
-                delBtn.title = 'Supprimer ce visuel pour tout le monde sur R2 (Code Bonesink124! requis)';
+                delBtn.title = 'Supprimer ce visuel pour tout le monde sur R2 (Code requis)';
                 delBtn.textContent = '✕';
                 delBtn.addEventListener('click', (e) => {
                     e.stopPropagation();
@@ -2629,11 +2680,9 @@
             return candidates[0].code;
         }
 
-        // Détecte automatiquement les promotions visibles sur les étiquettes bleues (remises explicites OU double prix barré/réduit)
         function detectLabelPromotion(fullText, productName, decimalPrices = [], baseUnitPrice = 0, unitQty = 1, unitType = 'pièce') {
             const textWithoutTitle = fullText.replace(productName, '');
 
-            // 1. Offre 2+1 ou 1+1
             if (/\b2\s*\+\s*1\b/i.test(textWithoutTitle) || /\b2\s*achet[eé]s?\s*1\s*(?:offert|gratuit)/i.test(textWithoutTitle)) {
                 return { active: true, presetKey: '2_plus_1', discount: '2+1', text: 'OFFERT', unitLabel: 'LES 3 PRODUITS' };
             }
@@ -2641,7 +2690,6 @@
                 return { active: true, presetKey: '1_plus_1', discount: '1+1', text: 'GRATUIT', unitLabel: 'LE LOT DE 2' };
             }
 
-            // 2. Offre sur le 2ème produit (ex: -50% sur le 2ème, -68% sur le 2ème)
             const secondMatch = textWithoutTitle.match(/-\s*(\d{1,2})\s*%\s*(?:sur\s*le\s*2|2[eè]me)/i)
                              || textWithoutTitle.match(/2[eè]me\s*(?:produit\s*)?[aà]\s*-\s*(\d{1,2})\s*%/i);
             if (secondMatch) {
@@ -2649,7 +2697,6 @@
                 return { active: true, presetKey: '2eme_50', discount: `-${pct}%`, text: 'SUR LE 2ÈME|PRODUIT', unitLabel: 'LE 2ÈME PRODUIT' };
             }
 
-            // 3. Remise immédiate en % (en ignorant "% MG" ou "% vol")
             const pctRemiseMatch = textWithoutTitle.match(/-\s*(\d{1,2})\s*%(?!\s*(?:MG|M\.G|VOL))/i)
                                 || textWithoutTitle.match(/(\d{1,2})\s*%\s*(?:de\s*)?remise/i);
             if (pctRemiseMatch) {
@@ -2659,21 +2706,18 @@
                 }
             }
 
-            // 4. Remise immédiate en €
             const euroRemiseMatch = textWithoutTitle.match(/-\s*(\d{1,2}(?:[.,]\d{1,2})?)\s*€\s*(?:de\s*remise)?/i);
             if (euroRemiseMatch) {
                 const val = euroRemiseMatch[1].replace('.', ',');
                 return { active: true, presetKey: 'remise_euros', discount: `-${val}€`, text: 'DE REMISE|IMMÉDIATE', unitLabel: 'LE PRODUIT' };
             }
 
-            // 5. Détection d'un ancien prix barré + nouveau prix promo présents simultanément sur l'étiquette bleue
             const nonUnitPrices = decimalPrices.filter(p => Math.abs(p - baseUnitPrice) > 0.03 || unitType === 'pièce');
             const uniquePrices = [...new Set(nonUnitPrices.map(p => Number(p.toFixed(2))))];
             if (uniquePrices.length >= 2) {
                 const sorted = [...uniquePrices].sort((a, b) => b - a);
                 const highP = sorted[0];
                 const lowP = sorted[sorted.length - 1];
-                // Vérifie que lowP n'est pas simplement le prix au kg/litre mais bien un prix remisé du même produit
                 const expectedNormalPrice = unitType !== 'pièce' && baseUnitPrice > 0 && unitQty > 0
                     ? Math.round(baseUnitPrice * unitQty * 100) / 100
                     : highP;
@@ -2694,7 +2738,6 @@
                 }
             }
 
-            // Aucune promo détectée : l'étiquette garde l'affichage standard sans promo
             return null;
         }
 
@@ -2864,7 +2907,6 @@
                 .map(m => parseFloat(m[1].replace(',', '.')))
                 .filter(p => p > 0 && p < 999);
 
-            // Détecte aussi les grands prix de type "€ 231" ou "2 € 31"
             const bigPriceMatches = [...fullText.matchAll(/€\s*(\d{3,4})\b|\b(\d{1,2})\s*€\s*(\d{2})\b/g)];
             for (const bm of bigPriceMatches) {
                 let bp = 0;
@@ -3443,7 +3485,8 @@
             const prefix = uType === 'pièce' ? 'La pièce' : (uType === 'l' ? 'Le L' : 'Le kg');
             const baseUnit = item.baseUnitPrice > 0 ? item.baseUnitPrice : (item.unitQty > 0 ? item.oldPrice / item.unitQty : item.oldPrice);
 
-            if (!isMechanicShown) {
+            // Si la mécanique est masquée OU si le bouton "Calcul prix" est sur Désactivé : aucun prix n'est modifié ni barré !
+            if (!isMechanicShown || !applyMechanicPriceCalc) {
                 return {
                     hasCrossedPrice: false,
                     crossedPrice: item.oldPrice,
@@ -3452,7 +3495,6 @@
                 };
             }
 
-            // Si l'étiquette bleue avait déjà un prix promo exact détecté, on l'utilise directement
             if (item.detectedPromo && item.detectedPromo.active && item.promoMainPrice && item.promoMainPrice < item.oldPrice) {
                 const ratio = item.oldPrice > 0 ? (item.promoMainPrice / item.oldPrice) : 1;
                 const newUnit = baseUnit * ratio;
@@ -3682,13 +3724,12 @@
         function drawSinglePoster(canvas, item) {
             const FONT_SLAB = getActiveFontSlab();
 
-            // Affiche la promo visible sur l'étiquette bleue ; pour celles sans promo, n'affiche pas de promo (sauf si l'utilisateur force le bouton global)
             const hasAutoPromo = Boolean(item.detectedPromo && item.detectedPromo.active);
             const isItemMechanicShown = hasAutoPromo ? true : showMechanic;
             const discountInput = hasAutoPromo ? item.detectedPromo.discount : document.getElementById('inputDiscount').value.trim();
             const rawDiscText = hasAutoPromo ? item.detectedPromo.text : document.getElementById('inputDiscountText').value.trim();
             const presetKey = hasAutoPromo ? item.detectedPromo.presetKey : document.getElementById('selectMechanicPreset').value;
-            const unitLabelText = hasAutoPromo ? item.detectedPromo.unitLabel : document.getElementById('inputUnitLabel').value;
+            const unitLabelText = (hasAutoPromo && applyMechanicPriceCalc) ? item.detectedPromo.unitLabel : document.getElementById('inputUnitLabel').value;
 
             const showContenance = document.getElementById('chkShowContenance').checked;
             const dateRaw = document.getElementById('inputDates').value.trim();
