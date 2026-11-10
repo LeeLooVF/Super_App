@@ -58,9 +58,9 @@
                     <span id="badgeCount" class="text-xs bg-red-100 text-red-700 font-bold px-2.5 py-1 rounded-full">
                         1 étiquette
                     </span>
-                    <!-- BOUTON BASCULE A4 PORTRAIT -->
-                    <button type="button" id="btnToggleA4Mode" class="text-xs font-extrabold px-3 py-1.5 rounded-lg border-2 border-gray-800 bg-white text-gray-800 hover:bg-gray-800 hover:text-white transition flex items-center gap-1.5 shadow-sm">
-                        <span>📐 Mode : 4 par page</span>
+                    <!-- BOUTON BASCULE STOP RAYON / A4 PORTRAIT -->
+                    <button type="button" id="btnToggleA4Mode" class="text-xs font-extrabold px-3 py-1.5 rounded-lg border-2 border-gray-800 bg-white text-gray-800 hover:bg-gray-800 hover:text-white transition flex items-center gap-1.5 shadow-sm" title="Basculer entre le format Stop Rayon (4 par page) et le format A4 Portrait (1 par page)">
+                        <span>📐 Mode : Stop Rayon</span>
                         <span class="bg-red-600 text-white text-[10px] px-1.5 py-0.5 rounded">Basculer A4 Portrait</span>
                     </button>
                     <!-- BOUTON MENTION ALCOOL -18 ANS -->
@@ -229,7 +229,7 @@
 
                 <div>
                     <button id="btnDownloadPdfA4" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-2.5 px-4 rounded-lg shadow transition duration-200 text-xs uppercase tracking-wider flex items-center justify-center gap-2">
-                        <span id="btnDownloadLabel">📄 TÉLÉCHARGER LE PDF A4 (4 PAR PAGE)</span>
+                        <span id="btnDownloadLabel">📄 TÉLÉCHARGER LE PDF (STOP RAYON)</span>
                     </button>
                 </div>
             </div>
@@ -572,7 +572,6 @@
                 .split('/')
                 .map(s => s.trim())
                 .filter(Boolean);
-            // Si le chemin commence par "Général/...", on retire le préfixe redondant car "Général" est la racine globale
             if (parts.length > 1 && parts[0].toLowerCase() === 'général') {
                 parts.shift();
             }
@@ -599,7 +598,6 @@
             });
         }
 
-        // Retourne les sous-dossiers directs d'un dossier donné (quand parentPath === 'Général', retourne tous les dossiers de 1er niveau comme Contenu, Utilisateurs...)
         function getDirectSubFoldersOf(parentPath, allPaths) {
             if (parentPath === 'Général') {
                 return allPaths.filter(p => p !== 'Général' && !p.includes('/'));
@@ -736,7 +734,7 @@
         let dateColor = '#FFFFFF';
         let showDate = false;
         let showMechanic = false;
-        let applyMechanicPriceCalc = true; // Quand false : aucun prix n'est modifié par la mécanique, seul le cercle rouge est visible
+        let applyMechanicPriceCalc = true;
         let showAlcoholGlobal = false;
         let isA4PortraitMode = false;
         let currentGalleryTarget = 'global';
@@ -1442,7 +1440,7 @@
         });
 
         // ============================================================================
-        // BOUTONS GLOBAUX (ALCOOL -18, MODE A4 PORTRAIT, MÉCANIQUE, CALCUL PRIX, DATES)
+        // BOUTONS GLOBAUX (ALCOOL -18, MODE STOP RAYON / A4 PORTRAIT, MÉCANIQUE, CALCUL PRIX, DATES)
         // ============================================================================
         const btnToggleAlcohol18 = document.getElementById('btnToggleAlcohol18');
         const alcoholBtnLabel = document.getElementById('alcoholBtnLabel');
@@ -1458,7 +1456,7 @@
             renderAllPosters();
         });
 
-        // Bouton Activé / Désactivé pour le calcul de prix de la mécanique (valable en 4/page et 1/A4)
+        // Bouton Activé / Désactivé pour le calcul de prix de la mécanique
         const btnTogglePriceCalc = document.getElementById('btnTogglePriceCalc');
         btnTogglePriceCalc.addEventListener('click', () => {
             applyMechanicPriceCalc = !applyMechanicPriceCalc;
@@ -1524,14 +1522,14 @@
             isA4PortraitMode = !isA4PortraitMode;
             if (isA4PortraitMode) {
                 btnToggleA4Mode.className = 'text-xs font-extrabold px-3 py-1.5 rounded-lg border-2 border-red-600 bg-red-600 text-white transition flex items-center gap-1.5 shadow-sm';
-                btnToggleA4Mode.innerHTML = '<span>📄 Mode : A4 Portrait (1/page)</span><span class="bg-white text-red-600 text-[10px] px-1.5 py-0.5 rounded">Revenir 4/page</span>';
-                btnDownloadLabel.textContent = '📄 TÉLÉCHARGER LE PDF A4 PORTRAIT (1 PAR PAGE)';
+                btnToggleA4Mode.innerHTML = '<span>📄 Mode : A4 Portrait</span><span class="bg-white text-red-600 text-[10px] px-1.5 py-0.5 rounded">Basculer Stop Rayon</span>';
+                btnDownloadLabel.textContent = '📄 TÉLÉCHARGER LE PDF (A4 PORTRAIT)';
                 labelZoneImage.textContent = '🖼️ 2. IMAGE HAUT (DOSSIER IMAGES A4)';
                 document.getElementById('globalGalleryLabel').textContent = `🖼️ ${labelImageA4 || 'Choisir visuel A4'}`;
             } else {
                 btnToggleA4Mode.className = 'text-xs font-extrabold px-3 py-1.5 rounded-lg border-2 border-gray-800 bg-white text-gray-800 hover:bg-gray-800 hover:text-white transition flex items-center gap-1.5 shadow-sm';
-                btnToggleA4Mode.innerHTML = '<span>📐 Mode : 4 par page</span><span class="bg-red-600 text-white text-[10px] px-1.5 py-0.5 rounded">Basculer A4 Portrait</span>';
-                btnDownloadLabel.textContent = '📄 TÉLÉCHARGER LE PDF A4 (4 PAR PAGE)';
+                btnToggleA4Mode.innerHTML = '<span>📐 Mode : Stop Rayon</span><span class="bg-red-600 text-white text-[10px] px-1.5 py-0.5 rounded">Basculer A4 Portrait</span>';
+                btnDownloadLabel.textContent = '📄 TÉLÉCHARGER LE PDF (STOP RAYON)';
                 labelZoneImage.textContent = '🖼️ 2. IMAGE GAUCHE';
                 document.getElementById('globalGalleryLabel').textContent = `🖼️ ${labelImage4 || 'Choisir visuel'}`;
             }
@@ -1584,7 +1582,6 @@
             const allPaths = customSubFolders[activeLibraryTab] || ['Général'];
             const currentRoot = activeLibrarySubFolder === 'Général' ? 'Général' : activeLibrarySubFolder.split('/')[0];
 
-            // 1. Barre supérieure : Général (Racine) + accès rapide aux dossiers de 1er niveau (Contenu, Utilisateurs...)
             const rootFolders = allPaths.filter(p => !p.includes('/'));
             libraryRootFoldersBar.innerHTML = '';
 
@@ -1643,7 +1640,6 @@
                 libraryRootFoldersBar.appendChild(wrap);
             });
 
-            // 2. Fil d'Ariane commençant toujours par "Général" (ex: Général / Contenu / Corbeilles Pains)
             libraryBreadcrumbBar.innerHTML = '';
             const rootCrumbBtn = document.createElement('button');
             rootCrumbBtn.type = 'button';
@@ -1681,7 +1677,6 @@
                 });
             }
 
-            // 3. Sous-dossiers directs du dossier actif (quand on est dans Général, affiche Contenu, Utilisateurs, etc.)
             libraryChildSubFoldersBar.innerHTML = '';
             const directChildren = getDirectSubFoldersOf(activeLibrarySubFolder, allPaths);
 
@@ -1742,7 +1737,6 @@
             }
         }
 
-        // Créer un dossier dans Général
         document.getElementById('btnCreateNewRootFolder').addEventListener('click', async () => {
             const folderName = prompt(`📁 Nom du nouveau dossier à créer dans "Général" :`);
             if (!folderName || !folderName.trim()) return;
@@ -1751,7 +1745,6 @@
             await createSubFolderOnR2(activeLibraryTab, clean);
         });
 
-        // Créer un sous-dossier dans le dossier actif (si actif = Général, crée un dossier dans Général)
         document.getElementById('btnCreateNewChildSubFolder').addEventListener('click', async () => {
             const subName = prompt(`📂 Créer un sous-dossier à l'intérieur de "${activeLibrarySubFolder}" :`);
             if (!subName || !subName.trim()) return;
@@ -1822,7 +1815,6 @@
             const sourceList = activeLibraryTab === 'ready_deposited' ? readyDepositedDocs : readyGeneratedDocs;
             const allPaths = customSubFolders[activeLibraryTab] || ['Général'];
 
-            // Quand activeLibrarySubFolder === 'Général', affiche directement les dossiers Contenu, Utilisateurs, etc. dans la grille !
             const directSubFolders = getDirectSubFoldersOf(activeLibrarySubFolder, allPaths).filter(p => {
                 const nameOnly = p.split('/').pop();
                 return !q || nameOnly.toLowerCase().includes(q);
@@ -1841,7 +1833,6 @@
             }
             readyDocsEmptyState.classList.add('hidden');
 
-            // 1. Cartes des Dossiers / Sous-dossiers (Contenu, Utilisateurs...)
             directSubFolders.forEach(subFullPath => {
                 const subName = subFullPath.split('/').pop();
                 const filesInsideCount = sourceList.filter(d => {
@@ -1889,7 +1880,6 @@
                 readyDocsGrid.appendChild(folderCard);
             });
 
-            // 2. Cartes des Fichiers
             filteredDocs.forEach(doc => {
                 const badgeColor = doc.fileType === 'PDF' ? 'bg-red-600 text-white' : (doc.fileType === 'SVG' ? 'bg-amber-500 text-white' : 'bg-indigo-600 text-white');
                 const card = document.createElement('div');
@@ -3248,7 +3238,7 @@
         }
 
         // ============================================================================
-        // DESSIN SUR CANVAS : MODE BANDEAU (4/PAGE) & MODE A4 PORTRAIT (1/PAGE)
+        // DESSIN SUR CANVAS : MODE STOP RAYON (4/PAGE) & MODE A4 PORTRAIT (1/PAGE)
         // ============================================================================
         function drawFormattedPrice(ctx, priceNumber, preferredCenterX, baselineY, isOldPrice, maxRightX = 656, scaleFactor = 1.0) {
             const FONT_SLAB = getActiveFontSlab();
@@ -3485,7 +3475,6 @@
             const prefix = uType === 'pièce' ? 'La pièce' : (uType === 'l' ? 'Le L' : 'Le kg');
             const baseUnit = item.baseUnitPrice > 0 ? item.baseUnitPrice : (item.unitQty > 0 ? item.oldPrice / item.unitQty : item.oldPrice);
 
-            // Si la mécanique est masquée OU si le bouton "Calcul prix" est sur Désactivé : aucun prix n'est modifié ni barré !
             if (!isMechanicShown || !applyMechanicPriceCalc) {
                 return {
                     hasCrossedPrice: false,
@@ -4182,7 +4171,7 @@
                     pdf.addImage(imgData, 'JPEG', 0, posY, pageWidth, posterHeightMm);
                 }
 
-                pdf.save('etiquettes_promo_A4.pdf');
+                pdf.save('etiquettes_Stop_Rayon.pdf');
             }
         });
 
