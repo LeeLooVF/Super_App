@@ -1,13 +1,14 @@
 // functions/api.js
 const PUBLIC_R2_URL = "https://pub-06317316428d44fe94ff17808d4763df.r2.dev";
 const DELETE_PASSCODE = "Bonesink124!";
+const DELETED_STATIC_KEY = "__system__/deleted_static_files.json";
 
 export async function onRequest(context) {
   const { request, env } = context;
   const url = new URL(request.url);
   const corsHeaders = {
     "Access-Control-Allow-Origin": "*",
-    "Access-Control-Allow-Methods": "GET, POST, DELETE, OPTIONS",
+    "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS",
     "Access-Control-Allow-Headers": "Content-Type",
   };
 
@@ -23,17 +24,46 @@ export async function onRequest(context) {
     );
   }
 
-  try {
-    // 1. LISTER TOUS LES FICHIERS, DOSSIERS ET SOUS-DOSSIERS SUR R2 (GET /api)
-    if (request.method === "GET") {
-      const folder = url.searchParams.get("folder") || "";
+  // Fonction utilitaire : lister tous les objets R2 avec pagination complète (> 1000 fichiers)
+  async function listAllObjects(prefix = "") {
+    let allObjects = [];
+    let cursor = undefined;
+    do {
       const listed = await bucket.list({
-        prefix: folder ? `${folder}/` : undefined,
+        prefix: prefix || undefined,
+        cursor,
         include: ["customMetadata", "httpMetadata"]
       });
+      allObjects = allObjects.concat(listed.objects || []);
+      cursor = listed.truncated ? listed.cursor : undefined;
+    } while (cursor);
+    return allObjects;
+  }
 
-      const files = listed.objects
-        .filter(obj => !obj.key.endsWith("_thumb.png"))
+  // Fonction utilitaire : récupérer la liste partagée des images GitHub masquées
+  async function getDeletedStaticFiles() {
+    try {
+      const obj = await bucket.get(DELETED_STATIC_KEY);
+      if (!obj) return [];
+      const text = await obj.text();
+      const parsed = JSON.parse(text);
+      return Array.isArray(parsed) ? parsed : [];
+    } catch (e) {
+      return [];
+    }
+  }
+
+  try {
+    // 1. LISTER TOUS LES FICHIERS, DOSSIERS ET LA LISTE NOIRE GITHUB SUR R2 (GET /api)
+    if (request.method === "GET") {
+      const folder = url.searchParams.get("folder") || "";
+      const [objects, deletedStaticFiles] = await Promise.all([
+        listAllObjects(folder ? `${folder}/` : ""),
+        getDeletedStaticFiles()
+      ]);
+
+      const files = objects
+        .filter(obj => !obj.key.endsWith("_thumb.png") && !obj.key.endsWith("_thumb.webp") && !obj.key.startsWith("__system__/"))
         .map(obj => {
           const meta = obj.customMetadata || {};
           const encodedKey = obj.key.split("/").map(encodeURIComponent).join("/");
@@ -56,16 +86,16 @@ export async function onRequest(context) {
         })
         .sort((a, b) => b.uploaded - a.uploaded);
 
-      return new Response(JSON.stringify({ ok: true, files }), {
+      return new Response(JSON.stringify({ ok: true, files, deletedStaticFiles }), {
         headers: { ...corsHeaders, "Content-Type": "application/json" }
       });
     }
 
-    // 2. UPLOADER UN FICHIER OU CRÉER UN DOSSIER / SOUS-DOSSIER (POST /api)
+    // 2. UPLOADER, CRÉER DOSSIER, DÉPLACER/RENOMMER OU SYNCHRONISER SUPPRESSION GITHUB (POST /api)
     if (request.method === "POST") {
       const body = await request.json();
 
-      // Création d'un dossier ou sous-dossier (ex: "Noël" ou "Noël/Chocolats")
+      // A. Création d'un dossier ou sous-dossier
       if (body.action === "create_folder") {
         const safeFolder = body.folder || "ready_deposited";
         const safeSub = (body.subFolder || "Nouveau_Dossier")
@@ -89,6 +119,127 @@ export async function onRequest(context) {
         });
       }
 
+      // B. Masquer une image GitHub ("Images Gauche" / "Images A4") pour tout le monde sur R2
+      if (body.action === "hide_static_file") {
+        if (body.code !== DELETE_PASSCODE) {
+          return new Response(
+            JSON.stringify({ ok: false, error: "Code de suppression incorrect." }),
+            { status: 403, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+          );
+        }
+        const currentList = await getDeletedStaticFiles();
+        if (body.filePath && !currentList.includes(body.filePath)) {
+          currentList.push(body.filePath);
+          await bucket.put(DELETED_STATIC_KEY, JSON.stringify(currentList), {
+            httpMetadata: { contentType: "application/json" }
+          });
+        }
+        return new Response(JSON.stringify({ ok: true, deletedStaticFiles: currentList }), {
+          headers: { ...corsHeaders, "Content-Type": "application/json" }
+        });
+      }
+
+      // C. Renommer et/ou déplacer un fichier vers un autre dossier/sous-dossier (Code Bonesink124!)
+      if (body.action === "update_file_meta") {
+        if (body.code !== DELETE_PASSCODE) {
+          return new Response(
+            JSON.stringify({ ok: false, error: "Code incorrect." }),
+            { status: 403, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+          );
+        }
+        const existingObj = await bucket.get(body.key);
+        if (!existingObj) {
+          return new Response(
+            JSON.stringify({ ok: false, error: "Fichier introuvable sur R2." }),
+            { status: 404, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+          );
+        }
+
+        const oldMeta = existingObj.customMetadata || {};
+        const newLabel = (body.newLabel || oldMeta.label || "").trim();
+        const newSubFolder = (body.newSubFolder || oldMeta.subFolder || "Général")
+          .split("/")
+          .map(p => p.trim())
+          .filter(Boolean)
+          .join("/");
+        const newFolder = body.newFolder || oldMeta.folder || body.key.split("/")[0];
+
+        const dataBuffer = await existingObj.arrayBuffer();
+        await bucket.put(body.key, dataBuffer, {
+          httpMetadata: existingObj.httpMetadata,
+          customMetadata: {
+            ...oldMeta,
+            label: newLabel,
+            folder: newFolder,
+            subFolder: newSubFolder
+          }
+        });
+
+        return new Response(JSON.stringify({ ok: true }), {
+          headers: { ...corsHeaders, "Content-Type": "application/json" }
+        });
+      }
+
+      // D. Renommer ou déplacer un dossier / sous-dossier entier (et tout son contenu)
+      if (body.action === "rename_folder") {
+        if (body.code !== DELETE_PASSCODE) {
+          return new Response(
+            JSON.stringify({ ok: false, error: "Code incorrect." }),
+            { status: 403, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+          );
+        }
+
+        const targetFolder = body.folder || "ready_deposited";
+        const oldSub = (body.oldSubFolder || "").trim();
+        const newSub = (body.newSubFolder || "")
+          .split("/")
+          .map(p => p.trim())
+          .filter(Boolean)
+          .join("/");
+
+        if (!oldSub || oldSub === "Général" || !newSub) {
+          return new Response(
+            JSON.stringify({ ok: false, error: "Chemin de dossier non valide." }),
+            { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+          );
+        }
+
+        const allObjects = await listAllObjects();
+        let updatedCount = 0;
+
+        for (const item of allObjects) {
+          const meta = item.customMetadata || {};
+          const itemFolder = meta.folder || item.key.split("/")[0];
+          const isMatchTab =
+            itemFolder === targetFolder ||
+            (targetFolder === "ready_deposited" && itemFolder === "ready_docs");
+          const itemSub = meta.subFolder || "";
+
+          if (isMatchTab && (itemSub === oldSub || itemSub.startsWith(oldSub + "/"))) {
+            const updatedSub = newSub + itemSub.slice(oldSub.length);
+            const fullObj = await bucket.get(item.key);
+            if (fullObj) {
+              const buf = await fullObj.arrayBuffer();
+              await bucket.put(item.key, buf, {
+                httpMetadata: fullObj.httpMetadata,
+                customMetadata: {
+                  ...meta,
+                  label: meta.fileType === "FOLDER" ? updatedSub : (meta.label || ""),
+                  folder: targetFolder,
+                  subFolder: updatedSub
+                }
+              });
+              updatedCount++;
+            }
+          }
+        }
+
+        return new Response(JSON.stringify({ ok: true, updatedCount, newSubFolder: newSub }), {
+          headers: { ...corsHeaders, "Content-Type": "application/json" }
+        });
+      }
+
+      // E. Upload standard d'un fichier (déjà converti en WebP côté client si c'est une image)
       const { folder, subFolder, label, fileName, fileType, dataUrl, previewDataUrl } = body;
       const safeFolder = folder || "left_4";
       const safeSubFolder = (subFolder || "Général")
@@ -97,7 +248,7 @@ export async function onRequest(context) {
         .filter(Boolean)
         .join("/");
 
-      const cleanFileName = (fileName || "fichier.png").replace(/[^a-zA-Z0-9._-]/g, "_");
+      const cleanFileName = (fileName || "fichier.webp").replace(/[^a-zA-Z0-9._-]/g, "_");
       const timestamp = Date.now();
       const mainKey = `${safeFolder}/${timestamp}_${cleanFileName}`;
 
@@ -112,10 +263,11 @@ export async function onRequest(context) {
 
       let thumbKey = "";
       if (previewDataUrl && previewDataUrl !== dataUrl) {
-        thumbKey = `${mainKey}_thumb.png`;
         const thumbDecoded = decodeDataUrl(previewDataUrl);
+        const thumbExt = thumbDecoded.mime.includes("webp") ? "webp" : "png";
+        thumbKey = `${mainKey}_thumb.${thumbExt}`;
         await bucket.put(thumbKey, thumbDecoded.u8, {
-          httpMetadata: { contentType: "image/png" }
+          httpMetadata: { contentType: thumbDecoded.mime }
         });
       }
 
@@ -168,7 +320,6 @@ export async function onRequest(context) {
 
       const action = url.searchParams.get("action") || "delete_file";
 
-      // Suppression complète d'un dossier, de ses sous-dossiers et de tous leurs fichiers
       if (action === "delete_folder") {
         const targetFolder = url.searchParams.get("folder") || "ready_deposited";
         const targetSubFolder = url.searchParams.get("subFolder") || "";
@@ -180,10 +331,10 @@ export async function onRequest(context) {
           );
         }
 
-        const listed = await bucket.list({ include: ["customMetadata"] });
+        const allObjects = await listAllObjects();
         let deletedCount = 0;
 
-        for (const obj of listed.objects) {
+        for (const obj of allObjects) {
           const meta = obj.customMetadata || {};
           const objFolder = meta.folder || obj.key.split("/")[0];
           const isMatchingTab =
@@ -208,7 +359,6 @@ export async function onRequest(context) {
         });
       }
 
-      // Suppression d'un fichier individuel
       const key = url.searchParams.get("key");
       const thumbKey = url.searchParams.get("thumbKey");
       if (key) await bucket.delete(key);
