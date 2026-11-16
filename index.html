@@ -24,34 +24,35 @@
     <div class="max-w-7xl mx-auto space-y-5">
         <!-- BANDEAU DE CONFIGURATION GLOBALE (RÉDUIT À 80%) -->
         <div id="topControlPanel" class="bg-white p-4 rounded-xl shadow-md border-t-4 border-red-600 space-y-3 sticky top-2 z-20">
-            <div class="flex flex-wrap justify-between items-center border-b pb-2.5 gap-2">
-                <div class="flex flex-wrap items-center gap-2">
-                    <h1 class="text-lg font-extrabold text-gray-800 tracking-wide">Generateur</h1>
-                    <span id="badgeCount" class="text-xs bg-red-100 text-red-700 font-bold px-2.5 py-1 rounded-full">1 / 50 étiquette</span>
-                    <button type="button" id="btnAddBlankPoster" class="text-xs font-extrabold px-2.5 py-1.5 rounded-lg border-2 border-emerald-600 bg-emerald-600 text-white hover:bg-emerald-700 transition shadow-sm" title="Ajouter une étiquette manuellement">
+            <!-- BARRE SUPÉRIEURE SUR UNE SEULE LIGNE (FLEX-NOWRAP) -->
+            <div class="flex flex-nowrap justify-between items-center border-b pb-2.5 gap-2">
+                <div class="flex flex-nowrap items-center gap-1.5 min-w-0">
+                    <h1 class="text-base font-extrabold text-gray-800 tracking-wide shrink-0">Generateur</h1>
+                    <span id="badgeCount" class="text-[11px] bg-red-100 text-red-700 font-bold px-2 py-1 rounded-full shrink-0">0 / 50 étiquette</span>
+                    <button type="button" id="btnAddBlankPoster" class="text-[11px] font-extrabold px-2 py-1 rounded-lg border-2 border-emerald-600 bg-emerald-600 text-white hover:bg-emerald-700 transition shadow-sm shrink-0" title="Ajouter une étiquette manuellement">
                         ➕ Étiquette
                     </button>
-                    <button type="button" id="btnClearAllPosters" class="text-xs font-extrabold px-2.5 py-1.5 rounded-lg border-2 border-red-200 bg-red-50 text-red-700 hover:bg-red-600 hover:text-white transition shadow-sm" title="Supprimer toutes les étiquettes de la liste">
+                    <button type="button" id="btnClearAllPosters" class="text-[11px] font-extrabold px-2 py-1 rounded-lg border-2 border-red-200 bg-red-50 text-red-700 hover:bg-red-600 hover:text-white transition shadow-sm shrink-0" title="Supprimer toutes les étiquettes de la liste">
                         🗑️ Tout vider
                     </button>
-                    <button type="button" id="btnToggleA4Mode" class="text-xs font-extrabold px-3 py-1.5 rounded-lg border-2 border-gray-800 bg-white text-gray-800 hover:bg-gray-800 hover:text-white transition flex items-center gap-1.5 shadow-sm">
+                    <button type="button" id="btnToggleA4Mode" class="text-[11px] font-extrabold px-2.5 py-1 rounded-lg border-2 border-gray-800 bg-white text-gray-800 hover:bg-gray-800 hover:text-white transition flex items-center gap-1 shadow-sm shrink-0">
                         <span>📐 Mode : Stop Rayon</span><span class="bg-red-600 text-white text-[10px] px-1.5 py-0.5 rounded">Basculer A4 Portrait</span>
                     </button>
-                    <button type="button" id="btnToggleAlcohol18" class="text-xs font-extrabold px-3 py-1.5 rounded-lg border-2 border-orange-300 bg-orange-50 text-orange-800 hover:bg-orange-100 transition flex items-center gap-1.5 shadow-sm">
-                        <span class="bg-orange-600 text-white text-[10px] font-black px-1.5 py-0.5 rounded">-18</span><span id="alcoholBtnLabel">Alcool : Masqué</span>
+                    <button type="button" id="btnToggleAlcohol18" class="text-[11px] font-extrabold px-2.5 py-1 rounded-lg border-2 border-orange-300 bg-orange-50 text-orange-800 hover:bg-orange-100 transition flex items-center gap-1 shadow-sm shrink-0">
+                        <span class="bg-orange-600 text-white text-[10px] font-black px-1.5 py-0.5 rounded">-18</span><span id="alcoholBtnLabel">Alcool</span>
                     </button>
-                    <button type="button" id="btnOpenReadyDocsModal" class="text-xs font-extrabold px-3 py-1.5 rounded-lg border-2 border-indigo-600 bg-indigo-600 text-white hover:bg-indigo-700 transition flex items-center gap-1.5 shadow-sm">
+                    <button type="button" id="btnOpenReadyDocsModal" class="text-[11px] font-extrabold px-2.5 py-1 rounded-lg border-2 border-indigo-600 bg-indigo-600 text-white hover:bg-indigo-700 transition flex items-center gap-1 shadow-sm shrink-0">
                         <span>📚 Bibliothèque</span><span id="readyDocsCountBadge" class="bg-white text-indigo-700 text-[10px] px-1.5 py-0.5 rounded-full font-black">0</span>
                     </button>
-                    <button type="button" id="btnOpenFontModal" class="text-xs bg-gray-100 hover:bg-gray-200 text-gray-800 font-extrabold py-1.5 px-3 rounded-lg cursor-pointer border-2 border-gray-300 transition flex items-center gap-1.5 shadow-sm">
+                    <button type="button" id="btnOpenFontModal" class="text-[11px] bg-gray-100 hover:bg-gray-200 text-gray-800 font-extrabold py-1 px-2.5 rounded-lg cursor-pointer border-2 border-gray-300 transition flex items-center gap-1 shadow-sm shrink-0">
                         🔤 Polices .OTF / R2
                     </button>
                 </div>
 
-                <!-- BOUTON ÉTAT DES SERVICES -->
-                <div class="relative flex items-center gap-2">
-                    <span id="ocrStatus" class="text-xs font-bold text-blue-700 bg-blue-50 px-2.5 py-1 rounded-lg border border-blue-200 hidden"></span>
-                    <button type="button" id="btnToggleServiceStatus" class="text-xs font-extrabold px-3 py-1.5 rounded-lg border-2 border-emerald-300 bg-emerald-50 text-emerald-800 hover:bg-emerald-100 transition flex items-center gap-2 shadow-sm">
+                <!-- BOUTON ÉTAT DES SERVICES & BADGE STATUT TOUJOURS ALIGNÉS SUR LA MÊME LIGNE -->
+                <div class="relative flex flex-nowrap items-center gap-1.5 shrink-0">
+                    <span id="ocrStatus" class="text-[11px] font-bold text-blue-700 bg-blue-50 px-2 py-1 rounded-lg border border-blue-200 hidden whitespace-nowrap max-w-[260px] truncate"></span>
+                    <button type="button" id="btnToggleServiceStatus" class="text-[11px] font-extrabold px-2.5 py-1 rounded-lg border-2 border-emerald-300 bg-emerald-50 text-emerald-800 hover:bg-emerald-100 transition flex items-center gap-1.5 shadow-sm whitespace-nowrap shrink-0">
                         <span id="serviceDot" class="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block animate-pulse"></span>
                         <span>État des services</span>
                         <span class="text-[10px] opacity-75">▼</span>
@@ -76,7 +77,7 @@
                         </div>
                         <div class="flex justify-between items-center py-1">
                             <span class="font-semibold text-gray-600">Capacité génération :</span>
-                            <span id="quotaServiceBadge" class="font-bold text-gray-800 bg-gray-100 px-2 py-0.5 rounded border border-gray-300">1 / 50 max</span>
+                            <span id="quotaServiceBadge" class="font-bold text-gray-800 bg-gray-100 px-2 py-0.5 rounded border border-gray-300">0 / 50 max</span>
                         </div>
                     </div>
                 </div>
@@ -411,7 +412,8 @@
             prix_choc:        { discount: 'PRIX', text: 'CHOC !', unitLabel: 'LE PRODUIT', mode: 'direct_lot' }
         };
 
-        let postersList = [{ productName: 'APERIVRAIS ST AGUR 30%MG 100G', oldPrice: 2.31, crossedPrice: null, baseUnitPrice: 23.10, unitQty: 0.1, unitType: 'kg', contenanceText: '100 g', gencode: '3616305242723', useCustomLeftImage: false, customRawImg: null, customTrimmedImg: null, customImageLabel: '', showAlcohol18: null, detectedPromo: null }];
+        // De base sur la page : aucune étiquette affichée (tableau vide)
+        let postersList = [];
         let rawLeftImage4 = null, trimmedLeftImage4 = null, labelImage4 = 'Les Prix Bas';
         let rawTopImageA4 = null, trimmedTopImageA4 = null, labelImageA4 = 'Les Prix Bas (A4)';
         let dateColor = '#FFFFFF', showDate = false, showMechanic = false, applyMechanicPriceCalc = false, showAlcoholGlobal = false, isA4PortraitMode = false, currentGalleryTarget = 'global';
@@ -427,14 +429,43 @@
         const ensureWebpFileName = f => `${(f || 'image').replace(/\.[^.]+$/, '')}.webp`;
         const readFileAsDataURL = file => new Promise(res => { const r = new FileReader(); r.onload = e => res(e.target.result); r.readAsDataURL(file); });
 
-        // Ajouter une étiquette vierge ou tout vider (sans aucune alerte bloquante)
+        // Retourne l'état réel de la promo pour une étiquette (active si détectée OU si la mécanique globale est activée et non désactivée manuellement sur cette étiquette)
+        function isPosterPromoActive(item) {
+            if (item.detectedPromo && typeof item.detectedPromo.active === 'boolean') {
+                return item.detectedPromo.active;
+            }
+            return showMechanic;
+        }
+
         $('btnAddBlankPoster').onclick = () => {
             if (postersList.length >= MAX_LABELS_LIMIT) return;
-            postersList.push({ productName: 'NOUVEAU PRODUIT', oldPrice: 1.99, crossedPrice: null, baseUnitPrice: 1.99, unitQty: 1, unitType: 'pièce', contenanceText: '1 pièce', gencode: '', useCustomLeftImage: false, customRawImg: null, customTrimmedImg: null, customImageLabel: '', showAlcohol18: null, detectedPromo: null });
+            postersList.push({
+                productName: 'NOUVEAU PRODUIT',
+                oldPrice: 1.99,
+                crossedPrice: null,
+                baseUnitPrice: 1.99,
+                unitQty: 1,
+                unitType: 'pièce',
+                contenanceText: '1 pièce',
+                gencode: '',
+                useCustomLeftImage: false,
+                customRawImg: null,
+                customTrimmedImg: null,
+                customImageLabel: '',
+                showAlcohol18: null,
+                detectedPromo: showMechanic ? {
+                    active: true,
+                    presetKey: $('selectMechanicPreset').value,
+                    discount: $('inputDiscount').value.trim(),
+                    text: $('inputDiscountText').value.trim(),
+                    unitLabel: $('inputUnitLabel').value.trim()
+                } : null
+            });
             renderAllPosters();
         };
         $('btnClearAllPosters').onclick = () => {
             postersList = [];
+            $('ocrStatus').classList.add('hidden');
             renderAllPosters();
         };
 
@@ -1024,8 +1055,10 @@
         // ============================================================================
         $('btnToggleAlcohol18').onclick = () => {
             showAlcoholGlobal = !showAlcoholGlobal;
-            $('btnToggleAlcohol18').className = showAlcoholGlobal ? 'text-xs font-extrabold px-3 py-1.5 rounded-lg border-2 border-orange-600 bg-orange-600 text-white flex items-center gap-1.5 shadow-sm' : 'text-xs font-extrabold px-3 py-1.5 rounded-lg border-2 border-orange-300 bg-orange-50 text-orange-800 flex items-center gap-1.5 shadow-sm';
-            $('alcoholBtnLabel').textContent = showAlcoholGlobal ? 'Alcool -18 : Affiché' : 'Alcool : Masqué';
+            $('btnToggleAlcohol18').className = showAlcoholGlobal
+                ? 'text-[11px] font-extrabold px-2.5 py-1 rounded-lg border-2 border-orange-600 bg-orange-600 text-white flex items-center gap-1 shadow-sm shrink-0'
+                : 'text-[11px] font-extrabold px-2.5 py-1 rounded-lg border-2 border-orange-300 bg-orange-50 text-orange-800 hover:bg-orange-100 flex items-center gap-1 shadow-sm shrink-0';
+            $('alcoholBtnLabel').textContent = 'Alcool';
             renderAllPosters();
         };
 
@@ -1038,8 +1071,12 @@
 
         $('btnToggleA4Mode').onclick = function() {
             isA4PortraitMode = !isA4PortraitMode;
-            this.className = isA4PortraitMode ? 'text-xs font-extrabold px-3 py-1.5 rounded-lg border-2 border-red-600 bg-red-600 text-white flex items-center gap-1.5 shadow-sm' : 'text-xs font-extrabold px-3 py-1.5 rounded-lg border-2 border-gray-800 bg-white text-gray-800 flex items-center gap-1.5 shadow-sm';
-            this.innerHTML = isA4PortraitMode ? '<span>📄 Mode : A4 Portrait</span><span class="bg-white text-red-600 text-[10px] px-1.5 py-0.5 rounded">Basculer Stop Rayon</span>' : '<span>📐 Mode : Stop Rayon</span><span class="bg-red-600 text-white text-[10px] px-1.5 py-0.5 rounded">Basculer A4 Portrait</span>';
+            this.className = isA4PortraitMode
+                ? 'text-[11px] font-extrabold px-2.5 py-1 rounded-lg border-2 border-red-600 bg-red-600 text-white flex items-center gap-1 shadow-sm shrink-0'
+                : 'text-[11px] font-extrabold px-2.5 py-1 rounded-lg border-2 border-gray-800 bg-white text-gray-800 flex items-center gap-1 shadow-sm shrink-0';
+            this.innerHTML = isA4PortraitMode
+                ? '<span>📄 Mode : A4 Portrait</span><span class="bg-white text-red-600 text-[10px] px-1.5 py-0.5 rounded">Basculer Stop Rayon</span>'
+                : '<span>📐 Mode : Stop Rayon</span><span class="bg-red-600 text-white text-[10px] px-1.5 py-0.5 rounded">Basculer A4 Portrait</span>';
             $('btnDownloadLabel').textContent = isA4PortraitMode ? '📄 TÉLÉCHARGER LE PDF (A4 PORTRAIT)' : '📄 TÉLÉCHARGER LE PDF (STOP RAYON)';
             $('labelZoneImage').textContent = isA4PortraitMode ? '🖼️ 2. IMAGE HAUT (DOSSIER IMAGES A4)' : '🖼️ 2. IMAGE GAUCHE';
             $('globalGalleryLabel').textContent = `🖼️ ${isA4PortraitMode ? (labelImageA4 || 'Choisir visuel A4') : (labelImage4 || 'Choisir visuel')}`;
@@ -1049,6 +1086,14 @@
         $('selectMechanicPreset').onchange = function() {
             const p = MECHANIC_PRESETS[this.value]; if (!p) return;
             $('inputDiscount').value = p.discount; $('inputDiscountText').value = p.text; $('inputUnitLabel').value = p.unitLabel;
+            postersList.forEach(it => {
+                if (it.detectedPromo?.isGlobalSync) {
+                    it.detectedPromo.presetKey = this.value;
+                    it.detectedPromo.discount = p.discount;
+                    it.detectedPromo.text = p.text;
+                    it.detectedPromo.unitLabel = p.unitLabel;
+                }
+            });
             renderAllPosters();
         };
 
@@ -1060,16 +1105,46 @@
             renderAllPosters();
         };
 
+        // Quand on active/désactive la mécanique globale, toutes les étiquettes passent en PROMO (ou SANS PROMO) et restent modifiables individuellement
         $('btnToggleDiscountText').onclick = function() {
             showMechanic = !showMechanic;
             this.textContent = showMechanic ? 'affichée' : 'masquée';
             this.className = showMechanic ? 'min-w-[88px] text-center text-[11px] font-bold px-2.5 py-0.5 rounded bg-green-100 text-green-800 border border-green-300' : 'min-w-[88px] text-center text-[11px] font-bold px-2.5 py-0.5 rounded bg-red-100 text-red-800 border border-red-300';
             ['selectMechanicPreset', 'inputDiscount', 'inputDiscountText'].forEach(id => { $(id).disabled = !showMechanic; $(id).classList.toggle('opacity-50', !showMechanic); $(id).classList.toggle('bg-gray-100', !showMechanic); });
+
+            postersList.forEach(it => {
+                if (showMechanic) {
+                    if (!it.detectedPromo) {
+                        it.detectedPromo = {
+                            active: true,
+                            isGlobalSync: true,
+                            presetKey: $('selectMechanicPreset').value,
+                            discount: $('inputDiscount').value.trim(),
+                            text: $('inputDiscountText').value.trim(),
+                            unitLabel: $('inputUnitLabel').value.trim()
+                        };
+                    } else {
+                        it.detectedPromo.active = true;
+                    }
+                } else {
+                    if (it.detectedPromo) it.detectedPromo.active = false;
+                }
+            });
             renderAllPosters();
         };
 
-        $('btnDateWhite').onclick = () => { dateColor = '#FFFFFF'; renderAllPosters(); };
-        $('btnDateBlack').onclick = () => { dateColor = '#000000'; renderAllPosters(); };
+        $('btnDateWhite').onclick = () => {
+            dateColor = '#FFFFFF';
+            $('btnDateWhite').className = 'flex-1 py-1.5 px-3 rounded-lg border-2 border-red-600 bg-gray-800 text-white text-xs font-bold flex items-center justify-center gap-1.5';
+            $('btnDateBlack').className = 'flex-1 py-1.5 px-3 rounded-lg border border-gray-300 bg-white text-gray-900 text-xs font-bold flex items-center justify-center gap-1.5';
+            renderAllPosters();
+        };
+        $('btnDateBlack').onclick = () => {
+            dateColor = '#000000';
+            $('btnDateBlack').className = 'flex-1 py-1.5 px-3 rounded-lg border-2 border-red-600 bg-gray-100 text-gray-900 text-xs font-bold flex items-center justify-center gap-1.5';
+            $('btnDateWhite').className = 'flex-1 py-1.5 px-3 rounded-lg border border-gray-300 bg-gray-700 text-white text-xs font-bold flex items-center justify-center gap-1.5 opacity-70';
+            renderAllPosters();
+        };
         $('chkShowContenance').onchange = $('chkAutoTrim').onchange = renderAllPosters;
 
         function autoTrimWhiteBorders(img) {
@@ -1091,7 +1166,6 @@
             } catch (e) { return img; }
         }
 
-        // Charge les pages PDF avec les coordonnées exactes (x, y) de chaque élément de texte
         async function loadFileToPages(file) {
             if (file.type === 'application/pdf' || file.name.toLowerCase().endsWith('.pdf')) {
                 const pdf = await pdfjsLib.getDocument({ data: await file.arrayBuffer() }).promise;
@@ -1232,7 +1306,7 @@
         }
 
         // ============================================================================
-        // DÉCOUPE PAR BANDES VERTICALES (CADRES VIOLETS) POUR LE FORMAT PDF ETIQ-25
+        // DÉCOUPE PAR BANDES VERTICALES (FORMAT ETIQ-25) & EXTRACTION IA GEMINI
         // ============================================================================
         function isValidEAN13Checksum(c) {
             if (!/^\d{13}$/.test(c)) return false;
@@ -1240,7 +1314,6 @@
             return ((10 - (s % 10)) % 10) === parseInt(c[12], 10);
         }
 
-        // Reconstitue un prix dont les centimes sont en exposant dans une zone X donnée (ex: "64," + "65" -> 64.65)
         function parsePriceFromZoneItems(zoneItems) {
             if (!zoneItems || !zoneItems.length) return null;
             const sorted = [...zoneItems].sort((a, b) => a.x - b.x);
@@ -1255,7 +1328,6 @@
             return null;
         }
 
-        // Lit le gros prix bitmap situé dans le cadre de droite (ex: 10,99 €)
         async function readBigRightBoxPrice(pageCanvas, yTop, yBottom, ocrWorker) {
             const w = pageCanvas.width, h = pageCanvas.height;
             const sx = Math.floor(w * 0.48);
@@ -1283,17 +1355,14 @@
             return null;
         }
 
-        // Détecte et extrait chaque étiquette encadrée l'une après l'autre (Format Etiq-25)
         async function extractEtiq25BandsFromPage(pageObj, getOcrWorker) {
             const { canvas, textItems } = pageObj;
             if (!textItems || textItems.length < 4) return null;
 
-            // Repère chaque étiquette grâce à son code EAN-13 situé en bas à gauche (x < 45% de la largeur)
             const eanAnchors = textItems
                 .filter(it => /^\d{13}$/.test(it.str.replace(/\s+/g, '')) && it.rx < 0.45)
                 .sort((a, b) => a.y - b.y);
 
-            // Vérifie qu'il s'agit bien d'une planche Etiq-25 (1 seule colonne d'étiquettes empilées verticalement)
             if (eanAnchors.length === 0 || eanAnchors.length > 5) return null;
             const hasHorizontalDuplicates = eanAnchors.some((a, i) => i > 0 && Math.abs(a.y - eanAnchors[i - 1].y) < 25);
             if (hasHorizontalDuplicates) return null;
@@ -1305,7 +1374,6 @@
                 const eanItem = eanAnchors[i];
                 const gencode = eanItem.str.replace(/\s+/g, '');
 
-                // Délimite le cadre violet exact de l'étiquette i (entre la fin de l'étiquette précédente et le bas de son EAN-13)
                 const yBottom = eanItem.y + (canvas.height * 0.025);
                 const yTop = i === 0
                     ? Math.max(0, eanItem.y - (canvas.height * 0.25))
@@ -1317,7 +1385,6 @@
                     !/^(Fichier\s*portable|0000000|Etiquettes$|Etiq-\d+|\d+\s*étiquettes|\.{4,})/i.test(it.str)
                 );
 
-                // 1. ROUGE : Nom du produit (ligne supérieure de la bande contenant des lettres en majuscules)
                 const titleCandidates = bandItems
                     .filter(it => it.y < eanItem.y - (canvas.height * 0.06) && it.rx < 0.65 && /[A-ZÀ-Ý]{2,}/.test(it.str) && !/^(Prix|kg|l|pi[eè]ce|cont)/i.test(it.str))
                     .sort((a, b) => (Math.abs(a.y - b.y) > 8 ? a.y - b.y : a.x - b.x));
@@ -1329,7 +1396,6 @@
                     productName = sameLineTitle.map(it => it.str).join(' ').replace(/\s+/g, ' ').trim().toUpperCase();
                 }
 
-                // 2. VERT : Prix au kg / litre / pièce (zone gauche : rx entre 0.11 et 0.24, au-dessus de l'EAN)
                 let unitType = 'kg';
                 const unitLabelItem = bandItems.find(it => /^(kg|l|pi[eè]ce)$/i.test(it.str) && it.rx < 0.20);
                 if (unitLabelItem) {
@@ -1343,7 +1409,6 @@
                 );
                 let baseUnitPrice = parsePriceFromZoneItems(unitPriceZone) || 0;
 
-                // 3. BLEU : Contenant (zone cont: rx entre 0.20 et 0.37)
                 let contenanceText = '';
                 let contQtyKgOrL = 0;
                 const contZone = bandItems
@@ -1361,7 +1426,6 @@
                     else contenanceText = `${val} ${u}`;
                 }
 
-                // 4. VIOLET : Prix barré (zone centrale entre cont: et le gros cadre : rx entre 0.36 et 0.53)
                 const crossedZone = bandItems.filter(it =>
                     it.rx >= 0.36 && it.rx <= 0.53 &&
                     it.y >= eanItem.y - (canvas.height * 0.095) &&
@@ -1369,13 +1433,11 @@
                 );
                 let crossedPrice = parsePriceFromZoneItems(crossedZone);
 
-                // 5. ORANGE : Gros prix principal dans le cadre de droite (via OCR sur le rectangle de droite + vérification mathématique Prix kg × Contenance)
                 let mainPrice = await readBigRightBoxPrice(canvas, yTop, yBottom, worker);
                 const computedFromUnit = (baseUnitPrice > 0 && contQtyKgOrL > 0)
                     ? Math.round(baseUnitPrice * contQtyKgOrL * 100) / 100
                     : null;
 
-                // Si l'OCR du gros chiffre a manqué une décimale ou confondu un chiffre, la formule Prix_kg × Contenance corrige au centime près (ex: 64.65 × 0.170 = 10.99 €) !
                 if (computedFromUnit && computedFromUnit > 0) {
                     if (!mainPrice || Math.abs(mainPrice - computedFromUnit) > 0.05) {
                         mainPrice = computedFromUnit;
@@ -1383,9 +1445,31 @@
                 }
                 if (!mainPrice) mainPrice = crossedPrice || baseUnitPrice || 1.99;
 
-                // Si le prix barré est identique ou inférieur au prix principal, on l'ignore
                 if (crossedPrice && crossedPrice <= mainPrice + 0.005) {
                     crossedPrice = null;
+                }
+
+                // Si une promo (prix barré) est présente ou si la mécanique globale est activée, on passe automatiquement le bouton en PROMO (désactivable au choix)
+                let autoDetectedPromo = null;
+                if (crossedPrice && crossedPrice > mainPrice) {
+                    const pct = Math.max(1, Math.round(((crossedPrice - mainPrice) / crossedPrice) * 100));
+                    autoDetectedPromo = {
+                        active: true,
+                        isGlobalSync: false,
+                        presetKey: $('selectMechanicPreset').value || 'remise_imm',
+                        discount: showMechanic ? $('inputDiscount').value.trim() : `-${pct}%`,
+                        text: $('inputDiscountText').value.trim() || 'DE REMISE|IMMÉDIATE',
+                        unitLabel: $('inputUnitLabel').value.trim() || 'LE PRODUIT'
+                    };
+                } else if (showMechanic) {
+                    autoDetectedPromo = {
+                        active: true,
+                        isGlobalSync: true,
+                        presetKey: $('selectMechanicPreset').value,
+                        discount: $('inputDiscount').value.trim(),
+                        text: $('inputDiscountText').value.trim(),
+                        unitLabel: $('inputUnitLabel').value.trim()
+                    };
                 }
 
                 results.push({
@@ -1402,7 +1486,7 @@
                     customTrimmedImg: null,
                     customImageLabel: '',
                     showAlcohol18: null,
-                    detectedPromo: null
+                    detectedPromo: autoDetectedPromo
                 });
             }
 
@@ -1446,8 +1530,33 @@
                         mainRedPrice = Math.min(rawOld, rawPromo);
                         crossedOldPrice = Math.max(rawOld, rawPromo);
                     }
-                    const discStr = (lbl.promoDiscount || '').trim();
-                    const hasExplicitCirclePromo = Boolean(lbl.hasPromo && discStr);
+                    let discStr = (lbl.promoDiscount || '').trim();
+                    if (!discStr && crossedOldPrice && crossedOldPrice > mainRedPrice) {
+                        const pct = Math.max(1, Math.round(((crossedOldPrice - mainRedPrice) / crossedOldPrice) * 100));
+                        discStr = `-${pct}%`;
+                    }
+                    const hasExplicitCirclePromo = Boolean((lbl.hasPromo && discStr) || crossedOldPrice);
+
+                    let autoPromoObj = null;
+                    if (hasExplicitCirclePromo) {
+                        autoPromoObj = {
+                            active: true,
+                            isGlobalSync: false,
+                            presetKey: lbl.promoPresetKey || 'remise_imm',
+                            discount: discStr || $('inputDiscount').value.trim(),
+                            text: lbl.promoText || $('inputDiscountText').value.trim() || 'DE REMISE|IMMÉDIATE',
+                            unitLabel: lbl.promoPresetKey === '2_plus_1' ? 'LES 3 PRODUITS' : (lbl.promoPresetKey === '1_plus_1' ? 'LE LOT DE 2' : 'LE PRODUIT')
+                        };
+                    } else if (showMechanic) {
+                        autoPromoObj = {
+                            active: true,
+                            isGlobalSync: true,
+                            presetKey: $('selectMechanicPreset').value,
+                            discount: $('inputDiscount').value.trim(),
+                            text: $('inputDiscountText').value.trim(),
+                            unitLabel: $('inputUnitLabel').value.trim()
+                        };
+                    }
 
                     return {
                         productName: (lbl.productName || 'PRODUIT').toUpperCase().trim(),
@@ -1457,7 +1566,7 @@
                         unitQty: 1, unitType: uType, contenanceText: lbl.contenanceText || '',
                         gencode: (lbl.gencode || '').replace(/\D/g, ''),
                         useCustomLeftImage: false, customRawImg: null, customTrimmedImg: null, customImageLabel: '', showAlcohol18: null,
-                        detectedPromo: hasExplicitCirclePromo ? { active: true, presetKey: lbl.promoPresetKey || 'remise_imm', discount: discStr, text: lbl.promoText || 'DE REMISE|IMMÉDIATE', unitLabel: lbl.promoPresetKey === '2_plus_1' ? 'LES 3 PRODUITS' : (lbl.promoPresetKey === '1_plus_1' ? 'LE LOT DE 2' : 'LE PRODUIT') } : null
+                        detectedPromo: autoPromoObj
                     };
                 });
             }
@@ -1467,8 +1576,8 @@
         $('inputBlueLabel').onchange = async function(e) {
             const files = Array.from(e.target.files); if (!files.length) return;
             const status = $('ocrStatus'); status.classList.remove('hidden');
-            status.textContent = "✨ Analyse des étiquettes PDF en cours...";
-            if ($('aiServiceBadge')) $('aiServiceBadge').textContent = "⏳ Analyse en cours...";
+            status.textContent = "✨ Analyse PDF...";
+            if ($('aiServiceBadge')) $('aiServiceBadge').textContent = "⏳ Analyse...";
 
             let sharedWorker = null;
             const getOcrWorker = async () => {
@@ -1482,13 +1591,11 @@
                 for (const file of files) {
                     const pages = await loadFileToPages(file);
                     for (let p = 0; p < pages.length; p++) {
-                        status.textContent = `✨ Lecture Page ${p + 1}/${pages.length} (${file.name})...`;
-                        // 1. Extraction géométrique haute précision si c'est le format Etiq-25 (cadres empilés verticalement)
+                        status.textContent = `✨ Page ${p + 1}/${pages.length}...`;
                         const etiq25Labels = await extractEtiq25BandsFromPage(pages[p], getOcrWorker);
                         if (etiq25Labels && etiq25Labels.length > 0) {
                             allDetected = allDetected.concat(etiq25Labels);
                         } else {
-                            // 2. Sinon (planche d'étiquettes bleues 3x7), extraction via Gemini Vision
                             const labels = await extractPageWithGemini(pages[p].canvas);
                             if (labels?.length) allDetected = allDetected.concat(labels);
                         }
@@ -1504,14 +1611,14 @@
 
                 if (allDetected.length) {
                     postersList = allDetected;
-                    const cCount = postersList.filter(it => it.crossedPrice && it.crossedPrice > 0).length;
-                    status.textContent = `✅ ${postersList.length} étiquette(s) générée(s)${limitReached ? ' (Max 50)' : ''} — ${cCount} avec prix barré !`;
+                    const cCount = postersList.filter(it => isPosterPromoActive(it)).length;
+                    status.textContent = `✅ ${postersList.length} étiq. (${cCount} promo)`;
                 } else status.textContent = "⚠️ Aucune étiquette détectée.";
                 if ($('aiServiceBadge')) $('aiServiceBadge').textContent = "✨ Prêt";
                 renderAllPosters();
             } catch (err) {
                 if (sharedWorker) await sharedWorker.terminate();
-                status.textContent = "⚠️ Erreur lors de l'analyse : " + err.message;
+                status.textContent = "⚠️ Erreur : " + err.message;
                 if ($('aiServiceBadge')) $('aiServiceBadge').textContent = "⚠️ Erreur";
             }
         };
@@ -1656,12 +1763,13 @@
         }
 
         function drawSinglePoster(canvas, item) {
-            const FONT_SLAB = getActiveFontSlab(), hasAuto = Boolean(item.detectedPromo?.active);
-            const isMech = hasAuto ? true : showMechanic;
-            const discIn = hasAuto ? item.detectedPromo.discount : $('inputDiscount').value.trim();
-            const discTxt = hasAuto ? item.detectedPromo.text : $('inputDiscountText').value.trim();
-            const presetK = hasAuto ? item.detectedPromo.presetKey : $('selectMechanicPreset').value;
-            const uLabel = (hasAuto && applyMechanicPriceCalc) ? item.detectedPromo.unitLabel : $('inputUnitLabel').value;
+            const FONT_SLAB = getActiveFontSlab();
+            const isMech = isPosterPromoActive(item);
+            const hasCustomPromo = Boolean(item.detectedPromo && !item.detectedPromo.isGlobalSync);
+            const discIn = hasCustomPromo ? item.detectedPromo.discount : $('inputDiscount').value.trim();
+            const discTxt = hasCustomPromo ? item.detectedPromo.text : $('inputDiscountText').value.trim();
+            const presetK = hasCustomPromo ? item.detectedPromo.presetKey : $('selectMechanicPreset').value;
+            const uLabel = (hasCustomPromo && applyMechanicPriceCalc) ? item.detectedPromo.unitLabel : $('inputUnitLabel').value;
             const showCont = $('chkShowContenance').checked, dateRaw = $('inputDates').value.trim();
             const pricing = computePromoPricing(item, presetK, discIn, isMech);
             const dispAlc = item.showAlcohol18 !== null ? item.showAlcohol18 : showAlcoholGlobal;
@@ -1679,10 +1787,7 @@
                     ctx.drawImage(activeImg, (840 - activeImg.width * s) / 2, (235 - activeImg.height * s) / 2, activeImg.width * s, activeImg.height * s);
                     ctx.restore();
                 }
-                if (showDate && dateRaw) {
-                    ctx.fillStyle = dateColor; ctx.font = `700 20px ${FONT_SLAB}`; ctx.textAlign = 'center';
-                    dateRaw.split('|').forEach((l, i) => ctx.fillText(l.trim(), 420, 34 + i * 25));
-                }
+
                 if (isMech) {
                     drawPromoCircle(ctx, 605, 490, 165, discIn, discTxt, true);
                     if (pricing.hasCrossedPrice) { drawFormattedPrice(ctx, pricing.crossedPrice, 300, 395, true, 422, 1.35); drawFormattedPrice(ctx, pricing.mainPrice, 285, 555, false, 422, 1.35); }
@@ -1697,7 +1802,24 @@
                     ctx.fillStyle = '#000000'; ctx.font = `600 23px ${FONT_SANS}`; ctx.fillText(pricing.unitPriceText, 420, pricing.hasCrossedPrice ? 630 : 588);
                     if (showCont && item.contenanceText) { ctx.fillStyle = '#374151'; ctx.font = `700 21px ${FONT_SANS}`; ctx.fillText(`Contenance : ${item.contenanceText}`, 420, pricing.hasCrossedPrice ? 660 : 620); }
                 }
-                ctx.fillStyle = '#000000'; drawFittedProductTitle(ctx, item.productName, 52, 775, 736, 1020, 62, 28, 'left');
+
+                // Limite basse du titre ajustée si la date est affichée en bas de la page A4 Portrait
+                const maxTitleBottomY = showDate ? 985 : 1020;
+                ctx.fillStyle = '#000000';
+                drawFittedProductTitle(ctx, item.productName, 52, 765, 736, maxTitleBottomY, 62, 28, 'left');
+
+                // Date promo en bas de la page A4 Portrait, placée plus haut que le bandeau -18 ans alcool
+                if (showDate && dateRaw) {
+                    const dateLines = dateRaw.split('|').map(s => s.trim()).filter(Boolean);
+                    const dateStartY = dispAlc
+                        ? (dateLines.length > 1 ? 1042 : 1065)
+                        : (dateLines.length > 1 ? 1095 : 1120);
+                    ctx.fillStyle = dateColor === '#FFFFFF' ? '#000000' : dateColor;
+                    ctx.font = `800 21px ${FONT_SLAB}`;
+                    ctx.textAlign = 'center';
+                    dateLines.forEach((l, i) => ctx.fillText(l, 420, dateStartY + i * 26));
+                }
+
                 if (dispAlc) drawAlcohol18Banner(ctx, 38, 1098, 1.05);
                 if (showDate && dateRaw.includes('*')) { ctx.fillStyle = '#000000'; ctx.font = `500 15px ${FONT_SANS}`; ctx.textAlign = 'left'; ctx.fillText("* Selon jour d'ouverture de votre magasin", 42, 1172); }
                 if (item.gencode) drawVisualBarcode(ctx, item.gencode, dispAlc ? 580 : 530, dispAlc ? 1093 : 1166, dispAlc ? 220 : 270, dispAlc ? 42 : 52);
@@ -1756,7 +1878,7 @@
             if (postersList.length === 0) {
                 container.innerHTML = `
                     <div class="bg-white p-8 rounded-xl shadow text-center space-y-3 border-2 border-dashed border-gray-300">
-                        <p class="text-sm font-bold text-gray-600">Aucune étiquette dans la liste.</p>
+                        <p class="text-sm font-bold text-gray-600">Aucune étiquette affichée. Dépose un fichier PDF/Photo ou crée une étiquette manuellement.</p>
                         <button type="button" id="btnEmptyStateAdd" class="text-xs font-extrabold px-4 py-2 rounded-lg bg-red-600 text-white hover:bg-red-700 shadow">➕ Créer une étiquette</button>
                     </div>`;
                 $('btnEmptyStateAdd').onclick = () => $('btnAddBlankPoster').click();
@@ -1764,15 +1886,20 @@
             }
 
             postersList.forEach((item, index) => {
-                const isCustom = Boolean(item.useCustomLeftImage), isAlc = item.showAlcohol18 !== null ? item.showAlcohol18 : showAlcoholGlobal, hasP = Boolean(item.detectedPromo?.active);
+                const isCustom = Boolean(item.useCustomLeftImage), isAlc = item.showAlcohol18 !== null ? item.showAlcohol18 : showAlcoholGlobal;
+                const hasP = isPosterPromoActive(item);
+                const promoBadgeDiscount = (item.detectedPromo && !item.detectedPromo.isGlobalSync && item.detectedPromo.discount)
+                    ? item.detectedPromo.discount
+                    : $('inputDiscount').value.trim();
                 const crossedVal = (item.crossedPrice && Number(item.crossedPrice) > 0) ? Number(item.crossedPrice).toFixed(2) : '';
+
                 const card = document.createElement('div');
                 card.className = 'bg-white p-4 rounded-xl shadow-md space-y-3';
                 card.innerHTML = `
                     <div class="flex flex-wrap xl:flex-nowrap items-center border-b pb-2 gap-1 text-[11px]">
                         <span class="bg-gray-800 text-white font-bold px-1.5 py-1 rounded shrink-0">#${index + 1}</span>
                         <input type="text" data-idx="${index}" data-field="productName" value="${item.productName.replace(/"/g, '&quot;')}" class="poster-edit-input flex-1 min-w-[110px] font-bold uppercase border rounded px-2 py-1">
-                        <button type="button" data-idx="${index}" class="btn-toggle-item-promo font-extrabold px-1.5 py-1 rounded border shrink-0 ${hasP ? 'bg-red-600 text-white border-red-700' : 'bg-gray-100 text-gray-600'}">🎯 ${hasP ? `Promo ${item.detectedPromo.discount}` : 'Sans promo'}</button>
+                        <button type="button" data-idx="${index}" class="btn-toggle-item-promo font-extrabold px-2 py-1 rounded border shrink-0 transition ${hasP ? 'bg-red-600 text-white border-red-700 hover:bg-red-700' : 'bg-gray-100 text-gray-600 border-gray-300 hover:bg-gray-200'}" title="Cliquer pour activer ou désactiver la promo sur cette étiquette">🎯 ${hasP ? `Promo ${promoBadgeDiscount}` : 'Sans promo'}</button>
                         <div class="flex items-center gap-1 px-1.5 py-0.5 rounded-lg border shrink-0 ${isCustom ? 'border-green-500 bg-green-50/60' : 'border-gray-200 bg-gray-50'}">
                             <span class="font-bold text-gray-600">Img:</span>
                             <button type="button" data-idx="${index}" class="btn-toggle-item-img font-bold px-1.5 py-0.5 rounded ${isCustom ? 'bg-green-600 text-white' : 'bg-gray-200 text-gray-700'}">${isCustom ? 'Activé' : 'Désactivé'}</button>
@@ -1808,15 +1935,30 @@
                 else postersList[i][f] = this.value.trim();
                 drawSinglePoster($(`posterCanvas_${i}`), postersList[i]);
             });
+            // Bascule individuelle PROMO / SANS PROMO sur n'importe quelle étiquette
             document.querySelectorAll('.btn-toggle-item-promo').forEach(b => b.onclick = function() {
                 const i = +this.dataset.idx;
-                if (postersList[i].detectedPromo?.active) postersList[i].detectedPromo.active = false;
-                else postersList[i].detectedPromo = { active: true, presetKey: $('selectMechanicPreset').value, discount: $('inputDiscount').value.trim(), text: $('inputDiscountText').value.trim(), unitLabel: $('inputUnitLabel').value.trim() };
+                const currentlyActive = isPosterPromoActive(postersList[i]);
+                if (currentlyActive) {
+                    if (!postersList[i].detectedPromo) {
+                        postersList[i].detectedPromo = { active: false, isGlobalSync: true };
+                    } else {
+                        postersList[i].detectedPromo.active = false;
+                    }
+                } else {
+                    postersList[i].detectedPromo = {
+                        active: true,
+                        isGlobalSync: false,
+                        presetKey: $('selectMechanicPreset').value,
+                        discount: $('inputDiscount').value.trim(),
+                        text: $('inputDiscountText').value.trim(),
+                        unitLabel: $('inputUnitLabel').value.trim()
+                    };
+                }
                 renderAllPosters();
             });
             document.querySelectorAll('.btn-toggle-item-alcohol').forEach(b => b.onclick = function() { const i = +this.dataset.idx; postersList[i].showAlcohol18 = !(postersList[i].showAlcohol18 !== null ? postersList[i].showAlcohol18 : showAlcoholGlobal); renderAllPosters(); });
             document.querySelectorAll('.btn-save-to-library').forEach(b => b.onclick = function() { openSaveDestinationModal(+this.dataset.idx); });
-            // Suppression directe sans alerte bloquante
             document.querySelectorAll('.btn-delete-poster').forEach(b => b.onclick = function() { postersList.splice(+this.dataset.idx, 1); renderAllPosters(); });
             document.querySelectorAll('.btn-toggle-item-img').forEach(b => b.onclick = function() { const i = +this.dataset.idx; postersList[i].useCustomLeftImage = !postersList[i].useCustomLeftImage; renderAllPosters(); if (postersList[i].useCustomLeftImage && !postersList[i].customRawImg) { currentGalleryTarget = i; $('visualGalleryModal').classList.remove('hidden'); } });
             document.querySelectorAll('.btn-open-item-gallery').forEach(b => b.onclick = function() { currentGalleryTarget = +this.dataset.idx; $('visualGalleryModal').classList.remove('hidden'); });
@@ -1841,7 +1983,16 @@
             pdf.save(isA4PortraitMode ? 'etiquettes_A4_Portrait.pdf' : 'etiquettes_Stop_Rayon.pdf');
         };
 
-        ['inputDates', 'inputDiscount', 'inputDiscountText', 'inputUnitLabel'].forEach(id => $(id).oninput = () => postersList.forEach((it, i) => drawSinglePoster($(`posterCanvas_${i}`), it)));
+        ['inputDates', 'inputDiscount', 'inputDiscountText', 'inputUnitLabel'].forEach(id => $(id).oninput = () => {
+            postersList.forEach(it => {
+                if (it.detectedPromo?.isGlobalSync) {
+                    it.detectedPromo.discount = $('inputDiscount').value.trim();
+                    it.detectedPromo.text = $('inputDiscountText').value.trim();
+                    it.detectedPromo.unitLabel = $('inputUnitLabel').value.trim();
+                }
+            });
+            renderAllPosters();
+        });
 
         window.addEventListener('DOMContentLoaded', async () => {
             await discoverFolderImagesAutomatically();
