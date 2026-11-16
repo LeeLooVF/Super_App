@@ -89,11 +89,11 @@ export async function onRequest(context) {
       });
     }
 
-    // 2. ACTIONS POST (EXTRACTION IA GEMINI 3.8 FLASH, DOSSIERS, UPLOAD R2, MODIFICATIONS)
+    // 2. ACTIONS POST (EXTRACTION IA GEMINI SANS TIMEOUT 524, DOSSIERS, UPLOAD R2, MODIFICATIONS)
     if (request.method === "POST") {
       const body = await request.json();
 
-      // EXTRACTION ULTRA-PRÉCISE DES ÉTIQUETTES VIA GEMINI VISION API
+      // EXTRACTION ULTRA-PRÉCISE ET RAPIDE VIA GEMINI VISION (SANS TIMEOUT 524)
       if (body.action === "extract_labels_gemini") {
         const apiKey = (body.apiKey || env.GEMINI_API_KEY || "").trim();
         if (!apiKey) {
@@ -108,23 +108,29 @@ export async function onRequest(context) {
         const mimeType = (parts[0].match(/:(.*?);/) || [null, "image/jpeg"])[1];
         const base64Image = parts[1];
 
-        const systemPrompt = `Tu es un expert en lecture de planches d'étiquettes de prix de supermarché Super U (souvent organisées en grille de 3 colonnes sur 7 lignes, soit jusqu'à 21 étiquettes par page, ou une étiquette unique).
-Lis TOUTES les étiquettes présentes sur l'image dans l'ordre de lecture (de gauche à droite, et de haut en bas, sans jamais oublier la dernière ligne tout en bas).
+        const systemPrompt = `Tu es un expert en lecture d'étiquettes Super U. Il existe 2 formats possibles sur l'image :
+1) Planche d'étiquettes bleues (grille 3x7).
+2) Planche d'étiquettes grand format "Etiq-25" (3 à 4 bandes horizontales par page) avec :
+   - Titre du produit en haut à gauche en gras (ex: "CALEND.AVENT OURS LINDT 170G").
+   - Très gros prix dans un cadre arrondi à droite (ex: "10,99 €") -> c'est le prix principal (mets-le dans promoMainPrice s'il y a un prix barré, sinon dans oldPrice).
+   - Juste à gauche du gros cadre, un prix barré d'un trait oblique (ex: "11,55 €") -> s'il est présent, mets-le dans oldPrice (il n'y a pas toujours de prix barré).
+   - En bas à gauche : "Prix kg 64,65 €" (baseUnitPrice = 64.65, unitType = "kg") et "cont: 0,170 kg" (contenanceText = "170 g").
+   - Sous "Prix kg" : un code court à 7 chiffres à GAUCHE (ex: "7176992" -> IGNORE-LE, c'est le code interne) et un code à 13 chiffres à DROITE (ex: "4000539766145" -> c'est le gencode EAN-13 !).
 
-Pour CHAQUE étiquette, extrais avec une précision absolue :
-- "productName" : Le libellé complet du produit situé tout en haut de l'étiquette (en MAJUSCULES).
-- "oldPrice" : Le prix principal TTC du produit en euros (nombre décimal, ex: 2.31). S'il y a un prix barré et un prix remisé, mets le prix barré (prix avant remise) dans oldPrice. Attention : sur certaines étiquettes Super U, le symbole € est écrit à gauche ou au milieu sans virgule (ex: "€ 2,31" ou "2€31"). Ne confonds JAMAIS le prix du produit avec le prix au kg/litre !
-- "promoMainPrice" : Si l'étiquette affiche un prix réduit en plus du prix barré, indique ce nouveau prix réduit (ex: 1.85), sinon mets null.
-- "baseUnitPrice" : Le prix au kilo, au litre ou à la pièce indiqué après "Prix kg :", "Prix l :" ou "Prix pièce :" (nombre décimal, ex: 23.10).
-- "unitType" : Uniquement "kg", "l" ou "pièce" selon l'unité du prix unitaire.
-- "contenanceText" : La contenance lisible du produit convertie proprement (ex: si "cont : 0.100 kg", écris "100 g" ; si "cont : 0.750 l", écris "75 cl" ou "750 ml" ; si "cont : 1.500 l", écris "1,5 L" ; si "1 pièce", écris "1 pièce").
-- "gencode" : Le code-barres EAN officiel (13 chiffres ou 8 chiffres) situé TOUT EN BAS À GAUCHE sous les barres verticales du code-barres (ex: "3616305242723" ou "5056585804187"). INTERDICTION ABSOLUE de prendre le code interne magasin situé au milieu de l'étiquette qui commence par "00001", "90527" ou qui contient un slash "/" (ex: ignore "00001 4015276/1" ou "90527 028335070"). Renvoie uniquement les chiffres attachés sans espaces.
-- "hasPromo" : true UNIQUEMENT si une promotion explicite est écrite sur l'étiquette (ex: "-34%", "2+1", "1+1", "-50% sur le 2ème", ou présence d'un prix barré), sinon false. Ne confonds jamais "30% MG" (matière grasse) ou "12% vol" (alcool) avec une promotion !
-- "promoDiscount" : Si hasPromo est true, la valeur courte à mettre dans le cercle rouge (ex: "-34%", "2+1", "1+1", "-50%"), sinon "".
-- "promoText" : Si hasPromo est true, le texte complémentaire (ex: "DE REMISE|IMMÉDIATE", "OFFERT", "GRATUIT", "SUR LE 2ÈME|PRODUIT"), sinon "".
-- "promoPresetKey" : Si hasPromo est true, choisis parmi "remise_imm", "2_plus_1", "1_plus_1", "2eme_50", "remise_euros", sinon "".
+Pour chaque étiquette, extrais :
+- "productName" : Nom du produit en MAJUSCULES.
+- "oldPrice" : Prix principal TTC (ou ancien prix barré s'il y a deux prix).
+- "promoMainPrice" : Nouveau prix réduit s'il y a un prix barré, sinon null.
+- "baseUnitPrice" : Prix au kilo, au litre ou à la pièce.
+- "unitType" : "kg", "l" ou "pièce".
+- "contenanceText" : Contenance lisible (ex: "170 g", "75 cl", "1,5 L", "1 pièce").
+- "gencode" : Code-barres EAN-13 ou EAN-8 (en ignorant toujours les codes internes à 7 chiffres ou commençant par 00001 / 90527).
+- "hasPromo" : true uniquement si une remise explicite (-34%, 2+1, 1+1...) est écrite sur l'étiquette.
+- "promoDiscount" : Valeur courte de la remise (ex: "-34%", "2+1"), sinon "".
+- "promoText" : Texte de la remise (ex: "DE REMISE|IMMÉDIATE"), sinon "".
+- "promoPresetKey" : "remise_imm", "2_plus_1", "1_plus_1", "2eme_50" ou "".
 
-Ignore les blocs techniques d'en-tête ou de pied de page qui ne sont pas des étiquettes produits (ex: "FICHIER PORTABLE", "COMMENTAIRES :", "Super U TALANGE").`;
+Ignore toujours l'encadré d'en-tête "Fichier portable / Etiq-25 / X étiquettes".`;
 
         const geminiPayload = {
           contents: [
@@ -167,15 +173,8 @@ Ignore les blocs techniques d'en-tête ou de pied de page qui ne sont pas des é
           }
         };
 
-        let candidateModels = [
-          "gemini-3.8-flash",
-          "gemini-3.8-flash-preview",
-          "gemini-3-flash-preview",
-          "gemini-3-flash",
-          "gemini-3.5-flash",
-          "gemini-flash-latest"
-        ];
-
+        // Sélection directe du modèle Flash actif sur la clé (max 2 essais rapides pour éviter tout Timeout 524)
+        let modelsToTry = ["gemini-3.8-flash", "gemini-flash-latest"];
         try {
           const listRes = await fetch(
             `https://generativelanguage.googleapis.com/v1beta/models?key=${encodeURIComponent(apiKey)}`,
@@ -183,20 +182,20 @@ Ignore les blocs techniques d'en-tête ou de pied de page qui ne sont pas des é
           );
           if (listRes.ok) {
             const listData = await listRes.json();
-            const available = (listData.models || [])
+            const availableFlash = (listData.models || [])
               .filter(m => (m.supportedGenerationMethods || []).includes("generateContent"))
               .map(m => m.name.replace(/^models\//, ""))
-              .filter(name => /gemini/i.test(name) && !/2\.0|2\.5|1\.5|embedding|imagen|veo|tts|audio/i.test(name));
-            if (available.length > 0) {
-              candidateModels = [...new Set(["gemini-3.8-flash", ...available, ...candidateModels])];
+              .filter(name => /gemini.*flash/i.test(name) && !/2\.0|2\.5|1\.5|embedding|imagen|veo|tts|audio/i.test(name));
+            if (availableFlash.length > 0) {
+              modelsToTry = [availableFlash[0], "gemini-3.8-flash"];
             }
           }
         } catch (e) {}
 
         let geminiJson = null;
-        let errorsLog = [];
+        let lastErr = "Erreur API Gemini";
 
-        for (const modelName of candidateModels) {
+        for (const modelName of [...new Set(modelsToTry)].slice(0, 2)) {
           const geminiRes = await fetch(
             `https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent?key=${encodeURIComponent(apiKey)}`,
             {
@@ -208,57 +207,27 @@ Ignore les blocs techniques d'en-tête ou de pied de page qui ne sont pas des é
               body: JSON.stringify(geminiPayload)
             }
           );
-          const data = await geminiRes.json();
-          if (geminiRes.ok && data.candidates?.[0]?.content?.parts?.[0]?.text) {
+
+          const textResp = await geminiRes.text();
+          let data = null;
+          try {
+            data = JSON.parse(textResp);
+          } catch (e) {
+            lastErr = `Erreur réseau (${geminiRes.status})`;
+            continue;
+          }
+
+          if (geminiRes.ok && data?.candidates?.[0]?.content?.parts?.[0]?.text) {
             geminiJson = data;
             break;
           } else {
-            errorsLog.push(`[${modelName}]: ${data.error?.message || geminiRes.status}`);
-          }
-        }
-
-        // Fallback Interactions API si requis par la clé
-        if (!geminiJson) {
-          for (const mName of ["gemini-3.8-flash", "gemini-3-flash-preview", "gemini-3-flash"]) {
-            try {
-              const interRes = await fetch(
-                `https://generativelanguage.googleapis.com/v1beta/interactions?key=${encodeURIComponent(apiKey)}`,
-                {
-                  method: "POST",
-                  headers: {
-                    "Content-Type": "application/json",
-                    "x-goog-api-key": apiKey
-                  },
-                  body: JSON.stringify({
-                    model: mName,
-                    input: [
-                      { type: "text", text: systemPrompt + "\nRenvoie UNIQUEMENT un objet JSON valide de la forme {\"labels\":[...]}." },
-                      { type: "image", data: base64Image, mime_type: mimeType }
-                    ]
-                  })
-                }
-              );
-              const interData = await interRes.json();
-              if (interRes.ok && interData) {
-                const outText =
-                  interData.outputs?.[0]?.text ||
-                  interData.candidates?.[0]?.content?.parts?.[0]?.text ||
-                  "";
-                if (outText) {
-                  const cleanJsonStr = outText.replace(/^```json\s*/i, "").replace(/```\s*$/, "").trim();
-                  const parsed = JSON.parse(cleanJsonStr);
-                  return new Response(JSON.stringify({ ok: true, labels: parsed.labels || [] }), {
-                    headers: { ...corsHeaders, "Content-Type": "application/json" }
-                  });
-                }
-              }
-            } catch (e) {}
+            lastErr = data?.error?.message || `Erreur HTTP ${geminiRes.status}`;
           }
         }
 
         if (!geminiJson) {
           return new Response(
-            JSON.stringify({ ok: false, error: `[API v5] ` + errorsLog[0] }),
+            JSON.stringify({ ok: false, error: lastErr }),
             { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
           );
         }
