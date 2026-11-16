@@ -89,12 +89,12 @@ export async function onRequest(context) {
       });
     }
 
-    // 2. ACTIONS POST (EXTRACTION IA GEMINI, DOSSIERS, UPLOAD R2, MODIFICATIONS)
+    // 2. ACTIONS POST (EXTRACTION IA GEMINI 3.0 FLASH, DOSSIERS, UPLOAD R2, MODIFICATIONS)
     if (request.method === "POST") {
       const body = await request.json();
 
       // =========================================================================
-      // NOUVEAU : EXTRACTION ULTRA-PRÉCISE DES ÉTIQUETTES VIA GEMINI VISION API
+      // EXTRACTION ULTRA-PRÉCISE DES ÉTIQUETTES VIA GEMINI 3.0 FLASH VISION API
       // =========================================================================
       if (body.action === "extract_labels_gemini") {
         const apiKey = body.apiKey || env.GEMINI_API_KEY;
@@ -169,19 +169,32 @@ Ignore les blocs techniques d'en-tête ou de pied de page qui ne sont pas des é
           }
         };
 
-        const geminiRes = await fetch(
-          `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${encodeURIComponent(apiKey)}`,
-          {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(geminiPayload)
-          }
-        );
+        // Modèle mis à jour vers gemini-3.0-flash (avec fallback automatique vers gemini-2.0-flash si besoin)
+        const modelsToTry = ["gemini-3.0-flash", "gemini-2.5-flash-preview-09-2025", "gemini-2.0-flash"];
+        let geminiJson = null;
+        let lastError = "Erreur Gemini API";
 
-        const geminiJson = await geminiRes.json();
-        if (!geminiRes.ok) {
+        for (const modelName of modelsToTry) {
+          const geminiRes = await fetch(
+            `https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent?key=${encodeURIComponent(apiKey)}`,
+            {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify(geminiPayload)
+            }
+          );
+          const data = await geminiRes.json();
+          if (geminiRes.ok && data.candidates?.[0]?.content?.parts?.[0]?.text) {
+            geminiJson = data;
+            break;
+          } else {
+            lastError = data.error?.message || `Erreur sur ${modelName}`;
+          }
+        }
+
+        if (!geminiJson) {
           return new Response(
-            JSON.stringify({ ok: false, error: geminiJson.error?.message || "Erreur Gemini API" }),
+            JSON.stringify({ ok: false, error: lastError }),
             { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
           );
         }
