@@ -28,6 +28,12 @@
                 <div class="flex flex-wrap items-center gap-2">
                     <h1 class="text-lg font-extrabold text-gray-800 tracking-wide">Generateur</h1>
                     <span id="badgeCount" class="text-xs bg-red-100 text-red-700 font-bold px-2.5 py-1 rounded-full">1 / 50 étiquette</span>
+                    <button type="button" id="btnAddBlankPoster" class="text-xs font-extrabold px-2.5 py-1.5 rounded-lg border-2 border-emerald-600 bg-emerald-600 text-white hover:bg-emerald-700 transition shadow-sm" title="Ajouter une étiquette manuellement">
+                        ➕ Étiquette
+                    </button>
+                    <button type="button" id="btnClearAllPosters" class="text-xs font-extrabold px-2.5 py-1.5 rounded-lg border-2 border-red-200 bg-red-50 text-red-700 hover:bg-red-600 hover:text-white transition shadow-sm" title="Supprimer toutes les étiquettes de la liste">
+                        🗑️ Tout vider
+                    </button>
                     <button type="button" id="btnToggleA4Mode" class="text-xs font-extrabold px-3 py-1.5 rounded-lg border-2 border-gray-800 bg-white text-gray-800 hover:bg-gray-800 hover:text-white transition flex items-center gap-1.5 shadow-sm">
                         <span>📐 Mode : Stop Rayon</span><span class="bg-red-600 text-white text-[10px] px-1.5 py-0.5 rounded">Basculer A4 Portrait</span>
                     </button>
@@ -65,8 +71,8 @@
                             <span id="fontStatus" class="font-bold text-green-700 bg-green-50 px-2 py-0.5 rounded border border-green-200">✓ <span id="activeFontBadgeName">Museo Slab</span></span>
                         </div>
                         <div class="flex justify-between items-center py-1 border-b border-gray-100">
-                            <span class="font-semibold text-gray-600">Extraction IA / OCR :</span>
-                            <span id="aiServiceBadge" class="font-bold text-blue-700 bg-blue-50 px-2 py-0.5 rounded border border-blue-200">✨ Gemini Vision Prêt</span>
+                            <span class="font-semibold text-gray-600">Extraction IA / PDF :</span>
+                            <span id="aiServiceBadge" class="font-bold text-blue-700 bg-blue-50 px-2 py-0.5 rounded border border-blue-200">✨ Prêt</span>
                         </div>
                         <div class="flex justify-between items-center py-1">
                             <span class="font-semibold text-gray-600">Capacité génération :</span>
@@ -420,6 +426,17 @@
         const safeFileUrl = f => f.split('/').map(encodeURIComponent).join('/');
         const ensureWebpFileName = f => `${(f || 'image').replace(/\.[^.]+$/, '')}.webp`;
         const readFileAsDataURL = file => new Promise(res => { const r = new FileReader(); r.onload = e => res(e.target.result); r.readAsDataURL(file); });
+
+        // Ajouter une étiquette vierge ou tout vider (sans aucune alerte bloquante)
+        $('btnAddBlankPoster').onclick = () => {
+            if (postersList.length >= MAX_LABELS_LIMIT) return;
+            postersList.push({ productName: 'NOUVEAU PRODUIT', oldPrice: 1.99, crossedPrice: null, baseUnitPrice: 1.99, unitQty: 1, unitType: 'pièce', contenanceText: '1 pièce', gencode: '', useCustomLeftImage: false, customRawImg: null, customTrimmedImg: null, customImageLabel: '', showAlcohol18: null, detectedPromo: null });
+            renderAllPosters();
+        };
+        $('btnClearAllPosters').onclick = () => {
+            postersList = [];
+            renderAllPosters();
+        };
 
         $('btnToggleServiceStatus').onclick = e => { e.stopPropagation(); $('serviceStatusPopover').classList.toggle('hidden'); };
         $('btnCloseServicePopover').onclick = () => $('serviceStatusPopover').classList.add('hidden');
@@ -1074,40 +1091,40 @@
             } catch (e) { return img; }
         }
 
+        // Charge les pages PDF avec les coordonnées exactes (x, y) de chaque élément de texte
         async function loadFileToPages(file) {
             if (file.type === 'application/pdf' || file.name.toLowerCase().endsWith('.pdf')) {
                 const pdf = await pdfjsLib.getDocument({ data: await file.arrayBuffer() }).promise;
                 const pages = [];
                 for (let p = 1; p <= pdf.numPages; p++) {
-                    const page = await pdf.getPage(p), vp = page.getViewport({ scale: 2.2 });
+                    const page = await pdf.getPage(p);
+                    const scale = 2.4;
+                    const vp = page.getViewport({ scale });
                     const c = document.createElement('canvas'); c.width = vp.width; c.height = vp.height;
                     await page.render({ canvasContext: c.getContext('2d'), viewport: vp }).promise;
 
-                    let nativeText = '';
+                    let textItems = [];
                     try {
                         const tc = await page.getTextContent();
-                        const items = tc.items.map(it => {
+                        textItems = tc.items.map(it => {
                             const tx = pdfjsLib.Util.transform(vp.transform, it.transform);
-                            return { str: it.str.trim(), x: tx[4], y: tx[5] };
+                            return {
+                                str: it.str.trim(),
+                                x: tx[4],
+                                y: tx[5],
+                                rx: tx[4] / vp.width,
+                                ry: tx[5] / vp.height
+                            };
                         }).filter(it => it.str.length > 0);
-                        items.sort((a, b) => (Math.abs(a.y - b.y) > 8 ? a.y - b.y : a.x - b.x));
-                        let lines = [], cur = [], lastY = null;
-                        for (const it of items) {
-                            if (lastY !== null && Math.abs(it.y - lastY) > 8) { lines.push(cur.join(' ')); cur = [it.str]; }
-                            else cur.push(it.str);
-                            lastY = it.y;
-                        }
-                        if (cur.length) lines.push(cur.join(' '));
-                        nativeText = lines.join('\n');
                     } catch (e) {}
 
-                    pages.push({ canvas: c, nativeText });
+                    pages.push({ canvas: c, textItems });
                 }
                 return pages;
             }
             return new Promise(res => {
                 const img = new Image();
-                img.onload = () => { const c = document.createElement('canvas'); c.width = img.width; c.height = img.height; c.getContext('2d').drawImage(img, 0, 0); res([{ canvas: c, nativeText: '' }]); };
+                img.onload = () => { const c = document.createElement('canvas'); c.width = img.width; c.height = img.height; c.getContext('2d').drawImage(img, 0, 0); res([{ canvas: c, textItems: [] }]); };
                 readFileAsDataURL(file).then(url => img.src = url);
             });
         }
@@ -1215,7 +1232,7 @@
         }
 
         // ============================================================================
-        // EXTRACTION INSTANTANÉE FORMAT ETIQ-25 (24 gr.pdf) + IA GEMINI VISION
+        // DÉCOUPE PAR BANDES VERTICALES (CADRES VIOLETS) POUR LE FORMAT PDF ETIQ-25
         // ============================================================================
         function isValidEAN13Checksum(c) {
             if (!/^\d{13}$/.test(c)) return false;
@@ -1223,79 +1240,172 @@
             return ((10 - (s % 10)) % 10) === parseInt(c[12], 10);
         }
 
-        function parseNativeEtiq25Page(nativeText) {
-            if (!nativeText || !/Prix\s*(?:kg|l|pi[eè]ce)/i.test(nativeText)) return null;
-            const lines = nativeText.split('\n').map(l => l.trim()).filter(Boolean);
-            const results = [];
-            let currentBlock = [];
-
-            for (const line of lines) {
-                if (/^(Fichier\s*portable|0000000|Etiquettes$|Etiq-\d+|\d+\s*étiquettes)/i.test(line)) continue;
-                currentBlock.push(line);
-
-                const eanMatch = line.match(/\b(\d{13})\b/);
-                if (eanMatch) {
-                    const blockStr = currentBlock.join(' \n ');
-                    const gencode = eanMatch[1]; // JAUNE : Gencode 13 chiffres
-
-                    // ROUGE : Nom du produit
-                    const titleLine = currentBlock.find(l => /[A-ZÀ-Ý]{3,}/.test(l) && !/^Prix\s*(kg|l|pi[eè]ce)/i.test(l) && !/^cont\s*:/i.test(l));
-                    const productName = (titleLine || 'PRODUIT').replace(/\s+\d{1,3}[.,]\d{2}\s*€.*$/, '').trim().toUpperCase();
-
-                    // VERT : Prix au kg / litre / pièce
-                    let unitType = 'kg', baseUnitPrice = 0;
-                    const unitMatch = blockStr.match(/Prix\s*(kg|l|pi[eè]ce)\s*[:.]?\s*(\d{1,4}[.,]\d{2})\s*€/i);
-                    if (unitMatch) {
-                        unitType = unitMatch[1].toLowerCase().startsWith('pi') ? 'pièce' : unitMatch[1].toLowerCase();
-                        baseUnitPrice = parseFloat(unitMatch[2].replace(',', '.'));
-                    }
-
-                    // BLEU : Contenant
-                    let contenanceText = '';
-                    const contMatch = blockStr.match(/cont\s*[:.]?\s*(\d+[.,]\d+)\s*(kg|l|g|ml|cl|pi[eè]ce)/i);
-                    if (contMatch) {
-                        const val = parseFloat(contMatch[1].replace(',', '.'));
-                        const u = contMatch[2].toLowerCase();
-                        if (u === 'kg') contenanceText = val < 1 ? `${Math.round(val * 1000)} g` : `${val.toString().replace('.', ',')} kg`;
-                        else if (u === 'l') contenanceText = val < 1 ? `${Math.round(val * 1000)} ml` : `${val.toString().replace('.', ',')} L`;
-                        else contenanceText = `${val} ${u}`;
-                    }
-
-                    // ORANGE (Prix principal) & VIOLET (Prix barré s'il est présent)
-                    const textWithoutUnit = blockStr.replace(/Prix\s*(?:kg|l|pi[eè]ce)\s*[:.]?\s*\d{1,4}[.,]\d{2}\s*€/gi, '');
-                    const allPrices = [...textWithoutUnit.matchAll(/(\d{1,3}[.,]\d{2})\s*[€\in]/g)]
-                        .map(m => parseFloat(m[1].replace(',', '.')))
-                        .filter(p => p > 0 && Math.abs(p - baseUnitPrice) > 0.01);
-
-                    let mainPrice = allPrices[0] || 1.99;
-                    let crossedPrice = null;
-                    if (allPrices.length >= 2) {
-                        const p1 = allPrices[0], p2 = allPrices[1];
-                        if (Math.abs(p1 - p2) > 0.01) {
-                            mainPrice = Math.min(p1, p2);
-                            crossedPrice = Math.max(p1, p2);
-                        }
-                    }
-
-                    results.push({
-                        productName,
-                        oldPrice: mainPrice,
-                        crossedPrice: crossedPrice,
-                        baseUnitPrice: baseUnitPrice || mainPrice,
-                        unitQty: 1,
-                        unitType,
-                        contenanceText,
-                        gencode,
-                        useCustomLeftImage: false,
-                        customRawImg: null,
-                        customTrimmedImg: null,
-                        customImageLabel: '',
-                        showAlcohol18: null,
-                        detectedPromo: null
-                    });
-                    currentBlock = [];
-                }
+        // Reconstitue un prix dont les centimes sont en exposant dans une zone X donnée (ex: "64," + "65" -> 64.65)
+        function parsePriceFromZoneItems(zoneItems) {
+            if (!zoneItems || !zoneItems.length) return null;
+            const sorted = [...zoneItems].sort((a, b) => a.x - b.x);
+            const joined = sorted.map(it => it.str).join('').replace(/\s+/g, '');
+            const m = joined.match(/(\d{1,4})[.,](\d{1,2})/);
+            if (m) {
+                const euros = m[1];
+                const cents = m[2].length === 1 ? m[2] + '0' : m[2].slice(0, 2);
+                const val = parseFloat(`${euros}.${cents}`);
+                if (val > 0 && val < 9999) return val;
             }
+            return null;
+        }
+
+        // Lit le gros prix bitmap situé dans le cadre de droite (ex: 10,99 €)
+        async function readBigRightBoxPrice(pageCanvas, yTop, yBottom, ocrWorker) {
+            const w = pageCanvas.width, h = pageCanvas.height;
+            const sx = Math.floor(w * 0.48);
+            const sy = Math.max(0, Math.floor(yTop));
+            const sw = Math.floor(w * 0.47);
+            const sh = Math.min(h - sy, Math.floor((yBottom - yTop) * 0.85));
+            if (sw <= 10 || sh <= 10) return null;
+
+            const crop = document.createElement('canvas');
+            crop.width = sw; crop.height = sh;
+            const ctx = crop.getContext('2d');
+            ctx.fillStyle = '#FFFFFF';
+            ctx.fillRect(0, 0, sw, sh);
+            ctx.drawImage(pageCanvas, sx, sy, sw, sh, 0, 0, sw, sh);
+
+            try {
+                const { data } = await ocrWorker.recognize(crop.toDataURL('image/png'));
+                const clean = (data.text || '').replace(/[OQoD]/g, '0').replace(/[Il|!]/g, '1').replace(/[Ss]/g, '5');
+                const m = clean.match(/(\d{1,3})\s*[.,]\s*(\d{2})/) || clean.match(/(\d{1,2})\s+(\d{2})\b/);
+                if (m) {
+                    const val = parseFloat(`${m[1]}.${m[2]}`);
+                    if (val > 0 && val < 999) return val;
+                }
+            } catch (e) {}
+            return null;
+        }
+
+        // Détecte et extrait chaque étiquette encadrée l'une après l'autre (Format Etiq-25)
+        async function extractEtiq25BandsFromPage(pageObj, getOcrWorker) {
+            const { canvas, textItems } = pageObj;
+            if (!textItems || textItems.length < 4) return null;
+
+            // Repère chaque étiquette grâce à son code EAN-13 situé en bas à gauche (x < 45% de la largeur)
+            const eanAnchors = textItems
+                .filter(it => /^\d{13}$/.test(it.str.replace(/\s+/g, '')) && it.rx < 0.45)
+                .sort((a, b) => a.y - b.y);
+
+            // Vérifie qu'il s'agit bien d'une planche Etiq-25 (1 seule colonne d'étiquettes empilées verticalement)
+            if (eanAnchors.length === 0 || eanAnchors.length > 5) return null;
+            const hasHorizontalDuplicates = eanAnchors.some((a, i) => i > 0 && Math.abs(a.y - eanAnchors[i - 1].y) < 25);
+            if (hasHorizontalDuplicates) return null;
+
+            const results = [];
+            const worker = await getOcrWorker();
+
+            for (let i = 0; i < eanAnchors.length; i++) {
+                const eanItem = eanAnchors[i];
+                const gencode = eanItem.str.replace(/\s+/g, '');
+
+                // Délimite le cadre violet exact de l'étiquette i (entre la fin de l'étiquette précédente et le bas de son EAN-13)
+                const yBottom = eanItem.y + (canvas.height * 0.025);
+                const yTop = i === 0
+                    ? Math.max(0, eanItem.y - (canvas.height * 0.25))
+                    : (eanAnchors[i - 1].y + (canvas.height * 0.02));
+
+                const bandItems = textItems.filter(it =>
+                    it.y >= yTop &&
+                    it.y <= yBottom &&
+                    !/^(Fichier\s*portable|0000000|Etiquettes$|Etiq-\d+|\d+\s*étiquettes|\.{4,})/i.test(it.str)
+                );
+
+                // 1. ROUGE : Nom du produit (ligne supérieure de la bande contenant des lettres en majuscules)
+                const titleCandidates = bandItems
+                    .filter(it => it.y < eanItem.y - (canvas.height * 0.06) && it.rx < 0.65 && /[A-ZÀ-Ý]{2,}/.test(it.str) && !/^(Prix|kg|l|pi[eè]ce|cont)/i.test(it.str))
+                    .sort((a, b) => (Math.abs(a.y - b.y) > 8 ? a.y - b.y : a.x - b.x));
+
+                let productName = 'PRODUIT';
+                if (titleCandidates.length > 0) {
+                    const firstY = titleCandidates[0].y;
+                    const sameLineTitle = titleCandidates.filter(it => Math.abs(it.y - firstY) < 12).sort((a, b) => a.x - b.x);
+                    productName = sameLineTitle.map(it => it.str).join(' ').replace(/\s+/g, ' ').trim().toUpperCase();
+                }
+
+                // 2. VERT : Prix au kg / litre / pièce (zone gauche : rx entre 0.11 et 0.24, au-dessus de l'EAN)
+                let unitType = 'kg';
+                const unitLabelItem = bandItems.find(it => /^(kg|l|pi[eè]ce)$/i.test(it.str) && it.rx < 0.20);
+                if (unitLabelItem) {
+                    const u = unitLabelItem.str.toLowerCase();
+                    unitType = u.startsWith('pi') ? 'pièce' : u;
+                }
+                const unitPriceZone = bandItems.filter(it =>
+                    it.rx >= 0.11 && it.rx <= 0.24 &&
+                    it.y >= eanItem.y - (canvas.height * 0.075) &&
+                    it.y <= eanItem.y - (canvas.height * 0.015)
+                );
+                let baseUnitPrice = parsePriceFromZoneItems(unitPriceZone) || 0;
+
+                // 3. BLEU : Contenant (zone cont: rx entre 0.20 et 0.37)
+                let contenanceText = '';
+                let contQtyKgOrL = 0;
+                const contZone = bandItems
+                    .filter(it => it.rx >= 0.20 && it.rx <= 0.37 && it.y >= eanItem.y - (canvas.height * 0.075) && it.y <= eanItem.y - (canvas.height * 0.015))
+                    .sort((a, b) => a.x - b.x)
+                    .map(it => it.str)
+                    .join(' ');
+                const contMatch = contZone.match(/(\d+[.,]\d+)\s*(kg|l|g|ml|cl|pi[eè]ce)/i);
+                if (contMatch) {
+                    const val = parseFloat(contMatch[1].replace(',', '.'));
+                    const u = contMatch[2].toLowerCase();
+                    contQtyKgOrL = val;
+                    if (u === 'kg') contenanceText = val < 1 ? `${Math.round(val * 1000)} g` : `${val.toString().replace('.', ',')} kg`;
+                    else if (u === 'l') contenanceText = val < 1 ? `${Math.round(val * 1000)} ml` : `${val.toString().replace('.', ',')} L`;
+                    else contenanceText = `${val} ${u}`;
+                }
+
+                // 4. VIOLET : Prix barré (zone centrale entre cont: et le gros cadre : rx entre 0.36 et 0.53)
+                const crossedZone = bandItems.filter(it =>
+                    it.rx >= 0.36 && it.rx <= 0.53 &&
+                    it.y >= eanItem.y - (canvas.height * 0.095) &&
+                    it.y <= eanItem.y - (canvas.height * 0.01)
+                );
+                let crossedPrice = parsePriceFromZoneItems(crossedZone);
+
+                // 5. ORANGE : Gros prix principal dans le cadre de droite (via OCR sur le rectangle de droite + vérification mathématique Prix kg × Contenance)
+                let mainPrice = await readBigRightBoxPrice(canvas, yTop, yBottom, worker);
+                const computedFromUnit = (baseUnitPrice > 0 && contQtyKgOrL > 0)
+                    ? Math.round(baseUnitPrice * contQtyKgOrL * 100) / 100
+                    : null;
+
+                // Si l'OCR du gros chiffre a manqué une décimale ou confondu un chiffre, la formule Prix_kg × Contenance corrige au centime près (ex: 64.65 × 0.170 = 10.99 €) !
+                if (computedFromUnit && computedFromUnit > 0) {
+                    if (!mainPrice || Math.abs(mainPrice - computedFromUnit) > 0.05) {
+                        mainPrice = computedFromUnit;
+                    }
+                }
+                if (!mainPrice) mainPrice = crossedPrice || baseUnitPrice || 1.99;
+
+                // Si le prix barré est identique ou inférieur au prix principal, on l'ignore
+                if (crossedPrice && crossedPrice <= mainPrice + 0.005) {
+                    crossedPrice = null;
+                }
+
+                results.push({
+                    productName,
+                    oldPrice: mainPrice,
+                    crossedPrice: crossedPrice,
+                    baseUnitPrice: baseUnitPrice || mainPrice,
+                    unitQty: contQtyKgOrL || 1,
+                    unitType,
+                    contenanceText,
+                    gencode,
+                    useCustomLeftImage: false,
+                    customRawImg: null,
+                    customTrimmedImg: null,
+                    customImageLabel: '',
+                    showAlcohol18: null,
+                    detectedPromo: null
+                });
+            }
+
             return results.length > 0 ? results : null;
         }
 
@@ -1357,19 +1467,28 @@
         $('inputBlueLabel').onchange = async function(e) {
             const files = Array.from(e.target.files); if (!files.length) return;
             const status = $('ocrStatus'); status.classList.remove('hidden');
-            status.textContent = "✨ Analyse des étiquettes en cours...";
+            status.textContent = "✨ Analyse des étiquettes PDF en cours...";
             if ($('aiServiceBadge')) $('aiServiceBadge').textContent = "⏳ Analyse en cours...";
+
+            let sharedWorker = null;
+            const getOcrWorker = async () => {
+                if (!sharedWorker) sharedWorker = await Tesseract.createWorker('fra');
+                return sharedWorker;
+            };
+
             try {
                 let allDetected = [], limitReached = false;
                 outerLoop:
                 for (const file of files) {
                     const pages = await loadFileToPages(file);
                     for (let p = 0; p < pages.length; p++) {
-                        const fastEtiq25 = parseNativeEtiq25Page(pages[p].nativeText);
-                        if (fastEtiq25 && fastEtiq25.length > 0) {
-                            allDetected = allDetected.concat(fastEtiq25);
+                        status.textContent = `✨ Lecture Page ${p + 1}/${pages.length} (${file.name})...`;
+                        // 1. Extraction géométrique haute précision si c'est le format Etiq-25 (cadres empilés verticalement)
+                        const etiq25Labels = await extractEtiq25BandsFromPage(pages[p], getOcrWorker);
+                        if (etiq25Labels && etiq25Labels.length > 0) {
+                            allDetected = allDetected.concat(etiq25Labels);
                         } else {
-                            status.textContent = `✨ Lecture IA Gemini — Page ${p + 1}/${pages.length}...`;
+                            // 2. Sinon (planche d'étiquettes bleues 3x7), extraction via Gemini Vision
                             const labels = await extractPageWithGemini(pages[p].canvas);
                             if (labels?.length) allDetected = allDetected.concat(labels);
                         }
@@ -1380,17 +1499,20 @@
                         }
                     }
                 }
+
+                if (sharedWorker) await sharedWorker.terminate();
+
                 if (allDetected.length) {
                     postersList = allDetected;
                     const cCount = postersList.filter(it => it.crossedPrice && it.crossedPrice > 0).length;
                     status.textContent = `✅ ${postersList.length} étiquette(s) générée(s)${limitReached ? ' (Max 50)' : ''} — ${cCount} avec prix barré !`;
-                    if (limitReached) alert(`⚠️ Limite atteinte : Le générateur est limité à ${MAX_LABELS_LIMIT} étiquettes maximum en une seule fois.`);
                 } else status.textContent = "⚠️ Aucune étiquette détectée.";
-                if ($('aiServiceBadge')) $('aiServiceBadge').textContent = "✨ Gemini Vision Actif";
+                if ($('aiServiceBadge')) $('aiServiceBadge').textContent = "✨ Prêt";
                 renderAllPosters();
             } catch (err) {
+                if (sharedWorker) await sharedWorker.terminate();
                 status.textContent = "⚠️ Erreur lors de l'analyse : " + err.message;
-                if ($('aiServiceBadge')) $('aiServiceBadge').textContent = "⚠️ Erreur IA";
+                if ($('aiServiceBadge')) $('aiServiceBadge').textContent = "⚠️ Erreur";
             }
         };
 
@@ -1631,6 +1753,16 @@
             $('badgeCount').textContent = `${postersList.length} / ${MAX_LABELS_LIMIT} étiquette${postersList.length > 1 ? 's' : ''}`;
             if ($('quotaServiceBadge')) $('quotaServiceBadge').textContent = `${postersList.length} / ${MAX_LABELS_LIMIT} max`;
 
+            if (postersList.length === 0) {
+                container.innerHTML = `
+                    <div class="bg-white p-8 rounded-xl shadow text-center space-y-3 border-2 border-dashed border-gray-300">
+                        <p class="text-sm font-bold text-gray-600">Aucune étiquette dans la liste.</p>
+                        <button type="button" id="btnEmptyStateAdd" class="text-xs font-extrabold px-4 py-2 rounded-lg bg-red-600 text-white hover:bg-red-700 shadow">➕ Créer une étiquette</button>
+                    </div>`;
+                $('btnEmptyStateAdd').onclick = () => $('btnAddBlankPoster').click();
+                return;
+            }
+
             postersList.forEach((item, index) => {
                 const isCustom = Boolean(item.useCustomLeftImage), isAlc = item.showAlcohol18 !== null ? item.showAlcohol18 : showAlcoholGlobal, hasP = Boolean(item.detectedPromo?.active);
                 const crossedVal = (item.crossedPrice && Number(item.crossedPrice) > 0) ? Number(item.crossedPrice).toFixed(2) : '';
@@ -1684,13 +1816,15 @@
             });
             document.querySelectorAll('.btn-toggle-item-alcohol').forEach(b => b.onclick = function() { const i = +this.dataset.idx; postersList[i].showAlcohol18 = !(postersList[i].showAlcohol18 !== null ? postersList[i].showAlcohol18 : showAlcoholGlobal); renderAllPosters(); });
             document.querySelectorAll('.btn-save-to-library').forEach(b => b.onclick = function() { openSaveDestinationModal(+this.dataset.idx); });
-            document.querySelectorAll('.btn-delete-poster').forEach(b => b.onclick = function() { if (postersList.length <= 1) return alert("Il doit rester au moins 1 étiquette."); postersList.splice(+this.dataset.idx, 1); renderAllPosters(); });
+            // Suppression directe sans alerte bloquante
+            document.querySelectorAll('.btn-delete-poster').forEach(b => b.onclick = function() { postersList.splice(+this.dataset.idx, 1); renderAllPosters(); });
             document.querySelectorAll('.btn-toggle-item-img').forEach(b => b.onclick = function() { const i = +this.dataset.idx; postersList[i].useCustomLeftImage = !postersList[i].useCustomLeftImage; renderAllPosters(); if (postersList[i].useCustomLeftImage && !postersList[i].customRawImg) { currentGalleryTarget = i; $('visualGalleryModal').classList.remove('hidden'); } });
             document.querySelectorAll('.btn-open-item-gallery').forEach(b => b.onclick = function() { currentGalleryTarget = +this.dataset.idx; $('visualGalleryModal').classList.remove('hidden'); });
         }
 
         // EXPORT PDF A4 AVEC HAUTEUR TOTALE RÉDUITE DE 3 MM (294 mm au lieu de 297 mm)
         $('btnDownloadPdfA4').onclick = () => {
+            if (!postersList.length) return;
             const pdf = new window.jspdf.jsPDF('p', 'mm', 'a4');
             const usablePageHeight = 294;
             const slotHeight = usablePageHeight / 4;
