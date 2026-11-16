@@ -89,15 +89,15 @@ export async function onRequest(context) {
       });
     }
 
-    // 2. ACTIONS POST (EXTRACTION IA GEMINI 3.0 FLASH, DOSSIERS, UPLOAD R2, MODIFICATIONS)
+    // 2. ACTIONS POST (EXTRACTION IA GEMINI AUTO-DÉTECTÉ, DOSSIERS, UPLOAD R2, MODIFICATIONS)
     if (request.method === "POST") {
       const body = await request.json();
 
       // =========================================================================
-      // EXTRACTION ULTRA-PRÉCISE DES ÉTIQUETTES VIA GEMINI 3.0 FLASH VISION API
+      // EXTRACTION ULTRA-PRÉCISE DES ÉTIQUETTES VIA GEMINI VISION API
       // =========================================================================
       if (body.action === "extract_labels_gemini") {
-        const apiKey = body.apiKey || env.GEMINI_API_KEY;
+        const apiKey = (body.apiKey || env.GEMINI_API_KEY || "").trim();
         if (!apiKey) {
           return new Response(
             JSON.stringify({ ok: false, error: "MISSING_API_KEY", message: "Clé GEMINI_API_KEY manquante." }),
@@ -169,17 +169,53 @@ Ignore les blocs techniques d'en-tête ou de pied de page qui ne sont pas des é
           }
         };
 
-        // Modèle mis à jour vers gemini-3.0-flash (avec fallback automatique vers gemini-2.0-flash si besoin)
-        const modelsToTry = ["gemini-3.0-flash", "gemini-2.5-flash-preview-09-2025", "gemini-2.0-flash"];
-        let geminiJson = null;
-        let lastError = "Erreur Gemini API";
+        // 1. Liste prioritaire incluant tous les identifiants Gemini 3 / 3.5 / 3.0 Flash actuels
+        let candidateModels = [
+          "gemini-3-flash-preview",
+          "gemini-3-flash",
+          "gemini-3.0-flash",
+          "gemini-3.5-flash",
+          "gemini-flash-latest"
+        ];
 
-        for (const modelName of modelsToTry) {
+        // 2. Interroge dynamiquement Google AI Studio pour récupérer les modèles exacts activés sur ta clé API
+        try {
+          const listRes = await fetch(
+            `https://generativelanguage.googleapis.com/v1beta/models?key=${encodeURIComponent(apiKey)}`,
+            { headers: { "x-goog-api-key": apiKey } }
+          );
+          if (listRes.ok) {
+            const listData = await listRes.json();
+            const available = (listData.models || [])
+              .filter(m => (m.supportedGenerationMethods || []).includes("generateContent"))
+              .map(m => m.name.replace(/^models\//, ""))
+              .filter(name => /gemini/i.test(name) && !/2\.0|2\.5|1\.5|embedding|imagen|veo|tts|audio/i.test(name));
+
+            // Trie pour mettre les modèles "flash" de génération 3+ en premier
+            available.sort((a, b) => {
+              const aFlash = /flash/i.test(a) ? -1 : 1;
+              const bFlash = /flash/i.test(b) ? -1 : 1;
+              return aFlash - bFlash;
+            });
+
+            if (available.length > 0) {
+              candidateModels = [...new Set([...available, ...candidateModels])];
+            }
+          }
+        } catch (e) {}
+
+        let geminiJson = null;
+        let errorsLog = [];
+
+        for (const modelName of candidateModels) {
           const geminiRes = await fetch(
             `https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent?key=${encodeURIComponent(apiKey)}`,
             {
               method: "POST",
-              headers: { "Content-Type": "application/json" },
+              headers: {
+                "Content-Type": "application/json",
+                "x-goog-api-key": apiKey
+              },
               body: JSON.stringify(geminiPayload)
             }
           );
@@ -188,13 +224,52 @@ Ignore les blocs techniques d'en-tête ou de pied de page qui ne sont pas des é
             geminiJson = data;
             break;
           } else {
-            lastError = data.error?.message || `Erreur sur ${modelName}`;
+            errorsLog.push(`[${modelName}]: ${data.error?.message || geminiRes.status}`);
+          }
+        }
+
+        // 3. Fallback sur l'API Interactions si la clé impose le nouvel endpoint Interactions
+        if (!geminiJson) {
+          for (const mName of ["gemini-3-flash-preview", "gemini-3.0-flash", "gemini-3-flash"]) {
+            try {
+              const interRes = await fetch(
+                `https://generativelanguage.googleapis.com/v1beta/interactions?key=${encodeURIComponent(apiKey)}`,
+                {
+                  method: "POST",
+                  headers: {
+                    "Content-Type": "application/json",
+                    "x-goog-api-key": apiKey
+                  },
+                  body: JSON.stringify({
+                    model: mName,
+                    input: [
+                      { type: "text", text: systemPrompt + "\nRenvoie UNIQUEMENT un objet JSON valide de la forme {\"labels\":[...]}." },
+                      { type: "image", data: base64Image, mime_type: mimeType }
+                    ]
+                  })
+                }
+              );
+              const interData = await interRes.json();
+              if (interRes.ok && interData) {
+                const outText =
+                  interData.outputs?.[0]?.text ||
+                  interData.candidates?.[0]?.content?.parts?.[0]?.text ||
+                  "";
+                if (outText) {
+                  const cleanJsonStr = outText.replace(/^```json\s*/i, "").replace(/```\s*$/, "").trim();
+                  const parsed = JSON.parse(cleanJsonStr);
+                  return new Response(JSON.stringify({ ok: true, labels: parsed.labels || [] }), {
+                    headers: { ...corsHeaders, "Content-Type": "application/json" }
+                  });
+                }
+              }
+            } catch (e) {}
           }
         }
 
         if (!geminiJson) {
           return new Response(
-            JSON.stringify({ ok: false, error: lastError }),
+            JSON.stringify({ ok: false, error: errorsLog[0] || "Aucun modèle Gemini compatible trouvé." }),
             { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
           );
         }
