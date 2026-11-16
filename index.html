@@ -405,7 +405,6 @@
             prix_choc:        { discount: 'PRIX', text: 'CHOC !', unitLabel: 'LE PRODUIT', mode: 'direct_lot' }
         };
 
-        // oldPrice = Prix principal affiché en rouge ; crossedPrice = Prix barré affiché juste au-dessus du prix rouge (optionnel)
         let postersList = [{ productName: 'APERIVRAIS ST AGUR 30%MG 100G', oldPrice: 2.31, crossedPrice: null, baseUnitPrice: 23.10, unitQty: 0.1, unitType: 'kg', contenanceText: '100 g', gencode: '3616305242723', useCustomLeftImage: false, customRawImg: null, customTrimmedImg: null, customImageLabel: '', showAlcohol18: null, detectedPromo: null }];
         let rawLeftImage4 = null, trimmedLeftImage4 = null, labelImage4 = 'Les Prix Bas';
         let rawTopImageA4 = null, trimmedTopImageA4 = null, labelImageA4 = 'Les Prix Bas (A4)';
@@ -1080,16 +1079,35 @@
                 const pdf = await pdfjsLib.getDocument({ data: await file.arrayBuffer() }).promise;
                 const pages = [];
                 for (let p = 1; p <= pdf.numPages; p++) {
-                    const page = await pdf.getPage(p), vp = page.getViewport({ scale: 3.2 });
+                    const page = await pdf.getPage(p), vp = page.getViewport({ scale: 2.2 });
                     const c = document.createElement('canvas'); c.width = vp.width; c.height = vp.height;
                     await page.render({ canvasContext: c.getContext('2d'), viewport: vp }).promise;
-                    pages.push({ canvas: c });
+
+                    let nativeText = '';
+                    try {
+                        const tc = await page.getTextContent();
+                        const items = tc.items.map(it => {
+                            const tx = pdfjsLib.Util.transform(vp.transform, it.transform);
+                            return { str: it.str.trim(), x: tx[4], y: tx[5] };
+                        }).filter(it => it.str.length > 0);
+                        items.sort((a, b) => (Math.abs(a.y - b.y) > 8 ? a.y - b.y : a.x - b.x));
+                        let lines = [], cur = [], lastY = null;
+                        for (const it of items) {
+                            if (lastY !== null && Math.abs(it.y - lastY) > 8) { lines.push(cur.join(' ')); cur = [it.str]; }
+                            else cur.push(it.str);
+                            lastY = it.y;
+                        }
+                        if (cur.length) lines.push(cur.join(' '));
+                        nativeText = lines.join('\n');
+                    } catch (e) {}
+
+                    pages.push({ canvas: c, nativeText });
                 }
                 return pages;
             }
             return new Promise(res => {
                 const img = new Image();
-                img.onload = () => { const c = document.createElement('canvas'); c.width = img.width; c.height = img.height; c.getContext('2d').drawImage(img, 0, 0); res([{ canvas: c }]); };
+                img.onload = () => { const c = document.createElement('canvas'); c.width = img.width; c.height = img.height; c.getContext('2d').drawImage(img, 0, 0); res([{ canvas: c, nativeText: '' }]); };
                 readFileAsDataURL(file).then(url => img.src = url);
             });
         }
@@ -1197,7 +1215,7 @@
         }
 
         // ============================================================================
-        // EXTRACTION IA GEMINI VISION (AVEC GESTION PRIX BARRÉ + PRIX ROUGE)
+        // EXTRACTION INSTANTANÉE FORMAT ETIQ-25 (24 gr.pdf) + IA GEMINI VISION
         // ============================================================================
         function isValidEAN13Checksum(c) {
             if (!/^\d{13}$/.test(c)) return false;
@@ -1205,20 +1223,106 @@
             return ((10 - (s % 10)) % 10) === parseInt(c[12], 10);
         }
 
+        function parseNativeEtiq25Page(nativeText) {
+            if (!nativeText || !/Prix\s*(?:kg|l|pi[eè]ce)/i.test(nativeText)) return null;
+            const lines = nativeText.split('\n').map(l => l.trim()).filter(Boolean);
+            const results = [];
+            let currentBlock = [];
+
+            for (const line of lines) {
+                if (/^(Fichier\s*portable|0000000|Etiquettes$|Etiq-\d+|\d+\s*étiquettes)/i.test(line)) continue;
+                currentBlock.push(line);
+
+                const eanMatch = line.match(/\b(\d{13})\b/);
+                if (eanMatch) {
+                    const blockStr = currentBlock.join(' \n ');
+                    const gencode = eanMatch[1]; // JAUNE : Gencode 13 chiffres
+
+                    // ROUGE : Nom du produit
+                    const titleLine = currentBlock.find(l => /[A-ZÀ-Ý]{3,}/.test(l) && !/^Prix\s*(kg|l|pi[eè]ce)/i.test(l) && !/^cont\s*:/i.test(l));
+                    const productName = (titleLine || 'PRODUIT').replace(/\s+\d{1,3}[.,]\d{2}\s*€.*$/, '').trim().toUpperCase();
+
+                    // VERT : Prix au kg / litre / pièce
+                    let unitType = 'kg', baseUnitPrice = 0;
+                    const unitMatch = blockStr.match(/Prix\s*(kg|l|pi[eè]ce)\s*[:.]?\s*(\d{1,4}[.,]\d{2})\s*€/i);
+                    if (unitMatch) {
+                        unitType = unitMatch[1].toLowerCase().startsWith('pi') ? 'pièce' : unitMatch[1].toLowerCase();
+                        baseUnitPrice = parseFloat(unitMatch[2].replace(',', '.'));
+                    }
+
+                    // BLEU : Contenant
+                    let contenanceText = '';
+                    const contMatch = blockStr.match(/cont\s*[:.]?\s*(\d+[.,]\d+)\s*(kg|l|g|ml|cl|pi[eè]ce)/i);
+                    if (contMatch) {
+                        const val = parseFloat(contMatch[1].replace(',', '.'));
+                        const u = contMatch[2].toLowerCase();
+                        if (u === 'kg') contenanceText = val < 1 ? `${Math.round(val * 1000)} g` : `${val.toString().replace('.', ',')} kg`;
+                        else if (u === 'l') contenanceText = val < 1 ? `${Math.round(val * 1000)} ml` : `${val.toString().replace('.', ',')} L`;
+                        else contenanceText = `${val} ${u}`;
+                    }
+
+                    // ORANGE (Prix principal) & VIOLET (Prix barré s'il est présent)
+                    const textWithoutUnit = blockStr.replace(/Prix\s*(?:kg|l|pi[eè]ce)\s*[:.]?\s*\d{1,4}[.,]\d{2}\s*€/gi, '');
+                    const allPrices = [...textWithoutUnit.matchAll(/(\d{1,3}[.,]\d{2})\s*[€\in]/g)]
+                        .map(m => parseFloat(m[1].replace(',', '.')))
+                        .filter(p => p > 0 && Math.abs(p - baseUnitPrice) > 0.01);
+
+                    let mainPrice = allPrices[0] || 1.99;
+                    let crossedPrice = null;
+                    if (allPrices.length >= 2) {
+                        const p1 = allPrices[0], p2 = allPrices[1];
+                        if (Math.abs(p1 - p2) > 0.01) {
+                            mainPrice = Math.min(p1, p2);
+                            crossedPrice = Math.max(p1, p2);
+                        }
+                    }
+
+                    results.push({
+                        productName,
+                        oldPrice: mainPrice,
+                        crossedPrice: crossedPrice,
+                        baseUnitPrice: baseUnitPrice || mainPrice,
+                        unitQty: 1,
+                        unitType,
+                        contenanceText,
+                        gencode,
+                        useCustomLeftImage: false,
+                        customRawImg: null,
+                        customTrimmedImg: null,
+                        customImageLabel: '',
+                        showAlcohol18: null,
+                        detectedPromo: null
+                    });
+                    currentBlock = [];
+                }
+            }
+            return results.length > 0 ? results : null;
+        }
+
         async function extractPageWithGemini(pageCanvas) {
-            const maxDim = 2400; let outCanvas = pageCanvas;
+            const maxDim = 1400; let outCanvas = pageCanvas;
             if (pageCanvas.width > maxDim || pageCanvas.height > maxDim) {
                 const s = Math.min(maxDim / pageCanvas.width, maxDim / pageCanvas.height);
                 outCanvas = document.createElement('canvas'); outCanvas.width = Math.round(pageCanvas.width * s); outCanvas.height = Math.round(pageCanvas.height * s);
                 outCanvas.getContext('2d').drawImage(pageCanvas, 0, 0, outCanvas.width, outCanvas.height);
             }
-            const imageDataUrl = outCanvas.toDataURL('image/jpeg', 0.90);
+            const imageDataUrl = outCanvas.toDataURL('image/jpeg', 0.82);
             let storedKey = localStorage.getItem('superu_gemini_api_key') || '';
-            const callApi = async k => (await fetch(R2_API_ENDPOINT, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'extract_labels_gemini', imageDataUrl, apiKey: k }) })).json();
+
+            const callApi = async k => {
+                const res = await fetch(R2_API_ENDPOINT, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ action: 'extract_labels_gemini', imageDataUrl, apiKey: k })
+                });
+                const rawTxt = await res.text();
+                try { return JSON.parse(rawTxt); }
+                catch (e) { throw new Error(`Délai serveur dépassé (${res.status}). Réessaie.`); }
+            };
 
             let json = await callApi(storedKey);
             if (!json.ok && json.error === 'MISSING_API_KEY') {
-                const uKey = prompt("✨ Colle ta clé API Gemini (AIzaSy... ou AQ...) pour activer l'extraction IA sans erreur :");
+                const uKey = prompt("✨ Colle ta clé API Gemini (AIzaSy... ou AQ...) :");
                 if (uKey?.trim()) { storedKey = uKey.trim(); localStorage.setItem('superu_gemini_api_key', storedKey); json = await callApi(storedKey); }
             }
             if (json?.ok && Array.isArray(json.labels)) {
@@ -1227,21 +1331,18 @@
                     const rawOld = Number(lbl.oldPrice) > 0 ? Number(lbl.oldPrice) : 1.99;
                     const rawPromo = (lbl.promoMainPrice && Number(lbl.promoMainPrice) > 0) ? Number(lbl.promoMainPrice) : null;
 
-                    // Si 2 prix sont présents sur l'étiquette (ex: 10,99€ et 11,55€), le plus petit est le Prix Rouge (mainPrice) et le plus grand est le Prix Barré (crossedPrice) !
-                    let mainRedPrice = rawOld;
-                    let crossedOldPrice = null;
+                    let mainRedPrice = rawOld, crossedOldPrice = null;
                     if (rawPromo && Math.abs(rawOld - rawPromo) > 0.005) {
                         mainRedPrice = Math.min(rawOld, rawPromo);
                         crossedOldPrice = Math.max(rawOld, rawPromo);
                     }
-
                     const discStr = (lbl.promoDiscount || '').trim();
                     const hasExplicitCirclePromo = Boolean(lbl.hasPromo && discStr);
 
                     return {
                         productName: (lbl.productName || 'PRODUIT').toUpperCase().trim(),
-                        oldPrice: mainRedPrice,          // Prix principal affiché en rouge
-                        crossedPrice: crossedOldPrice,   // Prix barré affiché juste au-dessus du prix rouge
+                        oldPrice: mainRedPrice,
+                        crossedPrice: crossedOldPrice,
                         baseUnitPrice: Number(lbl.baseUnitPrice) > 0 ? Number(lbl.baseUnitPrice) : mainRedPrice,
                         unitQty: 1, unitType: uType, contenanceText: lbl.contenanceText || '',
                         gencode: (lbl.gencode || '').replace(/\D/g, ''),
@@ -1256,7 +1357,7 @@
         $('inputBlueLabel').onchange = async function(e) {
             const files = Array.from(e.target.files); if (!files.length) return;
             const status = $('ocrStatus'); status.classList.remove('hidden');
-            status.textContent = "✨ Analyse IA Gemini Vision en cours...";
+            status.textContent = "✨ Analyse des étiquettes en cours...";
             if ($('aiServiceBadge')) $('aiServiceBadge').textContent = "⏳ Analyse en cours...";
             try {
                 let allDetected = [], limitReached = false;
@@ -1264,15 +1365,18 @@
                 for (const file of files) {
                     const pages = await loadFileToPages(file);
                     for (let p = 0; p < pages.length; p++) {
-                        status.textContent = `✨ Lecture IA Gemini — Page ${p + 1}/${pages.length}...`;
-                        const labels = await extractPageWithGemini(pages[p].canvas);
-                        if (labels?.length) {
-                            allDetected = allDetected.concat(labels);
-                            if (allDetected.length >= MAX_LABELS_LIMIT) {
-                                allDetected = allDetected.slice(0, MAX_LABELS_LIMIT);
-                                limitReached = true;
-                                break outerLoop;
-                            }
+                        const fastEtiq25 = parseNativeEtiq25Page(pages[p].nativeText);
+                        if (fastEtiq25 && fastEtiq25.length > 0) {
+                            allDetected = allDetected.concat(fastEtiq25);
+                        } else {
+                            status.textContent = `✨ Lecture IA Gemini — Page ${p + 1}/${pages.length}...`;
+                            const labels = await extractPageWithGemini(pages[p].canvas);
+                            if (labels?.length) allDetected = allDetected.concat(labels);
+                        }
+                        if (allDetected.length >= MAX_LABELS_LIMIT) {
+                            allDetected = allDetected.slice(0, MAX_LABELS_LIMIT);
+                            limitReached = true;
+                            break outerLoop;
                         }
                     }
                 }
@@ -1371,7 +1475,6 @@
             const baseUnit = item.baseUnitPrice > 0 ? item.baseUnitPrice : item.oldPrice;
             const manualCrossed = (item.crossedPrice && Number(item.crossedPrice) > 0) ? Number(item.crossedPrice) : null;
 
-            // Si un prix barré existe sur l'étiquette (importé ou saisi dans le champ "Barré"), on l'affiche TOUJOURS au-dessus du prix rouge !
             if (!isMechanicShown || !applyMechanicPriceCalc) {
                 return {
                     hasCrossedPrice: Boolean(manualCrossed),
@@ -1545,7 +1648,7 @@
                         </div>
                         <button type="button" data-idx="${index}" class="btn-toggle-item-alcohol font-extrabold px-1.5 py-1 rounded border shrink-0 ${isAlc ? 'bg-orange-600 text-white' : 'bg-orange-50 text-orange-800'}">-18 ${isAlc ? 'ON' : 'OFF'}</button>
                         <label class="flex items-center gap-0.5 font-semibold text-gray-600 shrink-0">Prix:<input type="number" step="0.01" data-idx="${index}" data-field="oldPrice" value="${item.oldPrice.toFixed(2)}" class="poster-edit-input w-11 font-bold border rounded px-1 py-1 text-pink-700 bg-pink-50 text-center" title="Prix principal affiché en rouge"></label>
-                        <label class="flex items-center gap-0.5 font-semibold text-gray-600 shrink-0">Barré:<input type="number" step="0.01" data-idx="${index}" data-field="crossedPrice" value="${crossedVal}" placeholder="-" class="poster-edit-input w-11 font-bold border rounded px-1 py-1 text-gray-700 bg-gray-100 text-center" title="Prix barré affiché juste au-dessus du prix rouge (laisser vide si aucun)"></label>
+                        <label class="flex items-center gap-0.5 font-semibold text-gray-600 shrink-0">Barré:<input type="number" step="0.01" data-idx="${index}" data-field="crossedPrice" value="${crossedVal}" placeholder="-" class="poster-edit-input w-11 font-bold border rounded px-1 py-1 text-gray-700 bg-gray-100 text-center" title="Prix barré affiché juste au-dessus du prix rouge"></label>
                         <label class="flex items-center gap-0.5 font-semibold text-gray-600 shrink-0">P.Unité:<input type="number" step="0.01" data-idx="${index}" data-field="baseUnitPrice" value="${(item.baseUnitPrice || item.oldPrice).toFixed(2)}" class="poster-edit-input w-11 font-bold border rounded px-1 py-1 text-amber-800 bg-amber-50 text-center"></label>
                         <label class="flex items-center gap-0.5 font-semibold text-gray-600 shrink-0">Unité:<select data-idx="${index}" data-field="unitType" class="poster-edit-input font-bold border rounded px-1 py-1 bg-yellow-50"><option value="pièce" ${item.unitType === 'pièce' ? 'selected' : ''}>Pièce</option><option value="kg" ${item.unitType === 'kg' ? 'selected' : ''}>Kg</option><option value="l" ${item.unitType === 'l' ? 'selected' : ''}>Litre</option></select></label>
                         <label class="flex items-center gap-0.5 font-semibold text-gray-600 shrink-0">Cont.:<input type="text" data-idx="${index}" data-field="contenanceText" value="${(item.contenanceText || '').replace(/"/g, '&quot;')}" class="poster-edit-input w-11 font-bold border rounded px-1 py-1 text-emerald-800 bg-emerald-50 text-center"></label>
