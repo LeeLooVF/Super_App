@@ -24,7 +24,6 @@ export async function onRequest(context) {
     );
   }
 
-  // Fonction utilitaire : lister tous les objets R2 avec pagination complète (> 1000 fichiers)
   async function listAllObjects(prefix = "") {
     let allObjects = [];
     let cursor = undefined;
@@ -40,7 +39,6 @@ export async function onRequest(context) {
     return allObjects;
   }
 
-  // Fonction utilitaire : récupérer la liste partagée des images GitHub masquées
   async function getDeletedStaticFiles() {
     try {
       const obj = await bucket.get(DELETED_STATIC_KEY);
@@ -91,9 +89,110 @@ export async function onRequest(context) {
       });
     }
 
-    // 2. UPLOADER, CRÉER DOSSIER, DÉPLACER/RENOMMER OU SYNCHRONISER SUPPRESSION GITHUB (POST /api)
+    // 2. ACTIONS POST (EXTRACTION IA GEMINI, DOSSIERS, UPLOAD R2, MODIFICATIONS)
     if (request.method === "POST") {
       const body = await request.json();
+
+      // =========================================================================
+      // NOUVEAU : EXTRACTION ULTRA-PRÉCISE DES ÉTIQUETTES VIA GEMINI VISION API
+      // =========================================================================
+      if (body.action === "extract_labels_gemini") {
+        const apiKey = body.apiKey || env.GEMINI_API_KEY;
+        if (!apiKey) {
+          return new Response(
+            JSON.stringify({ ok: false, error: "MISSING_API_KEY", message: "Clé GEMINI_API_KEY manquante." }),
+            { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+          );
+        }
+
+        const dataUrl = body.imageDataUrl || "";
+        const parts = dataUrl.split(",");
+        const mimeType = (parts[0].match(/:(.*?);/) || [null, "image/jpeg"])[1];
+        const base64Image = parts[1];
+
+        const systemPrompt = `Tu es un expert en lecture de planches d'étiquettes de prix de supermarché Super U (souvent organisées en grille de 3 colonnes sur 7 lignes, soit jusqu'à 21 étiquettes par page, ou une étiquette unique).
+Lis TOUTES les étiquettes présentes sur l'image dans l'ordre de lecture (de gauche à droite, et de haut en bas, sans jamais oublier la dernière ligne tout en bas).
+
+Pour CHAQUE étiquette, extrais avec une précision absolue :
+- "productName" : Le libellé complet du produit situé tout en haut de l'étiquette (en MAJUSCULES).
+- "oldPrice" : Le prix principal TTC du produit en euros (nombre décimal, ex: 2.31). S'il y a un prix barré et un prix remisé, mets le prix barré (prix avant remise) dans oldPrice. Attention : sur certaines étiquettes Super U, le symbole € est écrit à gauche ou au milieu sans virgule (ex: "€ 2,31" ou "2€31"). Ne confonds JAMAIS le prix du produit avec le prix au kg/litre !
+- "promoMainPrice" : Si l'étiquette affiche un prix réduit en plus du prix barré, indique ce nouveau prix réduit (ex: 1.85), sinon mets null.
+- "baseUnitPrice" : Le prix au kilo, au litre ou à la pièce indiqué après "Prix kg :", "Prix l :" ou "Prix pièce :" (nombre décimal, ex: 23.10).
+- "unitType" : Uniquement "kg", "l" ou "pièce" selon l'unité du prix unitaire.
+- "contenanceText" : La contenance lisible du produit convertie proprement (ex: si "cont : 0.100 kg", écris "100 g" ; si "cont : 0.750 l", écris "75 cl" ou "750 ml" ; si "cont : 1.500 l", écris "1,5 L" ; si "1 pièce", écris "1 pièce").
+- "gencode" : Le code-barres EAN officiel (13 chiffres ou 8 chiffres) situé TOUT EN BAS À GAUCHE sous les barres verticales du code-barres (ex: "3616305242723" ou "5056585804187"). INTERDICTION ABSOLUE de prendre le code interne magasin situé au milieu de l'étiquette qui commence par "00001", "90527" ou qui contient un slash "/" (ex: ignore "00001 4015276/1" ou "90527 028335070"). Renvoie uniquement les chiffres attachés sans espaces.
+- "hasPromo" : true UNIQUEMENT si une promotion explicite est écrite sur l'étiquette (ex: "-34%", "2+1", "1+1", "-50% sur le 2ème", ou présence d'un prix barré), sinon false. Ne confonds jamais "30% MG" (matière grasse) ou "12% vol" (alcool) avec une promotion !
+- "promoDiscount" : Si hasPromo est true, la valeur courte à mettre dans le cercle rouge (ex: "-34%", "2+1", "1+1", "-50%"), sinon "".
+- "promoText" : Si hasPromo est true, le texte complémentaire (ex: "DE REMISE|IMMÉDIATE", "OFFERT", "GRATUIT", "SUR LE 2ÈME|PRODUIT"), sinon "".
+- "promoPresetKey" : Si hasPromo est true, choisis parmi "remise_imm", "2_plus_1", "1_plus_1", "2eme_50", "remise_euros", sinon "".
+
+Ignore les blocs techniques d'en-tête ou de pied de page qui ne sont pas des étiquettes produits (ex: "FICHIER PORTABLE", "COMMENTAIRES :", "Super U TALANGE").`;
+
+        const geminiPayload = {
+          contents: [
+            {
+              parts: [
+                { text: systemPrompt },
+                { inline_data: { mime_type: mimeType, data: base64Image } }
+              ]
+            }
+          ],
+          generationConfig: {
+            temperature: 0.1,
+            responseMimeType: "application/json",
+            responseSchema: {
+              type: "OBJECT",
+              properties: {
+                labels: {
+                  type: "ARRAY",
+                  items: {
+                    type: "OBJECT",
+                    properties: {
+                      productName: { type: "STRING" },
+                      oldPrice: { type: "NUMBER" },
+                      promoMainPrice: { type: "NUMBER", nullable: true },
+                      baseUnitPrice: { type: "NUMBER" },
+                      unitType: { type: "STRING" },
+                      contenanceText: { type: "STRING" },
+                      gencode: { type: "STRING" },
+                      hasPromo: { type: "BOOLEAN" },
+                      promoDiscount: { type: "STRING" },
+                      promoText: { type: "STRING" },
+                      promoPresetKey: { type: "STRING" }
+                    },
+                    required: ["productName", "oldPrice", "baseUnitPrice", "unitType", "contenanceText", "gencode", "hasPromo"]
+                  }
+                }
+              },
+              required: ["labels"]
+            }
+          }
+        };
+
+        const geminiRes = await fetch(
+          `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${encodeURIComponent(apiKey)}`,
+          {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(geminiPayload)
+          }
+        );
+
+        const geminiJson = await geminiRes.json();
+        if (!geminiRes.ok) {
+          return new Response(
+            JSON.stringify({ ok: false, error: geminiJson.error?.message || "Erreur Gemini API" }),
+            { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+          );
+        }
+
+        const rawText = geminiJson.candidates?.[0]?.content?.parts?.[0]?.text || '{"labels":[]}';
+        const parsedData = JSON.parse(rawText);
+
+        return new Response(JSON.stringify({ ok: true, labels: parsedData.labels || [] }), {
+          headers: { ...corsHeaders, "Content-Type": "application/json" }
+        });
+      }
 
       // A. Création d'un dossier ou sous-dossier
       if (body.action === "create_folder") {
@@ -139,7 +238,7 @@ export async function onRequest(context) {
         });
       }
 
-      // C. Renommer et/ou déplacer un fichier vers un autre dossier/sous-dossier (Code Bonesink124!)
+      // C. Renommer et/ou déplacer un fichier vers un autre dossier/sous-dossier
       if (body.action === "update_file_meta") {
         if (body.code !== DELETE_PASSCODE) {
           return new Response(
@@ -180,7 +279,7 @@ export async function onRequest(context) {
         });
       }
 
-      // D. Renommer ou déplacer un dossier / sous-dossier entier (et tout son contenu)
+      // D. Renommer ou déplacer un dossier / sous-dossier entier
       if (body.action === "rename_folder") {
         if (body.code !== DELETE_PASSCODE) {
           return new Response(
@@ -239,7 +338,7 @@ export async function onRequest(context) {
         });
       }
 
-      // E. Upload standard d'un fichier (déjà converti en WebP côté client si c'est une image)
+      // E. Upload standard d'un fichier sur R2
       const { folder, subFolder, label, fileName, fileType, dataUrl, previewDataUrl } = body;
       const safeFolder = folder || "left_4";
       const safeSubFolder = (subFolder || "Général")
@@ -308,7 +407,7 @@ export async function onRequest(context) {
       });
     }
 
-    // 3. SUPPRIMER UN FICHIER OU UN DOSSIER/SOUS-DOSSIER COMPLET AVEC LE CODE Bonesink124! (DELETE /api)
+    // 3. SUPPRIMER UN FICHIER OU UN DOSSIER/SOUS-DOSSIER COMPLET (DELETE /api)
     if (request.method === "DELETE") {
       const code = url.searchParams.get("code") || "";
       if (code !== DELETE_PASSCODE) {
