@@ -16,6 +16,8 @@
         @font-face { font-family:'Museo Slab'; src:url("Copie de Museo_Slab_700.otf") format("opentype"),url("Copie de Museo_Slab_3.otf") format("opentype"),local('Museo Slab 700'),url('https://fonts.cdnfonts.com/s/13918/Museo_Slab_700.woff') format('woff'); font-weight:700; }
         @font-face { font-family:'Museo Slab'; src:url("Copie de Museo_Slab_900.otf") format("opentype"),url("Copie de Museo_Slab_4.otf") format("opentype"),local('Museo Slab 900'),url('https://fonts.cdnfonts.com/s/13918/Museo_Slab_900.woff') format('woff'); font-weight:900; }
         #topControlPanel { zoom: 0.8; }
+        input[type=number]::-webkit-inner-spin-button, input[type=number]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
+        input[type=number] { -moz-appearance: textfield; }
     </style>
 </head>
 <body class="bg-gray-100 min-h-screen p-3 md:p-5 font-sans text-gray-800">
@@ -40,7 +42,7 @@
                     </button>
                 </div>
 
-                <!-- BOUTON ÉTAT DES SERVICES (R2, POLICES, IA/OCR, QUOTA 50) -->
+                <!-- BOUTON ÉTAT DES SERVICES -->
                 <div class="relative flex items-center gap-2">
                     <span id="ocrStatus" class="text-xs font-bold text-blue-700 bg-blue-50 px-2.5 py-1 rounded-lg border border-blue-200 hidden"></span>
                     <button type="button" id="btnToggleServiceStatus" class="text-xs font-extrabold px-3 py-1.5 rounded-lg border-2 border-emerald-300 bg-emerald-50 text-emerald-800 hover:bg-emerald-100 transition flex items-center gap-2 shadow-sm">
@@ -49,7 +51,6 @@
                         <span class="text-[10px] opacity-75">▼</span>
                     </button>
 
-                    <!-- Menu déroulant État des services -->
                     <div id="serviceStatusPopover" class="hidden absolute right-0 top-10 w-80 bg-white rounded-xl shadow-2xl border-2 border-gray-200 p-4 z-50 space-y-2.5 text-xs">
                         <div class="flex justify-between items-center border-b pb-2">
                             <span class="font-extrabold uppercase text-gray-800">📡 État des services</span>
@@ -114,7 +115,7 @@
                 <div>
                     <div class="flex justify-between items-center mb-1">
                         <label class="block text-xs font-bold text-gray-700 uppercase">⚙️ MÉCANIQUE & VALEUR</label>
-                        <button type="button" id="btnTogglePriceCalc" class="text-[11px] font-bold px-2 py-0.5 rounded bg-green-100 text-green-800 border border-green-300 hover:bg-green-200 transition">Calcul prix : Activé</button>
+                        <button type="button" id="btnTogglePriceCalc" class="text-[11px] font-bold px-2 py-0.5 rounded bg-amber-100 text-amber-900 border border-amber-400 hover:bg-amber-200 transition">Calcul prix : Désactivé</button>
                     </div>
                     <div class="flex gap-1.5">
                         <select id="selectMechanicPreset" disabled class="w-2/3 p-1.5 border rounded-lg text-xs font-bold text-gray-800 bg-gray-100 opacity-50 cursor-pointer">
@@ -175,7 +176,7 @@
         <div id="postersContainer" class="space-y-6"></div>
     </div>
 
-    <!-- MODALE 1 : GALERIE VISUELLE (IMAGES GAUCHE & IMAGES A4) -->
+    <!-- MODALE 1 : GALERIE VISUELLE -->
     <div id="visualGalleryModal" class="fixed inset-0 bg-black/60 z-50 hidden flex items-center justify-center p-4 backdrop-blur-sm">
         <div class="bg-white rounded-2xl shadow-2xl max-w-5xl w-full max-h-[90vh] flex flex-col overflow-hidden border-t-4 border-red-600">
             <div class="flex flex-wrap justify-between items-center px-5 py-3.5 border-b bg-gray-50 gap-3">
@@ -407,7 +408,8 @@
         let postersList = [{ productName: 'APERIVRAIS ST AGUR 30%MG 100G', oldPrice: 2.31, promoMainPrice: null, baseUnitPrice: 23.10, unitQty: 0.1, unitType: 'kg', contenanceText: '100 g', gencode: '3616305242723', useCustomLeftImage: false, customRawImg: null, customTrimmedImg: null, customImageLabel: '', showAlcohol18: null, detectedPromo: null }];
         let rawLeftImage4 = null, trimmedLeftImage4 = null, labelImage4 = 'Les Prix Bas';
         let rawTopImageA4 = null, trimmedTopImageA4 = null, labelImageA4 = 'Les Prix Bas (A4)';
-        let dateColor = '#FFFFFF', showDate = false, showMechanic = false, applyMechanicPriceCalc = true, showAlcoholGlobal = false, isA4PortraitMode = false, currentGalleryTarget = 'global';
+        // Calcul prix désactivé de base (applyMechanicPriceCalc = false)
+        let dateColor = '#FFFFFF', showDate = false, showMechanic = false, applyMechanicPriceCalc = false, showAlcoholGlobal = false, isA4PortraitMode = false, currentGalleryTarget = 'global';
         let savedUserImages = [], readyDepositedDocs = [], readyGeneratedDocs = [], customSubFolders = { ready_deposited: ['Général'], ready_generated: ['Général'] };
         let activeLibraryTab = 'ready_deposited', activeLibrarySubFolder = 'Général', pendingSavePosterIndex = null, pendingMoveRenameDoc = null, currentLightboxDoc = null;
         let deletedStaticFiles = JSON.parse(localStorage.getItem('superu_deleted_static_files') || '[]');
@@ -420,7 +422,6 @@
         const ensureWebpFileName = f => `${(f || 'image').replace(/\.[^.]+$/, '')}.webp`;
         const readFileAsDataURL = file => new Promise(res => { const r = new FileReader(); r.onload = e => res(e.target.result); r.readAsDataURL(file); });
 
-        // Menu déroulant État des services
         $('btnToggleServiceStatus').onclick = e => { e.stopPropagation(); $('serviceStatusPopover').classList.toggle('hidden'); };
         $('btnCloseServicePopover').onclick = () => $('serviceStatusPopover').classList.add('hidden');
         document.addEventListener('click', e => { if (!e.target.closest('#serviceStatusPopover') && !e.target.closest('#btnToggleServiceStatus')) $('serviceStatusPopover').classList.add('hidden'); });
@@ -1217,22 +1218,29 @@
 
             let json = await callApi(storedKey);
             if (!json.ok && json.error === 'MISSING_API_KEY') {
-                const uKey = prompt("✨ Colle ta clé API Gemini (AIzaSy...) pour activer l'extraction IA sans erreur :");
+                const uKey = prompt("✨ Colle ta clé API Gemini (AIzaSy... ou AQ...) pour activer l'extraction IA sans erreur :");
                 if (uKey?.trim()) { storedKey = uKey.trim(); localStorage.setItem('superu_gemini_api_key', storedKey); json = await callApi(storedKey); }
             }
             if (json?.ok && Array.isArray(json.labels)) {
                 return json.labels.map(lbl => {
                     const uType = ['kg', 'l', 'pièce'].includes((lbl.unitType || '').toLowerCase()) ? lbl.unitType.toLowerCase() : 'pièce';
-                    const hasPromo = Boolean(lbl.hasPromo && lbl.promoDiscount);
+                    const oldP = Number(lbl.oldPrice) > 0 ? Number(lbl.oldPrice) : 1.99;
+                    const promoP = (lbl.promoMainPrice && Number(lbl.promoMainPrice) > 0 && Number(lbl.promoMainPrice) < oldP) ? Number(lbl.promoMainPrice) : null;
+                    let discStr = lbl.promoDiscount || '';
+                    if (!discStr && promoP) {
+                        const computedPct = Math.round(((oldP - promoP) / oldP) * 100);
+                        if (computedPct >= 3) discStr = `-${computedPct}%`;
+                    }
+                    const hasPromo = Boolean((lbl.hasPromo && discStr) || promoP);
                     return {
                         productName: (lbl.productName || 'PRODUIT').toUpperCase().trim(),
-                        oldPrice: Number(lbl.oldPrice) > 0 ? Number(lbl.oldPrice) : 1.99,
-                        promoMainPrice: lbl.promoMainPrice && Number(lbl.promoMainPrice) > 0 ? Number(lbl.promoMainPrice) : null,
-                        baseUnitPrice: Number(lbl.baseUnitPrice) > 0 ? Number(lbl.baseUnitPrice) : (Number(lbl.oldPrice) || 1.99),
+                        oldPrice: oldP,
+                        promoMainPrice: promoP,
+                        baseUnitPrice: Number(lbl.baseUnitPrice) > 0 ? Number(lbl.baseUnitPrice) : oldP,
                         unitQty: 1, unitType: uType, contenanceText: lbl.contenanceText || '',
                         gencode: (lbl.gencode || '').replace(/\D/g, ''),
                         useCustomLeftImage: false, customRawImg: null, customTrimmedImg: null, customImageLabel: '', showAlcohol18: null,
-                        detectedPromo: hasPromo ? { active: true, presetKey: lbl.promoPresetKey || 'remise_imm', discount: lbl.promoDiscount, text: lbl.promoText || 'DE REMISE|IMMÉDIATE', unitLabel: lbl.promoPresetKey === '2_plus_1' ? 'LES 3 PRODUITS' : (lbl.promoPresetKey === '1_plus_1' ? 'LE LOT DE 2' : 'LE PRODUIT') } : null
+                        detectedPromo: hasPromo ? { active: true, presetKey: lbl.promoPresetKey || 'remise_imm', discount: discStr, text: lbl.promoText || 'DE REMISE|IMMÉDIATE', unitLabel: lbl.promoPresetKey === '2_plus_1' ? 'LES 3 PRODUITS' : (lbl.promoPresetKey === '1_plus_1' ? 'LE LOT DE 2' : 'LE PRODUIT') } : null
                     };
                 });
             }
@@ -1264,8 +1272,8 @@
                 }
                 if (allDetected.length) {
                     postersList = allDetected;
-                    const pCount = postersList.filter(it => it.detectedPromo?.active).length;
-                    status.textContent = `✅ ${postersList.length} étiquette(s) générée(s)${limitReached ? ' (Limite max de 50 atteinte)' : ''} — ${pCount} avec promo !`;
+                    const pCount = postersList.filter(it => it.detectedPromo?.active || (it.promoMainPrice && it.promoMainPrice < it.oldPrice)).length;
+                    status.textContent = `✅ ${postersList.length} étiquette(s) générée(s)${limitReached ? ' (Limite max de 50 atteinte)' : ''} — ${pCount} avec promo/prix barré !`;
                     if (limitReached) alert(`⚠️ Limite atteinte : Le générateur est limité à ${MAX_LABELS_LIMIT} étiquettes maximum en une seule fois. Les 50 premières étiquettes ont été générées.`);
                 } else status.textContent = "⚠️ Aucune étiquette détectée.";
                 if ($('aiServiceBadge')) $('aiServiceBadge').textContent = "✨ Gemini Vision Actif";
@@ -1355,12 +1363,15 @@
         function computePromoPricing(item, presetKey, discountInput, isMechanicShown) {
             const uType = item.unitType || 'pièce', prefix = uType === 'pièce' ? 'La pièce' : (uType === 'l' ? 'Le L' : 'Le kg');
             const baseUnit = item.baseUnitPrice > 0 ? item.baseUnitPrice : item.oldPrice;
-            if (!isMechanicShown || !applyMechanicPriceCalc) {
-                return { hasCrossedPrice: false, crossedPrice: item.oldPrice, mainPrice: item.oldPrice, unitPriceText: `${prefix} : ${baseUnit.toFixed(2).replace('.', ',')} €` };
-            }
-            if (item.detectedPromo?.active && item.promoMainPrice && item.promoMainPrice < item.oldPrice) {
+
+            // Si l'étiquette importée possède déjà un prix barré + un nouveau prix réduit (promoMainPrice), on affiche TOUJOURS le prix barré de base !
+            if (item.promoMainPrice && item.promoMainPrice > 0 && item.promoMainPrice < item.oldPrice) {
                 const r = item.oldPrice > 0 ? (item.promoMainPrice / item.oldPrice) : 1;
                 return { hasCrossedPrice: true, crossedPrice: item.oldPrice, mainPrice: item.promoMainPrice, unitPriceText: `${prefix} : ${(baseUnit * r).toFixed(2).replace('.', ',')} €` };
+            }
+
+            if (!isMechanicShown || !applyMechanicPriceCalc) {
+                return { hasCrossedPrice: false, crossedPrice: item.oldPrice, mainPrice: item.oldPrice, unitPriceText: `${prefix} : ${baseUnit.toFixed(2).replace('.', ',')} €` };
             }
             const preset = MECHANIC_PRESETS[presetKey] || { mode: 'pct_single' };
             const pctM = discountInput.match(/(\d+(?:[.,]\d+)?)\s*%/), eurM = discountInput.match(/(\d+(?:[.,]\d+)?)\s*€/);
@@ -1438,10 +1449,11 @@
                     ctx.fillStyle = '#000000'; ctx.font = `600 21px ${FONT_SANS}`; ctx.fillText(pricing.unitPriceText, 285, 628);
                     if (showCont && item.contenanceText) { ctx.fillStyle = '#374151'; ctx.font = `700 19px ${FONT_SANS}`; ctx.fillText(`Contenance : ${item.contenanceText}`, 285, 655); }
                 } else {
-                    drawFormattedPrice(ctx, pricing.mainPrice, 420, 500, false, 780, 1.65);
-                    ctx.fillStyle = '#EE1C25'; ctx.font = `800 25px ${FONT_SANS}`; ctx.textAlign = 'center'; ctx.fillText(uLabel.toUpperCase(), 420, 555);
-                    ctx.fillStyle = '#000000'; ctx.font = `600 23px ${FONT_SANS}`; ctx.fillText(pricing.unitPriceText, 420, 588);
-                    if (showCont && item.contenanceText) { ctx.fillStyle = '#374151'; ctx.font = `700 21px ${FONT_SANS}`; ctx.fillText(`Contenance : ${item.contenanceText}`, 420, 620); }
+                    if (pricing.hasCrossedPrice) { drawFormattedPrice(ctx, pricing.crossedPrice, 435, 395, true, 780, 1.35); drawFormattedPrice(ctx, pricing.mainPrice, 420, 555, false, 780, 1.55); }
+                    else drawFormattedPrice(ctx, pricing.mainPrice, 420, 500, false, 780, 1.65);
+                    ctx.fillStyle = '#EE1C25'; ctx.font = `800 25px ${FONT_SANS}`; ctx.textAlign = 'center'; ctx.fillText(uLabel.toUpperCase(), 420, pricing.hasCrossedPrice ? 598 : 555);
+                    ctx.fillStyle = '#000000'; ctx.font = `600 23px ${FONT_SANS}`; ctx.fillText(pricing.unitPriceText, 420, pricing.hasCrossedPrice ? 630 : 588);
+                    if (showCont && item.contenanceText) { ctx.fillStyle = '#374151'; ctx.font = `700 21px ${FONT_SANS}`; ctx.fillText(`Contenance : ${item.contenanceText}`, 420, pricing.hasCrossedPrice ? 660 : 620); }
                 }
                 ctx.fillStyle = '#000000'; drawFittedProductTitle(ctx, item.productName, 52, 775, 736, 1020, 62, 28, 'left');
                 if (dispAlc) drawAlcohol18Banner(ctx, 38, 1098, 1.05);
@@ -1472,10 +1484,18 @@
                 ctx.fillStyle = '#000000'; ctx.font = `600 15px ${FONT_SANS}`; ctx.fillText(pricing.unitPriceText, 555, 314);
                 if (showCont && item.contenanceText) { ctx.fillStyle = '#374151'; ctx.font = `700 14px ${FONT_SANS}`; ctx.fillText(`Contenance : ${item.contenanceText}`, 555, 334); }
             } else {
-                drawFormattedPrice(ctx, pricing.mainPrice, 565, 230, false, 715);
-                ctx.fillStyle = '#EE1C25'; ctx.font = `800 16px ${FONT_SANS}`; ctx.textAlign = 'center'; ctx.fillText(uLabel.toUpperCase(), 565, 265);
-                ctx.fillStyle = '#000000'; ctx.font = `600 16px ${FONT_SANS}`; ctx.fillText(pricing.unitPriceText, 565, 287);
-                if (showCont && item.contenanceText) { ctx.fillStyle = '#374151'; ctx.font = `700 15px ${FONT_SANS}`; ctx.fillText(`Contenance : ${item.contenanceText}`, 565, 309); }
+                if (pricing.hasCrossedPrice) {
+                    drawFormattedPrice(ctx, pricing.crossedPrice, 580, 162, true, 715);
+                    drawFormattedPrice(ctx, pricing.mainPrice, 565, 264, false, 715);
+                    ctx.fillStyle = '#EE1C25'; ctx.font = `800 15px ${FONT_SANS}`; ctx.textAlign = 'center'; ctx.fillText(uLabel.toUpperCase(), 565, 294);
+                    ctx.fillStyle = '#000000'; ctx.font = `600 15px ${FONT_SANS}`; ctx.fillText(pricing.unitPriceText, 565, 314);
+                    if (showCont && item.contenanceText) { ctx.fillStyle = '#374151'; ctx.font = `700 14px ${FONT_SANS}`; ctx.fillText(`Contenance : ${item.contenanceText}`, 565, 334); }
+                } else {
+                    drawFormattedPrice(ctx, pricing.mainPrice, 565, 230, false, 715);
+                    ctx.fillStyle = '#EE1C25'; ctx.font = `800 16px ${FONT_SANS}`; ctx.textAlign = 'center'; ctx.fillText(uLabel.toUpperCase(), 565, 265);
+                    ctx.fillStyle = '#000000'; ctx.font = `600 16px ${FONT_SANS}`; ctx.fillText(pricing.unitPriceText, 565, 287);
+                    if (showCont && item.contenanceText) { ctx.fillStyle = '#374151'; ctx.font = `700 15px ${FONT_SANS}`; ctx.fillText(`Contenance : ${item.contenanceText}`, 565, 309); }
+                }
             }
             const tX = isMech ? 912 : 740;
             ctx.fillStyle = '#000000'; drawFittedProductTitle(ctx, item.productName, tX, 68, 1180 - tX, 315, 34, 17, 'left');
@@ -1494,25 +1514,25 @@
             postersList.forEach((item, index) => {
                 const isCustom = Boolean(item.useCustomLeftImage), isAlc = item.showAlcohol18 !== null ? item.showAlcohol18 : showAlcoholGlobal, hasP = Boolean(item.detectedPromo?.active);
                 const card = document.createElement('div');
-                card.className = 'bg-white p-5 rounded-xl shadow-md space-y-3';
+                card.className = 'bg-white p-4 rounded-xl shadow-md space-y-3';
                 card.innerHTML = `
-                    <div class="flex flex-wrap items-center border-b pb-2 gap-2">
-                        <span class="bg-gray-800 text-white text-xs font-bold px-2.5 py-1 rounded">#${index + 1}</span>
-                        <input type="text" data-idx="${index}" data-field="productName" value="${item.productName.replace(/"/g, '&quot;')}" class="poster-edit-input flex-1 min-w-[160px] text-xs font-bold uppercase border rounded px-2.5 py-1">
-                        <button type="button" data-idx="${index}" class="btn-toggle-item-promo text-[11px] font-extrabold px-2 py-1 rounded border ${hasP ? 'bg-red-600 text-white border-red-700' : 'bg-gray-100 text-gray-600'}">🎯 ${hasP ? `Promo ${item.detectedPromo.discount}` : 'Sans promo'}</button>
-                        <div class="flex items-center gap-1.5 px-2 py-0.5 rounded-lg border ${isCustom ? 'border-green-500 bg-green-50/60' : 'border-gray-200 bg-gray-50'}">
-                            <span class="text-[11px] font-bold text-gray-600">Img perso:</span>
-                            <button type="button" data-idx="${index}" class="btn-toggle-item-img text-[11px] font-bold px-2 py-0.5 rounded ${isCustom ? 'bg-green-600 text-white' : 'bg-gray-200 text-gray-700'}">${isCustom ? 'Activé' : 'Désactivé'}</button>
-                            <button type="button" data-idx="${index}" class="btn-open-item-gallery ${isCustom ? '' : 'hidden'} text-[11px] font-bold px-2 py-0.5 rounded bg-white border border-green-400 text-green-900">🖼️ ${item.customImageLabel || 'Visuel'}</button>
+                    <div class="flex flex-wrap xl:flex-nowrap items-center border-b pb-2 gap-1.5 text-[11px]">
+                        <span class="bg-gray-800 text-white font-bold px-2 py-1 rounded shrink-0">#${index + 1}</span>
+                        <input type="text" data-idx="${index}" data-field="productName" value="${item.productName.replace(/"/g, '&quot;')}" class="poster-edit-input flex-1 min-w-[130px] font-bold uppercase border rounded px-2 py-1">
+                        <button type="button" data-idx="${index}" class="btn-toggle-item-promo font-extrabold px-2 py-1 rounded border shrink-0 ${hasP ? 'bg-red-600 text-white border-red-700' : 'bg-gray-100 text-gray-600'}">🎯 ${hasP ? `Promo ${item.detectedPromo.discount}` : 'Sans promo'}</button>
+                        <div class="flex items-center gap-1 px-1.5 py-0.5 rounded-lg border shrink-0 ${isCustom ? 'border-green-500 bg-green-50/60' : 'border-gray-200 bg-gray-50'}">
+                            <span class="font-bold text-gray-600">Img:</span>
+                            <button type="button" data-idx="${index}" class="btn-toggle-item-img font-bold px-1.5 py-0.5 rounded ${isCustom ? 'bg-green-600 text-white' : 'bg-gray-200 text-gray-700'}">${isCustom ? 'Activé' : 'Désactivé'}</button>
+                            <button type="button" data-idx="${index}" class="btn-open-item-gallery ${isCustom ? '' : 'hidden'} font-bold px-1.5 py-0.5 rounded bg-white border border-green-400 text-green-900">🖼️ ${item.customImageLabel || 'Visuel'}</button>
                         </div>
-                        <button type="button" data-idx="${index}" class="btn-toggle-item-alcohol text-[11px] font-extrabold px-2 py-1 rounded border ${isAlc ? 'bg-orange-600 text-white' : 'bg-orange-50 text-orange-800'}">-18 ${isAlc ? 'ON' : 'OFF'}</button>
-                        <label class="flex items-center gap-1 text-xs font-semibold text-gray-600">Prix (€):<input type="number" step="0.01" data-idx="${index}" data-field="oldPrice" value="${item.oldPrice.toFixed(2)}" class="poster-edit-input w-20 text-xs font-bold border rounded px-2 py-1 text-pink-700 bg-pink-50"></label>
-                        <label class="flex items-center gap-1 text-xs font-semibold text-gray-600">Prix Unité:<input type="number" step="0.01" data-idx="${index}" data-field="baseUnitPrice" value="${(item.baseUnitPrice || item.oldPrice).toFixed(2)}" class="poster-edit-input w-20 text-xs font-bold border rounded px-2 py-1 text-amber-800 bg-amber-50"></label>
-                        <label class="flex items-center gap-1 text-xs font-semibold text-gray-600">Unité:<select data-idx="${index}" data-field="unitType" class="poster-edit-input text-xs font-bold border rounded px-1.5 py-1 bg-yellow-50"><option value="pièce" ${item.unitType === 'pièce' ? 'selected' : ''}>Pièce</option><option value="kg" ${item.unitType === 'kg' ? 'selected' : ''}>Kg</option><option value="l" ${item.unitType === 'l' ? 'selected' : ''}>Litre</option></select></label>
-                        <label class="flex items-center gap-1 text-xs font-semibold text-gray-600">Cont.:<input type="text" data-idx="${index}" data-field="contenanceText" value="${(item.contenanceText || '').replace(/"/g, '&quot;')}" class="poster-edit-input w-20 text-xs font-bold border rounded px-2 py-1 text-emerald-800 bg-emerald-50"></label>
-                        <label class="flex items-center gap-1 text-xs font-semibold text-gray-600">EAN:<input type="text" data-idx="${index}" data-field="gencode" value="${item.gencode || ''}" class="poster-edit-input w-32 text-xs font-bold border rounded px-2 py-1 text-blue-800 bg-blue-50"></label>
-                        <button type="button" data-idx="${index}" class="btn-save-to-library text-xs font-bold px-2.5 py-1 rounded bg-indigo-50 hover:bg-indigo-600 text-indigo-700 hover:text-white border border-indigo-200">☁️ Biblio</button>
-                        <button type="button" data-idx="${index}" class="btn-delete-poster text-xs font-bold px-2.5 py-1 rounded bg-red-50 hover:bg-red-600 text-red-600 hover:text-white border border-red-200">🗑️</button>
+                        <button type="button" data-idx="${index}" class="btn-toggle-item-alcohol font-extrabold px-1.5 py-1 rounded border shrink-0 ${isAlc ? 'bg-orange-600 text-white' : 'bg-orange-50 text-orange-800'}">-18 ${isAlc ? 'ON' : 'OFF'}</button>
+                        <label class="flex items-center gap-1 font-semibold text-gray-600 shrink-0">Prix (€):<input type="number" step="0.01" data-idx="${index}" data-field="oldPrice" value="${item.oldPrice.toFixed(2)}" class="poster-edit-input w-12 font-bold border rounded px-1.5 py-1 text-pink-700 bg-pink-50 text-center"></label>
+                        <label class="flex items-center gap-1 font-semibold text-gray-600 shrink-0">Prix Unité:<input type="number" step="0.01" data-idx="${index}" data-field="baseUnitPrice" value="${(item.baseUnitPrice || item.oldPrice).toFixed(2)}" class="poster-edit-input w-12 font-bold border rounded px-1.5 py-1 text-amber-800 bg-amber-50 text-center"></label>
+                        <label class="flex items-center gap-1 font-semibold text-gray-600 shrink-0">Unité:<select data-idx="${index}" data-field="unitType" class="poster-edit-input font-bold border rounded px-1 py-1 bg-yellow-50"><option value="pièce" ${item.unitType === 'pièce' ? 'selected' : ''}>Pièce</option><option value="kg" ${item.unitType === 'kg' ? 'selected' : ''}>Kg</option><option value="l" ${item.unitType === 'l' ? 'selected' : ''}>Litre</option></select></label>
+                        <label class="flex items-center gap-1 font-semibold text-gray-600 shrink-0">Cont.:<input type="text" data-idx="${index}" data-field="contenanceText" value="${(item.contenanceText || '').replace(/"/g, '&quot;')}" class="poster-edit-input w-12 font-bold border rounded px-1.5 py-1 text-emerald-800 bg-emerald-50 text-center"></label>
+                        <label class="flex items-center gap-1 font-semibold text-gray-600 shrink-0">EAN:<input type="text" data-idx="${index}" data-field="gencode" value="${item.gencode || ''}" class="poster-edit-input w-[108px] font-bold border rounded px-1.5 py-1 text-blue-800 bg-blue-50 text-center"></label>
+                        <button type="button" data-idx="${index}" class="btn-save-to-library font-bold px-2 py-1 rounded bg-indigo-50 hover:bg-indigo-600 text-indigo-700 hover:text-white border border-indigo-200 shrink-0">☁️ Biblio</button>
+                        <button type="button" data-idx="${index}" class="btn-delete-poster font-bold px-2 py-1 rounded bg-red-50 hover:bg-red-600 text-red-600 hover:text-white border border-red-200 shrink-0">🗑️</button>
                     </div>
                     <div class="overflow-x-auto w-full flex justify-center border border-gray-200 bg-gray-100 p-4 rounded-lg">
                         <canvas id="posterCanvas_${index}" class="${isA4PortraitMode ? 'max-w-[420px]' : 'max-w-full'} h-auto shadow-md bg-white"></canvas>
@@ -1542,12 +1562,20 @@
             document.querySelectorAll('.btn-open-item-gallery').forEach(b => b.onclick = function() { currentGalleryTarget = +this.dataset.idx; $('visualGalleryModal').classList.remove('hidden'); });
         }
 
+        // EXPORT PDF A4 AVEC HAUTEUR TOTALE RÉDUITE DE 3 MM (294 mm au lieu de 297 mm)
         $('btnDownloadPdfA4').onclick = () => {
             const pdf = new window.jspdf.jsPDF('p', 'mm', 'a4');
+            const usablePageHeight = 294; // 297mm - 3mm
+            const slotHeight = usablePageHeight / 4; // 73.5mm par étiquette en Stop Rayon
             postersList.forEach((_, i) => {
                 const c = $(`posterCanvas_${i}`); if (!c) return;
-                if (isA4PortraitMode) { if (i > 0) pdf.addPage(); pdf.addImage(c.toDataURL('image/jpeg', 0.98), 'JPEG', 0, 0, 210, 297); }
-                else { if (i > 0 && i % 4 === 0) pdf.addPage(); pdf.addImage(c.toDataURL('image/jpeg', 0.98), 'JPEG', 0, (i % 4) * (297 / 4), 210, 297 / 4); }
+                if (isA4PortraitMode) {
+                    if (i > 0) pdf.addPage();
+                    pdf.addImage(c.toDataURL('image/jpeg', 0.98), 'JPEG', 0, 0, 210, usablePageHeight);
+                } else {
+                    if (i > 0 && i % 4 === 0) pdf.addPage();
+                    pdf.addImage(c.toDataURL('image/jpeg', 0.98), 'JPEG', 0, (i % 4) * slotHeight, 210, slotHeight);
+                }
             });
             pdf.save(isA4PortraitMode ? 'etiquettes_A4_Portrait.pdf' : 'etiquettes_Stop_Rayon.pdf');
         };
