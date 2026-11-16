@@ -12,9 +12,9 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.6/dist/JsBarcode.all.min.js"></script>
     <style>
-        @font-face { font-family:'Museo Slab'; src:url("Copie de Museo_Slab_500.otf") format("opentype"),url("Copie de Museo_Slab.otf") format("opentype"),url("Copie de Museo_Slab_2.otf") format("opentype"),local('Museo Slab'),url('https://fonts.cdnfonts.com/s/13918/Museo_Slab_500.woff') format('woff'); font-weight:500; }
-        @font-face { font-family:'Museo Slab'; src:url("Copie de Museo_Slab_700.otf") format("opentype"),url("Copie de Museo_Slab_3.otf") format("opentype"),local('Museo Slab 700'),url('https://fonts.cdnfonts.com/s/13918/Museo_Slab_700.woff') format('woff'); font-weight:700; }
-        @font-face { font-family:'Museo Slab'; src:url("Copie de Museo_Slab_900.otf") format("opentype"),url("Copie de Museo_Slab_4.otf") format("opentype"),local('Museo Slab 900'),url('https://fonts.cdnfonts.com/s/13918/Museo_Slab_900.woff') format('woff'); font-weight:900; }
+        @font-face { font-family:'Museo Slab'; src:url("Copie%20de%20Museo_Slab.otf") format("opentype"),url("Copie%20de%20Museo_Slab_0.otf") format("opentype"),url("Copie%20de%20Museo_Slab_1.otf") format("opentype"),url("Copie%20de%20Museo_Slab_2.otf") format("opentype"),local('Museo Slab'); font-weight:500; font-style:normal; }
+        @font-face { font-family:'Museo Slab'; src:url("Copie%20de%20Museo_Slab_3.otf") format("opentype"),local('Museo Slab 700'); font-weight:700; font-style:normal; }
+        @font-face { font-family:'Museo Slab'; src:url("Copie%20de%20Museo_Slab_4.otf") format("opentype"),url("Copie%20de%20Museo_Slab.otf") format("opentype"),local('Museo Slab 900'); font-weight:900; font-style:normal; }
         #topControlPanel { zoom: 0.8; }
         input[type=number]::-webkit-inner-spin-button, input[type=number]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
         input[type=number] { -moz-appearance: textfield; }
@@ -36,7 +36,11 @@
                         🗑️ Tout vider
                     </button>
                     <button type="button" id="btnToggleA4Mode" class="text-[11px] font-extrabold px-2.5 py-1 rounded-lg border-2 border-gray-800 bg-white text-gray-800 hover:bg-gray-800 hover:text-white transition flex items-center gap-1 shadow-sm shrink-0">
-                        <span>📐 Mode : Stop Rayon</span><span class="bg-red-600 text-white text-[10px] px-1.5 py-0.5 rounded">Basculer A4 Portrait</span>
+                        <span>📐 Mode : Stock Rayon</span><span class="bg-red-600 text-white text-[10px] px-1.5 py-0.5 rounded">Basculer A4 Portrait</span>
+                    </button>
+                    <!-- BOUTON FOND D'ÉTIQUETTE (UNIQUEMENT EN MODE STOCK RAYON) -->
+                    <button type="button" id="btnOpenBgModal" class="text-[11px] font-extrabold px-2.5 py-1 rounded-lg border-2 border-purple-300 bg-purple-50 text-purple-900 hover:bg-purple-100 transition flex items-center gap-1 shadow-sm shrink-0" title="Ajouter un fond en arrière-plan sur toutes les étiquettes Stock Rayon">
+                        <span id="bgBtnLabel" class="truncate max-w-[130px]">🎨 Fond : Aucun</span>
                     </button>
                     <button type="button" id="btnToggleAlcohol18" class="text-[11px] font-extrabold px-2.5 py-1 rounded-lg border-2 border-orange-300 bg-orange-50 text-orange-800 hover:bg-orange-100 transition flex items-center gap-1 shadow-sm shrink-0">
                         <span class="bg-orange-600 text-white text-[10px] font-black px-1.5 py-0.5 rounded">-18</span><span id="alcoholBtnLabel">Alcool</span>
@@ -174,7 +178,7 @@
                 </div>
                 <div>
                     <button id="btnDownloadPdfA4" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-lg shadow transition text-xs uppercase tracking-wider flex items-center justify-center gap-2">
-                        <span id="btnDownloadLabel">📄 TÉLÉCHARGER LE PDF (STOP RAYON)</span>
+                        <span id="btnDownloadLabel">📄 TÉLÉCHARGER LE PDF (STOCK RAYON)</span>
                     </button>
                 </div>
             </div>
@@ -183,7 +187,7 @@
         <div id="postersContainer" class="space-y-6"></div>
     </div>
 
-    <!-- MODALE 1 : GALERIE VISUELLE -->
+    <!-- MODALE 1 : GALERIE VISUELLE (IMAGES GAUCHE & IMAGES A4) -->
     <div id="visualGalleryModal" class="fixed inset-0 bg-black/60 z-50 hidden flex items-center justify-center p-4 backdrop-blur-sm">
         <div class="bg-white rounded-2xl shadow-2xl max-w-5xl w-full max-h-[90vh] flex flex-col overflow-hidden border-t-4 border-red-600">
             <div class="flex flex-wrap justify-between items-center px-5 py-3.5 border-b bg-gray-50 gap-3">
@@ -214,6 +218,41 @@
             <div class="px-5 py-3 border-t bg-white flex justify-between items-center">
                 <button type="button" id="btnClearVisualSelection" class="text-xs font-bold text-red-600 hover:text-red-800 px-3 py-1.5 rounded border border-red-200">🗑️ Aucun visuel (Fond rouge uni)</button>
                 <button type="button" id="btnCancelGalleryModal" class="text-xs font-bold bg-gray-200 hover:bg-gray-300 text-gray-800 px-4 py-1.5 rounded-lg">Fermer</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODALE 1-BIS : GALERIE DES FONDS D'ARRIÈRE-PLAN (DOSSIER "Fonds" + R2 OPACITÉ 33%) -->
+    <div id="bgGalleryModal" class="fixed inset-0 bg-black/60 z-50 hidden flex items-center justify-center p-4 backdrop-blur-sm">
+        <div class="bg-white rounded-2xl shadow-2xl max-w-5xl w-full max-h-[90vh] flex flex-col overflow-hidden border-t-4 border-purple-600">
+            <div class="flex flex-wrap justify-between items-center px-5 py-3.5 border-b bg-gray-50 gap-3">
+                <div>
+                    <h2 class="text-sm font-extrabold text-purple-900 uppercase">🎨 Choisir un Fond d'étiquette (Stock Rayon)</h2>
+                    <p class="text-[11px] text-gray-500">Appliqué en arrière-plan sur toutes les étiquettes générées • Opacité automatique à 33% sur chaque nouveau dépôt R2</p>
+                </div>
+                <div class="flex flex-wrap items-center gap-2">
+                    <input type="text" id="inputSearchBgGallery" placeholder="🔍 Filtrer un fond..." class="text-xs border rounded-lg px-3 py-1.5 w-48">
+                    <button type="button" id="btnRefreshBgGallery" class="text-xs font-bold bg-gray-200 hover:bg-gray-300 px-2.5 py-1.5 rounded-lg" title="Rafraîchir le dossier Fonds et R2">🔄</button>
+                    <label class="text-xs font-bold bg-purple-600 hover:bg-purple-700 text-white px-3 py-1.5 rounded-lg cursor-pointer shadow-sm">
+                        ☁️ Déposer un Fond sur R2 (Opacité 33% auto)
+                        <input type="file" id="inputAddBgImage" accept=".jpeg,.jpg,.png,.pdf,.webp,.gif,.bmp,.svg,image/*,application/pdf" multiple class="hidden">
+                    </label>
+                    <button type="button" id="btnCloseBgModal" class="text-gray-500 hover:text-red-600 font-bold text-lg px-2.5 py-1">✕</button>
+                </div>
+            </div>
+            <div class="p-5 overflow-y-auto space-y-5 bg-gray-100/70 flex-1">
+                <div id="savedBgSection" class="hidden space-y-2">
+                    <h3 class="text-xs font-extrabold uppercase text-purple-900 bg-purple-100 px-2.5 py-1 rounded-md inline-block">☁️ Fonds déposés sur R2 (Opacité 33% intégrée) (<span id="savedBgCountBadge">0</span>)</h3>
+                    <div id="savedBgGrid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3"></div>
+                </div>
+                <div class="space-y-2">
+                    <h3 class="text-xs font-extrabold uppercase text-gray-700 bg-gray-200 px-2.5 py-1 rounded-md inline-block">📁 Fonds préchargés depuis le dossier "Fonds" (<span id="presetBgCountBadge">0</span>)</h3>
+                    <div id="bgGalleryGrid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3"></div>
+                </div>
+            </div>
+            <div class="px-5 py-3 border-t bg-white flex justify-between items-center">
+                <button type="button" id="btnClearBgSelection" class="text-xs font-bold text-red-600 hover:text-red-800 px-3 py-1.5 rounded border border-red-200">🗑️ Aucun fond (Fond blanc classique)</button>
+                <button type="button" id="btnCancelBgModal" class="text-xs font-bold bg-gray-200 hover:bg-gray-300 text-gray-800 px-4 py-1.5 rounded-lg">Fermer</button>
             </div>
         </div>
     </div>
@@ -412,15 +451,18 @@
             prix_choc:        { discount: 'PRIX', text: 'CHOC !', unitLabel: 'LE PRODUIT', mode: 'direct_lot' }
         };
 
-        // De base sur la page : aucune étiquette affichée (tableau vide)
         let postersList = [];
         let rawLeftImage4 = null, trimmedLeftImage4 = null, labelImage4 = 'Les Prix Bas';
         let rawTopImageA4 = null, trimmedTopImageA4 = null, labelImageA4 = 'Les Prix Bas (A4)';
+        // Image de fond globale pour le mode Stock Rayon
+        let activeBgStockImg = null, activeBgStockLabel = 'Aucun', activeBgStockIsR2 = false;
+
         let dateColor = '#FFFFFF', showDate = false, showMechanic = false, applyMechanicPriceCalc = false, showAlcoholGlobal = false, isA4PortraitMode = false, currentGalleryTarget = 'global';
         let savedUserImages = [], readyDepositedDocs = [], readyGeneratedDocs = [], customSubFolders = { ready_deposited: ['Général'], ready_generated: ['Général'] };
         let activeLibraryTab = 'ready_deposited', activeLibrarySubFolder = 'Général', pendingSavePosterIndex = null, pendingMoveRenameDoc = null, currentLightboxDoc = null;
         let deletedStaticFiles = JSON.parse(localStorage.getItem('superu_deleted_static_files') || '[]');
-        let rawGithubLeftItems = [], rawGithubA4Items = [], dynamicPresets4PerPage = [], dynamicPresetsA4Portrait = [];
+        let rawGithubLeftItems = [], rawGithubA4Items = [], rawGithubBgItems = [];
+        let dynamicPresets4PerPage = [], dynamicPresetsA4Portrait = [], dynamicPresetsBackgrounds = [];
         let activeFontFamilyName = 'Museo Slab';
         let availableFontsList = [{ id: 'default_museo', name: 'Museo Slab', isSystem: true }, { id: 'default_montserrat', name: 'Montserrat', isSystem: true }, { id: 'default_arvo', name: 'Arvo', isSystem: true }];
 
@@ -429,7 +471,43 @@
         const ensureWebpFileName = f => `${(f || 'image').replace(/\.[^.]+$/, '')}.webp`;
         const readFileAsDataURL = file => new Promise(res => { const r = new FileReader(); r.onload = e => res(e.target.result); r.readAsDataURL(file); });
 
-        // Retourne l'état réel de la promo pour une étiquette (active si détectée OU si la mécanique globale est activée et non désactivée manuellement sur cette étiquette)
+        // ============================================================================
+        // CHARGEMENT FORCÉ DE LA POLICE MUSEO SLAB DE BASE DEPUIS LES FICHIERS .OTF
+        // ============================================================================
+        async function autoLoadMuseoSlabFonts() {
+            if (window.location.protocol === 'file:') return;
+            const fontCandidates = [
+                { file: 'Copie de Museo_Slab.otf', weight: '500' },
+                { file: 'Copie de Museo_Slab.otf', weight: '900' },
+                { file: 'Copie de Museo_Slab_0.otf', weight: '500' },
+                { file: 'Copie de Museo_Slab_1.otf', weight: '500' },
+                { file: 'Copie de Museo_Slab_2.otf', weight: '500' },
+                { file: 'Copie de Museo_Slab_3.otf', weight: '700' },
+                { file: 'Copie de Museo_Slab_4.otf', weight: '900' },
+                { file: 'Copie de Museo_Slab_500italic.otf', weight: '500' },
+                { file: 'Copie de Museo_Slab_700italic.otf', weight: '700' },
+                { file: 'Copie de Museo_Slab_900italic.otf', weight: '900' }
+            ];
+            let loadedAny = false;
+            await Promise.all(fontCandidates.map(async item => {
+                try {
+                    const response = await fetch(safeFileUrl(item.file));
+                    if (response.ok) {
+                        const buffer = await response.arrayBuffer();
+                        const fontFace = new FontFace('Museo Slab', buffer, { weight: item.weight, style: 'normal' });
+                        await fontFace.load();
+                        document.fonts.add(fontFace);
+                        loadedAny = true;
+                    }
+                } catch (e) {}
+            }));
+            if (loadedAny) {
+                activeFontFamilyName = 'Museo Slab';
+                if ($('activeFontBadgeName')) $('activeFontBadgeName').textContent = 'Museo Slab';
+                renderAllPosters();
+            }
+        }
+
         function isPosterPromoActive(item) {
             if (item.detectedPromo && typeof item.detectedPromo.active === 'boolean') {
                 return item.detectedPromo.active;
@@ -455,6 +533,7 @@
                 showAlcohol18: null,
                 detectedPromo: showMechanic ? {
                     active: true,
+                    isGlobalSync: true,
                     presetKey: $('selectMechanicPreset').value,
                     discount: $('inputDiscount').value.trim(),
                     text: $('inputDiscountText').value.trim(),
@@ -483,6 +562,20 @@
         function canvasToWebPDataUrl(canvas, q = 0.88) {
             const w = canvas.toDataURL('image/webp', q);
             return w.startsWith('data:image/webp') ? w : canvas.toDataURL('image/png');
+        }
+
+        // Convertit un canvas avec une opacité intégrée de 33% sur fond blanc avant l'envoi sur R2
+        function canvasTo33PercentOpacityWebP(sourceCanvas, q = 0.88) {
+            const c = document.createElement('canvas');
+            c.width = sourceCanvas.width;
+            c.height = sourceCanvas.height;
+            const ctx = c.getContext('2d');
+            ctx.fillStyle = '#FFFFFF';
+            ctx.fillRect(0, 0, c.width, c.height);
+            ctx.globalAlpha = 0.33;
+            ctx.drawImage(sourceCanvas, 0, 0);
+            ctx.globalAlpha = 1.0;
+            return canvasToWebPDataUrl(c, q);
         }
 
         function convertDataUrlToWebP(dataUrl, q = 0.88) {
@@ -529,6 +622,7 @@
             });
             dynamicPresets4PerPage = sortPB(rawGithubLeftItems);
             dynamicPresetsA4Portrait = sortPB(rawGithubA4Items);
+            dynamicPresetsBackgrounds = sortPB(rawGithubBgItems);
         }
 
         async function discoverFolderImagesAutomatically() {
@@ -543,7 +637,11 @@
                     })) : [];
                 } catch (e) { return []; }
             };
-            [rawGithubLeftItems, rawGithubA4Items] = await Promise.all([loadGH('Images Gauche'), loadGH('Images A4')]);
+            [rawGithubLeftItems, rawGithubA4Items, rawGithubBgItems] = await Promise.all([
+                loadGH('Images Gauche'),
+                loadGH('Images A4'),
+                loadGH('Fonds')
+            ]);
             filterAndSortStaticPresets();
         }
 
@@ -666,6 +764,7 @@
             } catch (e) {}
             filterAndSortStaticPresets();
             buildVisualGallery($('inputSearchGallery')?.value || '');
+            buildBgGallery($('inputSearchBgGallery')?.value || '');
         }
 
         async function deleteSharedOrLocalItemWithPassword(item, storeName, displayName) {
@@ -709,7 +808,7 @@
                     customSubFolders.ready_generated = expandFolderHierarchy(genFolders);
 
                     const mapDoc = (f, folderName) => ({ id: f.key, r2Key: f.key, thumbKey: f.thumbKey || '', folder: folderName, subFolder: normalizeFolderPath(f.subFolder), name: f.label, fileName: f.fileName, fileType: f.fileType, previewDataUrl: f.thumbUrl || f.url, rawDataUrl: f.url, date: f.uploaded });
-                    const r2LeftA4 = json.files.filter(f => (f.folder === 'left_4' || f.folder === 'top_a4') && f.fileType !== 'FOLDER').map(f => ({ id: f.key, r2Key: f.key, thumbKey: f.thumbKey || '', folder: f.folder, label: f.label, dataUrl: f.url, date: f.uploaded }));
+                    const r2LeftA4Bg = json.files.filter(f => (f.folder === 'left_4' || f.folder === 'top_a4' || f.folder === 'bg_stock') && f.fileType !== 'FOLDER').map(f => ({ id: f.key, r2Key: f.key, thumbKey: f.thumbKey || '', folder: f.folder, label: f.label, dataUrl: f.url, date: f.uploaded }));
                     const r2Dep = json.files.filter(f => (f.folder === 'ready_deposited' || f.folder === 'ready_docs') && f.fileType !== 'FOLDER').map(f => mapDoc(f, 'ready_deposited'));
                     const r2Gen = json.files.filter(f => f.folder === 'ready_generated' && f.fileType !== 'FOLDER').map(f => mapDoc(f, 'ready_generated'));
 
@@ -727,11 +826,12 @@
                         }
                     }
                     const [localImgs, localDocs] = await Promise.all([dbGetAll(STORE_NAME), dbGetAll(READY_DOCS_STORE)]);
-                    savedUserImages = [...r2LeftA4, ...localImgs];
+                    savedUserImages = [...r2LeftA4Bg, ...localImgs];
                     readyDepositedDocs = [...r2Dep, ...localDocs.filter(d => d.folder !== 'ready_generated')];
                     readyGeneratedDocs = [...r2Gen, ...localDocs.filter(d => d.folder === 'ready_generated')];
                     updateLibraryBadgesAndUI();
                     renderSavedGallerySection($('inputSearchGallery')?.value || '');
+                    buildBgGallery($('inputSearchBgGallery')?.value || '');
                     renderFontManagerList();
                     return;
                 }
@@ -746,6 +846,7 @@
             readyGeneratedDocs = localDocs.filter(d => d.folder === 'ready_generated');
             updateLibraryBadgesAndUI();
             renderSavedGallerySection($('inputSearchGallery')?.value || '');
+            buildBgGallery($('inputSearchBgGallery')?.value || '');
             renderFontManagerList();
         }
 
@@ -1051,7 +1152,7 @@
         $('btnDownloadLightboxDoc').onclick = () => currentLightboxDoc && downloadReadyDocument(currentLightboxDoc);
 
         // ============================================================================
-        // BOUTONS DE CONFIGURATION & GALERIE VISUELLE
+        // BOUTONS DE CONFIGURATION, GALERIE VISUELLE & GALERIE DES FONDS (STOCK RAYON)
         // ============================================================================
         $('btnToggleAlcohol18').onclick = () => {
             showAlcoholGlobal = !showAlcoholGlobal;
@@ -1075,11 +1176,13 @@
                 ? 'text-[11px] font-extrabold px-2.5 py-1 rounded-lg border-2 border-red-600 bg-red-600 text-white flex items-center gap-1 shadow-sm shrink-0'
                 : 'text-[11px] font-extrabold px-2.5 py-1 rounded-lg border-2 border-gray-800 bg-white text-gray-800 flex items-center gap-1 shadow-sm shrink-0';
             this.innerHTML = isA4PortraitMode
-                ? '<span>📄 Mode : A4 Portrait</span><span class="bg-white text-red-600 text-[10px] px-1.5 py-0.5 rounded">Basculer Stop Rayon</span>'
-                : '<span>📐 Mode : Stop Rayon</span><span class="bg-red-600 text-white text-[10px] px-1.5 py-0.5 rounded">Basculer A4 Portrait</span>';
-            $('btnDownloadLabel').textContent = isA4PortraitMode ? '📄 TÉLÉCHARGER LE PDF (A4 PORTRAIT)' : '📄 TÉLÉCHARGER LE PDF (STOP RAYON)';
+                ? '<span>📄 Mode : A4 Portrait</span><span class="bg-white text-red-600 text-[10px] px-1.5 py-0.5 rounded">Basculer Stock Rayon</span>'
+                : '<span>📐 Mode : Stock Rayon</span><span class="bg-red-600 text-white text-[10px] px-1.5 py-0.5 rounded">Basculer A4 Portrait</span>';
+            $('btnDownloadLabel').textContent = isA4PortraitMode ? '📄 TÉLÉCHARGER LE PDF (A4 PORTRAIT)' : '📄 TÉLÉCHARGER LE PDF (STOCK RAYON)';
             $('labelZoneImage').textContent = isA4PortraitMode ? '🖼️ 2. IMAGE HAUT (DOSSIER IMAGES A4)' : '🖼️ 2. IMAGE GAUCHE';
             $('globalGalleryLabel').textContent = `🖼️ ${isA4PortraitMode ? (labelImageA4 || 'Choisir visuel A4') : (labelImage4 || 'Choisir visuel')}`;
+            // Le bouton de fond d'étiquette n'est affiché qu'en mode Stock Rayon
+            $('btnOpenBgModal').classList.toggle('hidden', isA4PortraitMode);
             buildVisualGallery(); renderAllPosters();
         };
 
@@ -1105,7 +1208,6 @@
             renderAllPosters();
         };
 
-        // Quand on active/désactive la mécanique globale, toutes les étiquettes passent en PROMO (ou SANS PROMO) et restent modifiables individuellement
         $('btnToggleDiscountText').onclick = function() {
             showMechanic = !showMechanic;
             this.textContent = showMechanic ? 'affichée' : 'masquée';
@@ -1146,6 +1248,101 @@
             renderAllPosters();
         };
         $('chkShowContenance').onchange = $('chkAutoTrim').onchange = renderAllPosters;
+
+        // ============================================================================
+        // GESTION DES FONDS D'ARRIÈRE-PLAN (MODE STOCK RAYON - DOSSIER "Fonds" & R2 33%)
+        // ============================================================================
+        function applyBackgroundVisual(dataUrl, labelName, isR2Baked33 = false) {
+            const img = new Image();
+            if (window.location.protocol !== 'file:') img.crossOrigin = 'anonymous';
+            img.onload = () => {
+                activeBgStockImg = img;
+                activeBgStockLabel = labelName;
+                activeBgStockIsR2 = isR2Baked33;
+                $('bgBtnLabel').textContent = `🎨 Fond : ${labelName}`;
+                $('btnOpenBgModal').className = 'text-[11px] font-extrabold px-2.5 py-1 rounded-lg border-2 border-purple-600 bg-purple-600 text-white transition flex items-center gap-1 shadow-sm shrink-0';
+                $('bgGalleryModal').classList.add('hidden');
+                renderAllPosters();
+            };
+            img.src = dataUrl;
+        }
+
+        function applyPresetBgWithFallback(candidates, labelName) {
+            let i = 0;
+            const next = () => {
+                if (i >= candidates.length) return;
+                const img = new Image();
+                if (window.location.protocol !== 'file:') img.crossOrigin = 'anonymous';
+                img.onload = () => applyBackgroundVisual(candidates[i], labelName, false);
+                img.onerror = () => { i++; next(); };
+                img.src = candidates[i];
+            };
+            next();
+        }
+
+        function buildBgGallery(filterText = '') {
+            const q = filterText.trim().toLowerCase();
+            // 1. Fonds déposés sur R2 (folder === 'bg_stock')
+            const savedBgs = savedUserImages.filter(it => it.folder === 'bg_stock' && (!q || (it.label || '').toLowerCase().includes(q)));
+            $('savedBgCountBadge').textContent = savedBgs.length;
+            $('savedBgSection').classList.toggle('hidden', !savedBgs.length);
+            const sGrid = $('savedBgGrid'); sGrid.innerHTML = '';
+            savedBgs.forEach(saved => {
+                const w = document.createElement('div');
+                w.className = 'relative bg-white border-2 border-purple-300 hover:border-purple-600 rounded-xl p-2 flex flex-col items-center gap-1.5 shadow-sm cursor-pointer group';
+                w.innerHTML = `<button type="button" class="btn-del absolute top-1 right-1 bg-red-600 text-white text-[10px] font-bold w-5 h-5 rounded-full">✕</button><div class="w-full h-24 bg-gray-50 rounded-lg flex items-center justify-center overflow-hidden border border-gray-100"><img src="${saved.dataUrl}" class="w-full h-full object-cover"></div><span class="text-[11px] font-extrabold text-purple-900 uppercase truncate w-full text-center">${saved.label}</span>`;
+                w.onclick = e => {
+                    if (e.target.closest('.btn-del')) { e.stopPropagation(); return deleteSharedOrLocalItemWithPassword(saved, STORE_NAME, saved.label); }
+                    applyBackgroundVisual(saved.dataUrl, saved.label, true);
+                };
+                sGrid.appendChild(w);
+            });
+
+            // 2. Fonds préchargés depuis le dossier GitHub "Fonds"
+            const pGrid = $('bgGalleryGrid'); pGrid.innerHTML = '';
+            const filteredPresets = dynamicPresetsBackgrounds.filter(p => !q || p.label.toLowerCase().includes(q));
+            $('presetBgCountBadge').textContent = filteredPresets.length;
+            filteredPresets.forEach(preset => {
+                const candidates = getCandidateUrls(preset);
+                const card = document.createElement('div');
+                card.className = 'relative bg-white border-2 border-gray-200 hover:border-purple-600 rounded-xl p-2 flex flex-col items-center gap-1.5 shadow-sm cursor-pointer group';
+                card.innerHTML = `<button type="button" class="btn-del absolute top-1 right-1 bg-red-600 text-white text-[10px] font-bold w-5 h-5 rounded-full opacity-0 group-hover:opacity-90">✕</button><div class="w-full h-24 bg-gray-50 rounded-lg flex items-center justify-center overflow-hidden border border-gray-100"><img class="w-full h-full object-cover"></div><span class="text-[11px] font-extrabold text-gray-800 uppercase truncate w-full text-center">${preset.label}</span>`;
+                const img = card.querySelector('img'); let t = 0;
+                img.onerror = () => { t++; if (t < candidates.length) img.src = candidates[t]; else card.remove(); };
+                img.src = candidates[0];
+                card.querySelector('.btn-del').onclick = e => { e.stopPropagation(); hideStaticGithubFileOnR2(preset.file, preset.label); };
+                card.onclick = () => applyPresetBgWithFallback(candidates, preset.label);
+                pGrid.appendChild(card);
+            });
+        }
+
+        $('btnOpenBgModal').onclick = () => { $('inputSearchBgGallery').value = ''; syncAllFromR2(); buildBgGallery(''); $('bgGalleryModal').classList.remove('hidden'); };
+        $('btnCloseBgModal').onclick = $('btnCancelBgModal').onclick = () => $('bgGalleryModal').classList.add('hidden');
+        $('inputSearchBgGallery').oninput = function() { buildBgGallery(this.value); };
+        $('btnRefreshBgGallery').onclick = async () => { await discoverFolderImagesAutomatically(); await syncAllFromR2(); buildBgGallery($('inputSearchBgGallery').value); };
+
+        $('btnClearBgSelection').onclick = () => {
+            activeBgStockImg = null;
+            activeBgStockLabel = 'Aucun';
+            activeBgStockIsR2 = false;
+            $('bgBtnLabel').textContent = '🎨 Fond : Aucun';
+            $('btnOpenBgModal').className = 'text-[11px] font-extrabold px-2.5 py-1 rounded-lg border-2 border-purple-300 bg-purple-50 text-purple-900 hover:bg-purple-100 transition flex items-center gap-1 shadow-sm shrink-0';
+            $('bgGalleryModal').classList.add('hidden');
+            renderAllPosters();
+        };
+
+        // Dépôt d'un nouveau fond sur R2 avec application automatique d'une opacité de 33%
+        $('inputAddBgImage').onchange = async function(e) {
+            const files = Array.from(e.target.files); if (!files.length) return;
+            for (const file of files) {
+                const pages = await loadFileToPages(file);
+                const webp33 = canvasTo33PercentOpacityWebP(pages[0].canvas, 0.88);
+                const cleanName = file.name.replace(/\.[^.]+$/, '');
+                await uploadToR2OrLocal('bg_stock', cleanName, ensureWebpFileName(file.name), 'IMAGE', webp33, webp33);
+                if (files.length === 1) applyBackgroundVisual(webp33, cleanName, true);
+            }
+            this.value = '';
+        };
 
         function autoTrimWhiteBorders(img) {
             try {
@@ -1449,7 +1646,6 @@
                     crossedPrice = null;
                 }
 
-                // Si une promo (prix barré) est présente ou si la mécanique globale est activée, on passe automatiquement le bouton en PROMO (désactivable au choix)
                 let autoDetectedPromo = null;
                 if (crossedPrice && crossedPrice > mainPrice) {
                     const pct = Math.max(1, Math.round(((crossedPrice - mainPrice) / crossedPrice) * 100));
@@ -1624,7 +1820,7 @@
         };
 
         // ============================================================================
-        // DESSIN SUR CANVAS (STOP RAYON & A4 PORTRAIT)
+        // DESSIN SUR CANVAS (STOCK RAYON & A4 PORTRAIT)
         // ============================================================================
         function drawAlcohol18Banner(ctx, x, y, scale = 1.0) {
             const FONT_SLAB = getActiveFontSlab();
@@ -1695,6 +1891,8 @@
                 const fmt = (/^\d{13}$/.test(clean) && isValidEAN13Checksum(clean)) ? "EAN13" : "CODE128";
                 JsBarcode(bc, clean, { format: fmt, width: 2.1, height: barHeight, displayValue: true, fontSize: 18, fontOptions: "bold", font: "Montserrat, Arial, sans-serif", textMargin: 2, margin: 0, background: "#FFFFFF", lineColor: "#000000" });
                 const tW = Math.min(maxWidth, bc.width), tH = bc.height * (tW / bc.width);
+                ctx.fillStyle = '#FFFFFF';
+                ctx.fillRect(x - 4, y - tH + 2, tW + 8, tH + 6);
                 ctx.drawImage(bc, x, y - tH + 6, tW, tH);
             } catch (e) { ctx.fillStyle = '#000000'; ctx.font = `700 18px ${FONT_SANS}`; ctx.textAlign = 'left'; ctx.fillText(clean, x, y); }
         }
@@ -1803,12 +2001,10 @@
                     if (showCont && item.contenanceText) { ctx.fillStyle = '#374151'; ctx.font = `700 21px ${FONT_SANS}`; ctx.fillText(`Contenance : ${item.contenanceText}`, 420, pricing.hasCrossedPrice ? 660 : 620); }
                 }
 
-                // Limite basse du titre ajustée si la date est affichée en bas de la page A4 Portrait
                 const maxTitleBottomY = showDate ? 985 : 1020;
                 ctx.fillStyle = '#000000';
                 drawFittedProductTitle(ctx, item.productName, 52, 765, 736, maxTitleBottomY, 62, 28, 'left');
 
-                // Date promo en bas de la page A4 Portrait, placée plus haut que le bandeau -18 ans alcool
                 if (showDate && dateRaw) {
                     const dateLines = dateRaw.split('|').map(s => s.trim()).filter(Boolean);
                     const dateStartY = dispAlc
@@ -1826,9 +2022,24 @@
                 return;
             }
 
-            // Mode Stop Rayon (1200 x 420)
+            // Mode Stock Rayon (1200 x 420)
             canvas.width = 1200; canvas.height = 420;
             ctx.fillStyle = '#FFFFFF'; ctx.fillRect(0, 0, 1200, 420);
+
+            // DESSIN DU FOND D'ARRIÈRE-PLAN EN MODE STOCK RAYON (sur toute la zone droite de l'étiquette : x=412 à 1200)
+            if (activeBgStockImg?.complete && activeBgStockImg.naturalWidth > 0) {
+                ctx.save();
+                ctx.beginPath();
+                ctx.rect(412, 0, 788, 420);
+                ctx.clip();
+                // Si l'image a été déposée sur R2, l'opacité de 33% est déjà cuite dedans ; sinon (dossier Fonds), on l'affiche telle quelle
+                const bgScale = Math.max(788 / activeBgStockImg.width, 420 / activeBgStockImg.height);
+                const bgW = activeBgStockImg.width * bgScale;
+                const bgH = activeBgStockImg.height * bgScale;
+                ctx.drawImage(activeBgStockImg, 412 + (788 - bgW) / 2, (420 - bgH) / 2, bgW, bgH);
+                ctx.restore();
+            }
+
             ctx.fillStyle = '#EE1C25'; ctx.fillRect(0, 0, 412, 420);
             if (activeImg?.complete && activeImg.naturalWidth > 0) {
                 ctx.save(); ctx.beginPath(); ctx.rect(0, 0, 412, 420); ctx.clip();
@@ -1935,7 +2146,6 @@
                 else postersList[i][f] = this.value.trim();
                 drawSinglePoster($(`posterCanvas_${i}`), postersList[i]);
             });
-            // Bascule individuelle PROMO / SANS PROMO sur n'importe quelle étiquette
             document.querySelectorAll('.btn-toggle-item-promo').forEach(b => b.onclick = function() {
                 const i = +this.dataset.idx;
                 const currentlyActive = isPosterPromoActive(postersList[i]);
@@ -1980,7 +2190,7 @@
                     pdf.addImage(c.toDataURL('image/jpeg', 0.98), 'JPEG', 0, (i % 4) * slotHeight, 210, slotHeight);
                 }
             });
-            pdf.save(isA4PortraitMode ? 'etiquettes_A4_Portrait.pdf' : 'etiquettes_Stop_Rayon.pdf');
+            pdf.save(isA4PortraitMode ? 'etiquettes_A4_Portrait.pdf' : 'etiquettes_Stock_Rayon.pdf');
         };
 
         ['inputDates', 'inputDiscount', 'inputDiscountText', 'inputUnitLabel'].forEach(id => $(id).oninput = () => {
@@ -1995,9 +2205,11 @@
         });
 
         window.addEventListener('DOMContentLoaded', async () => {
+            await autoLoadMuseoSlabFonts();
             await discoverFolderImagesAutomatically();
             await syncAllFromR2();
             buildVisualGallery();
+            buildBgGallery();
             loadDefaultModeImages();
             renderAllPosters();
         });
