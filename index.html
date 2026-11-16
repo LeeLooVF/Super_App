@@ -405,10 +405,10 @@
             prix_choc:        { discount: 'PRIX', text: 'CHOC !', unitLabel: 'LE PRODUIT', mode: 'direct_lot' }
         };
 
-        let postersList = [{ productName: 'APERIVRAIS ST AGUR 30%MG 100G', oldPrice: 2.31, promoMainPrice: null, baseUnitPrice: 23.10, unitQty: 0.1, unitType: 'kg', contenanceText: '100 g', gencode: '3616305242723', useCustomLeftImage: false, customRawImg: null, customTrimmedImg: null, customImageLabel: '', showAlcohol18: null, detectedPromo: null }];
+        // oldPrice = Prix principal affiché en rouge ; crossedPrice = Prix barré affiché juste au-dessus du prix rouge (optionnel)
+        let postersList = [{ productName: 'APERIVRAIS ST AGUR 30%MG 100G', oldPrice: 2.31, crossedPrice: null, baseUnitPrice: 23.10, unitQty: 0.1, unitType: 'kg', contenanceText: '100 g', gencode: '3616305242723', useCustomLeftImage: false, customRawImg: null, customTrimmedImg: null, customImageLabel: '', showAlcohol18: null, detectedPromo: null }];
         let rawLeftImage4 = null, trimmedLeftImage4 = null, labelImage4 = 'Les Prix Bas';
         let rawTopImageA4 = null, trimmedTopImageA4 = null, labelImageA4 = 'Les Prix Bas (A4)';
-        // Calcul prix désactivé de base (applyMechanicPriceCalc = false)
         let dateColor = '#FFFFFF', showDate = false, showMechanic = false, applyMechanicPriceCalc = false, showAlcoholGlobal = false, isA4PortraitMode = false, currentGalleryTarget = 'global';
         let savedUserImages = [], readyDepositedDocs = [], readyGeneratedDocs = [], customSubFolders = { ready_deposited: ['Général'], ready_generated: ['Général'] };
         let activeLibraryTab = 'ready_deposited', activeLibrarySubFolder = 'Général', pendingSavePosterIndex = null, pendingMoveRenameDoc = null, currentLightboxDoc = null;
@@ -1197,7 +1197,7 @@
         }
 
         // ============================================================================
-        // EXTRACTION IA GEMINI VISION (AVEC LIMITE DE 50 ÉTIQUETTES MAX)
+        // EXTRACTION IA GEMINI VISION (AVEC GESTION PRIX BARRÉ + PRIX ROUGE)
         // ============================================================================
         function isValidEAN13Checksum(c) {
             if (!/^\d{13}$/.test(c)) return false;
@@ -1224,23 +1224,29 @@
             if (json?.ok && Array.isArray(json.labels)) {
                 return json.labels.map(lbl => {
                     const uType = ['kg', 'l', 'pièce'].includes((lbl.unitType || '').toLowerCase()) ? lbl.unitType.toLowerCase() : 'pièce';
-                    const oldP = Number(lbl.oldPrice) > 0 ? Number(lbl.oldPrice) : 1.99;
-                    const promoP = (lbl.promoMainPrice && Number(lbl.promoMainPrice) > 0 && Number(lbl.promoMainPrice) < oldP) ? Number(lbl.promoMainPrice) : null;
-                    let discStr = lbl.promoDiscount || '';
-                    if (!discStr && promoP) {
-                        const computedPct = Math.round(((oldP - promoP) / oldP) * 100);
-                        if (computedPct >= 3) discStr = `-${computedPct}%`;
+                    const rawOld = Number(lbl.oldPrice) > 0 ? Number(lbl.oldPrice) : 1.99;
+                    const rawPromo = (lbl.promoMainPrice && Number(lbl.promoMainPrice) > 0) ? Number(lbl.promoMainPrice) : null;
+
+                    // Si 2 prix sont présents sur l'étiquette (ex: 10,99€ et 11,55€), le plus petit est le Prix Rouge (mainPrice) et le plus grand est le Prix Barré (crossedPrice) !
+                    let mainRedPrice = rawOld;
+                    let crossedOldPrice = null;
+                    if (rawPromo && Math.abs(rawOld - rawPromo) > 0.005) {
+                        mainRedPrice = Math.min(rawOld, rawPromo);
+                        crossedOldPrice = Math.max(rawOld, rawPromo);
                     }
-                    const hasPromo = Boolean((lbl.hasPromo && discStr) || promoP);
+
+                    const discStr = (lbl.promoDiscount || '').trim();
+                    const hasExplicitCirclePromo = Boolean(lbl.hasPromo && discStr);
+
                     return {
                         productName: (lbl.productName || 'PRODUIT').toUpperCase().trim(),
-                        oldPrice: oldP,
-                        promoMainPrice: promoP,
-                        baseUnitPrice: Number(lbl.baseUnitPrice) > 0 ? Number(lbl.baseUnitPrice) : oldP,
+                        oldPrice: mainRedPrice,          // Prix principal affiché en rouge
+                        crossedPrice: crossedOldPrice,   // Prix barré affiché juste au-dessus du prix rouge
+                        baseUnitPrice: Number(lbl.baseUnitPrice) > 0 ? Number(lbl.baseUnitPrice) : mainRedPrice,
                         unitQty: 1, unitType: uType, contenanceText: lbl.contenanceText || '',
                         gencode: (lbl.gencode || '').replace(/\D/g, ''),
                         useCustomLeftImage: false, customRawImg: null, customTrimmedImg: null, customImageLabel: '', showAlcohol18: null,
-                        detectedPromo: hasPromo ? { active: true, presetKey: lbl.promoPresetKey || 'remise_imm', discount: discStr, text: lbl.promoText || 'DE REMISE|IMMÉDIATE', unitLabel: lbl.promoPresetKey === '2_plus_1' ? 'LES 3 PRODUITS' : (lbl.promoPresetKey === '1_plus_1' ? 'LE LOT DE 2' : 'LE PRODUIT') } : null
+                        detectedPromo: hasExplicitCirclePromo ? { active: true, presetKey: lbl.promoPresetKey || 'remise_imm', discount: discStr, text: lbl.promoText || 'DE REMISE|IMMÉDIATE', unitLabel: lbl.promoPresetKey === '2_plus_1' ? 'LES 3 PRODUITS' : (lbl.promoPresetKey === '1_plus_1' ? 'LE LOT DE 2' : 'LE PRODUIT') } : null
                     };
                 });
             }
@@ -1272,9 +1278,9 @@
                 }
                 if (allDetected.length) {
                     postersList = allDetected;
-                    const pCount = postersList.filter(it => it.detectedPromo?.active || (it.promoMainPrice && it.promoMainPrice < it.oldPrice)).length;
-                    status.textContent = `✅ ${postersList.length} étiquette(s) générée(s)${limitReached ? ' (Limite max de 50 atteinte)' : ''} — ${pCount} avec promo/prix barré !`;
-                    if (limitReached) alert(`⚠️ Limite atteinte : Le générateur est limité à ${MAX_LABELS_LIMIT} étiquettes maximum en une seule fois. Les 50 premières étiquettes ont été générées.`);
+                    const cCount = postersList.filter(it => it.crossedPrice && it.crossedPrice > 0).length;
+                    status.textContent = `✅ ${postersList.length} étiquette(s) générée(s)${limitReached ? ' (Max 50)' : ''} — ${cCount} avec prix barré !`;
+                    if (limitReached) alert(`⚠️ Limite atteinte : Le générateur est limité à ${MAX_LABELS_LIMIT} étiquettes maximum en une seule fois.`);
                 } else status.textContent = "⚠️ Aucune étiquette détectée.";
                 if ($('aiServiceBadge')) $('aiServiceBadge').textContent = "✨ Gemini Vision Actif";
                 renderAllPosters();
@@ -1363,16 +1369,27 @@
         function computePromoPricing(item, presetKey, discountInput, isMechanicShown) {
             const uType = item.unitType || 'pièce', prefix = uType === 'pièce' ? 'La pièce' : (uType === 'l' ? 'Le L' : 'Le kg');
             const baseUnit = item.baseUnitPrice > 0 ? item.baseUnitPrice : item.oldPrice;
+            const manualCrossed = (item.crossedPrice && Number(item.crossedPrice) > 0) ? Number(item.crossedPrice) : null;
 
-            // Si l'étiquette importée possède déjà un prix barré + un nouveau prix réduit (promoMainPrice), on affiche TOUJOURS le prix barré de base !
-            if (item.promoMainPrice && item.promoMainPrice > 0 && item.promoMainPrice < item.oldPrice) {
-                const r = item.oldPrice > 0 ? (item.promoMainPrice / item.oldPrice) : 1;
-                return { hasCrossedPrice: true, crossedPrice: item.oldPrice, mainPrice: item.promoMainPrice, unitPriceText: `${prefix} : ${(baseUnit * r).toFixed(2).replace('.', ',')} €` };
-            }
-
+            // Si un prix barré existe sur l'étiquette (importé ou saisi dans le champ "Barré"), on l'affiche TOUJOURS au-dessus du prix rouge !
             if (!isMechanicShown || !applyMechanicPriceCalc) {
-                return { hasCrossedPrice: false, crossedPrice: item.oldPrice, mainPrice: item.oldPrice, unitPriceText: `${prefix} : ${baseUnit.toFixed(2).replace('.', ',')} €` };
+                return {
+                    hasCrossedPrice: Boolean(manualCrossed),
+                    crossedPrice: manualCrossed || item.oldPrice,
+                    mainPrice: item.oldPrice,
+                    unitPriceText: `${prefix} : ${baseUnit.toFixed(2).replace('.', ',')} €`
+                };
             }
+
+            if (manualCrossed) {
+                return {
+                    hasCrossedPrice: true,
+                    crossedPrice: manualCrossed,
+                    mainPrice: item.oldPrice,
+                    unitPriceText: `${prefix} : ${baseUnit.toFixed(2).replace('.', ',')} €`
+                };
+            }
+
             const preset = MECHANIC_PRESETS[presetKey] || { mode: 'pct_single' };
             const pctM = discountInput.match(/(\d+(?:[.,]\d+)?)\s*%/), eurM = discountInput.match(/(\d+(?:[.,]\d+)?)\s*€/);
             if (preset.mode === 'nth_2') {
@@ -1513,24 +1530,26 @@
 
             postersList.forEach((item, index) => {
                 const isCustom = Boolean(item.useCustomLeftImage), isAlc = item.showAlcohol18 !== null ? item.showAlcohol18 : showAlcoholGlobal, hasP = Boolean(item.detectedPromo?.active);
+                const crossedVal = (item.crossedPrice && Number(item.crossedPrice) > 0) ? Number(item.crossedPrice).toFixed(2) : '';
                 const card = document.createElement('div');
                 card.className = 'bg-white p-4 rounded-xl shadow-md space-y-3';
                 card.innerHTML = `
-                    <div class="flex flex-wrap xl:flex-nowrap items-center border-b pb-2 gap-1.5 text-[11px]">
-                        <span class="bg-gray-800 text-white font-bold px-2 py-1 rounded shrink-0">#${index + 1}</span>
-                        <input type="text" data-idx="${index}" data-field="productName" value="${item.productName.replace(/"/g, '&quot;')}" class="poster-edit-input flex-1 min-w-[130px] font-bold uppercase border rounded px-2 py-1">
-                        <button type="button" data-idx="${index}" class="btn-toggle-item-promo font-extrabold px-2 py-1 rounded border shrink-0 ${hasP ? 'bg-red-600 text-white border-red-700' : 'bg-gray-100 text-gray-600'}">🎯 ${hasP ? `Promo ${item.detectedPromo.discount}` : 'Sans promo'}</button>
+                    <div class="flex flex-wrap xl:flex-nowrap items-center border-b pb-2 gap-1 text-[11px]">
+                        <span class="bg-gray-800 text-white font-bold px-1.5 py-1 rounded shrink-0">#${index + 1}</span>
+                        <input type="text" data-idx="${index}" data-field="productName" value="${item.productName.replace(/"/g, '&quot;')}" class="poster-edit-input flex-1 min-w-[110px] font-bold uppercase border rounded px-2 py-1">
+                        <button type="button" data-idx="${index}" class="btn-toggle-item-promo font-extrabold px-1.5 py-1 rounded border shrink-0 ${hasP ? 'bg-red-600 text-white border-red-700' : 'bg-gray-100 text-gray-600'}">🎯 ${hasP ? `Promo ${item.detectedPromo.discount}` : 'Sans promo'}</button>
                         <div class="flex items-center gap-1 px-1.5 py-0.5 rounded-lg border shrink-0 ${isCustom ? 'border-green-500 bg-green-50/60' : 'border-gray-200 bg-gray-50'}">
                             <span class="font-bold text-gray-600">Img:</span>
                             <button type="button" data-idx="${index}" class="btn-toggle-item-img font-bold px-1.5 py-0.5 rounded ${isCustom ? 'bg-green-600 text-white' : 'bg-gray-200 text-gray-700'}">${isCustom ? 'Activé' : 'Désactivé'}</button>
                             <button type="button" data-idx="${index}" class="btn-open-item-gallery ${isCustom ? '' : 'hidden'} font-bold px-1.5 py-0.5 rounded bg-white border border-green-400 text-green-900">🖼️ ${item.customImageLabel || 'Visuel'}</button>
                         </div>
                         <button type="button" data-idx="${index}" class="btn-toggle-item-alcohol font-extrabold px-1.5 py-1 rounded border shrink-0 ${isAlc ? 'bg-orange-600 text-white' : 'bg-orange-50 text-orange-800'}">-18 ${isAlc ? 'ON' : 'OFF'}</button>
-                        <label class="flex items-center gap-1 font-semibold text-gray-600 shrink-0">Prix (€):<input type="number" step="0.01" data-idx="${index}" data-field="oldPrice" value="${item.oldPrice.toFixed(2)}" class="poster-edit-input w-12 font-bold border rounded px-1.5 py-1 text-pink-700 bg-pink-50 text-center"></label>
-                        <label class="flex items-center gap-1 font-semibold text-gray-600 shrink-0">Prix Unité:<input type="number" step="0.01" data-idx="${index}" data-field="baseUnitPrice" value="${(item.baseUnitPrice || item.oldPrice).toFixed(2)}" class="poster-edit-input w-12 font-bold border rounded px-1.5 py-1 text-amber-800 bg-amber-50 text-center"></label>
-                        <label class="flex items-center gap-1 font-semibold text-gray-600 shrink-0">Unité:<select data-idx="${index}" data-field="unitType" class="poster-edit-input font-bold border rounded px-1 py-1 bg-yellow-50"><option value="pièce" ${item.unitType === 'pièce' ? 'selected' : ''}>Pièce</option><option value="kg" ${item.unitType === 'kg' ? 'selected' : ''}>Kg</option><option value="l" ${item.unitType === 'l' ? 'selected' : ''}>Litre</option></select></label>
-                        <label class="flex items-center gap-1 font-semibold text-gray-600 shrink-0">Cont.:<input type="text" data-idx="${index}" data-field="contenanceText" value="${(item.contenanceText || '').replace(/"/g, '&quot;')}" class="poster-edit-input w-12 font-bold border rounded px-1.5 py-1 text-emerald-800 bg-emerald-50 text-center"></label>
-                        <label class="flex items-center gap-1 font-semibold text-gray-600 shrink-0">EAN:<input type="text" data-idx="${index}" data-field="gencode" value="${item.gencode || ''}" class="poster-edit-input w-[108px] font-bold border rounded px-1.5 py-1 text-blue-800 bg-blue-50 text-center"></label>
+                        <label class="flex items-center gap-0.5 font-semibold text-gray-600 shrink-0">Prix:<input type="number" step="0.01" data-idx="${index}" data-field="oldPrice" value="${item.oldPrice.toFixed(2)}" class="poster-edit-input w-11 font-bold border rounded px-1 py-1 text-pink-700 bg-pink-50 text-center" title="Prix principal affiché en rouge"></label>
+                        <label class="flex items-center gap-0.5 font-semibold text-gray-600 shrink-0">Barré:<input type="number" step="0.01" data-idx="${index}" data-field="crossedPrice" value="${crossedVal}" placeholder="-" class="poster-edit-input w-11 font-bold border rounded px-1 py-1 text-gray-700 bg-gray-100 text-center" title="Prix barré affiché juste au-dessus du prix rouge (laisser vide si aucun)"></label>
+                        <label class="flex items-center gap-0.5 font-semibold text-gray-600 shrink-0">P.Unité:<input type="number" step="0.01" data-idx="${index}" data-field="baseUnitPrice" value="${(item.baseUnitPrice || item.oldPrice).toFixed(2)}" class="poster-edit-input w-11 font-bold border rounded px-1 py-1 text-amber-800 bg-amber-50 text-center"></label>
+                        <label class="flex items-center gap-0.5 font-semibold text-gray-600 shrink-0">Unité:<select data-idx="${index}" data-field="unitType" class="poster-edit-input font-bold border rounded px-1 py-1 bg-yellow-50"><option value="pièce" ${item.unitType === 'pièce' ? 'selected' : ''}>Pièce</option><option value="kg" ${item.unitType === 'kg' ? 'selected' : ''}>Kg</option><option value="l" ${item.unitType === 'l' ? 'selected' : ''}>Litre</option></select></label>
+                        <label class="flex items-center gap-0.5 font-semibold text-gray-600 shrink-0">Cont.:<input type="text" data-idx="${index}" data-field="contenanceText" value="${(item.contenanceText || '').replace(/"/g, '&quot;')}" class="poster-edit-input w-11 font-bold border rounded px-1 py-1 text-emerald-800 bg-emerald-50 text-center"></label>
+                        <label class="flex items-center gap-0.5 font-semibold text-gray-600 shrink-0">EAN:<input type="text" data-idx="${index}" data-field="gencode" value="${item.gencode || ''}" class="poster-edit-input w-[104px] font-bold border rounded px-1 py-1 text-blue-800 bg-blue-50 text-center"></label>
                         <button type="button" data-idx="${index}" class="btn-save-to-library font-bold px-2 py-1 rounded bg-indigo-50 hover:bg-indigo-600 text-indigo-700 hover:text-white border border-indigo-200 shrink-0">☁️ Biblio</button>
                         <button type="button" data-idx="${index}" class="btn-delete-poster font-bold px-2 py-1 rounded bg-red-50 hover:bg-red-600 text-red-600 hover:text-white border border-red-200 shrink-0">🗑️</button>
                     </div>
@@ -1544,8 +1563,13 @@
             document.querySelectorAll('.poster-edit-input').forEach(inp => inp.oninput = function() {
                 const i = +this.dataset.idx, f = this.dataset.field;
                 if (f === 'productName') postersList[i].productName = this.value.toUpperCase();
-                else if (f === 'oldPrice') { postersList[i].oldPrice = parseFloat(this.value) || 0; postersList[i].promoMainPrice = null; if (postersList[i].unitType === 'pièce') postersList[i].baseUnitPrice = postersList[i].oldPrice; }
-                else if (f === 'baseUnitPrice') postersList[i].baseUnitPrice = parseFloat(this.value) || 0;
+                else if (f === 'oldPrice') {
+                    postersList[i].oldPrice = parseFloat(this.value) || 0;
+                    if (postersList[i].unitType === 'pièce') postersList[i].baseUnitPrice = postersList[i].oldPrice;
+                } else if (f === 'crossedPrice') {
+                    const v = parseFloat(this.value);
+                    postersList[i].crossedPrice = (v && v > 0) ? v : null;
+                } else if (f === 'baseUnitPrice') postersList[i].baseUnitPrice = parseFloat(this.value) || 0;
                 else postersList[i][f] = this.value.trim();
                 drawSinglePoster($(`posterCanvas_${i}`), postersList[i]);
             });
@@ -1565,8 +1589,8 @@
         // EXPORT PDF A4 AVEC HAUTEUR TOTALE RÉDUITE DE 3 MM (294 mm au lieu de 297 mm)
         $('btnDownloadPdfA4').onclick = () => {
             const pdf = new window.jspdf.jsPDF('p', 'mm', 'a4');
-            const usablePageHeight = 294; // 297mm - 3mm
-            const slotHeight = usablePageHeight / 4; // 73.5mm par étiquette en Stop Rayon
+            const usablePageHeight = 294;
+            const slotHeight = usablePageHeight / 4;
             postersList.forEach((_, i) => {
                 const c = $(`posterCanvas_${i}`); if (!c) return;
                 if (isA4PortraitMode) {
