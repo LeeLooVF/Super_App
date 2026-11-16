@@ -6,15 +6,15 @@
     <title>Generateur</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.cdnfonts.com/css/museo-slab" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Arvo:ital,wght@0,400;0,700;1,400&family=Montserrat:wght@500;600;700;800;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500;600;700;800;900&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.6/dist/JsBarcode.all.min.js"></script>
     <style>
-        @font-face { font-family:'Museo Slab'; src:url("Copie%20de%20Museo_Slab.otf") format("opentype"),url("Copie%20de%20Museo_Slab_0.otf") format("opentype"),url("Copie%20de%20Museo_Slab_1.otf") format("opentype"),url("Copie%20de%20Museo_Slab_2.otf") format("opentype"),local('Museo Slab'); font-weight:500; font-style:normal; }
-        @font-face { font-family:'Museo Slab'; src:url("Copie%20de%20Museo_Slab_3.otf") format("opentype"),local('Museo Slab 700'); font-weight:700; font-style:normal; }
-        @font-face { font-family:'Museo Slab'; src:url("Copie%20de%20Museo_Slab_4.otf") format("opentype"),url("Copie%20de%20Museo_Slab.otf") format("opentype"),local('Museo Slab 900'); font-weight:900; font-style:normal; }
+        @font-face { font-family:'Copie de Museo_Slab_3'; src:url("Copie%20de%20Museo_Slab_3.otf") format("opentype"),local('Museo Slab 700'),local('Museo Slab'); font-weight:500; font-style:normal; }
+        @font-face { font-family:'Copie de Museo_Slab_3'; src:url("Copie%20de%20Museo_Slab_3.otf") format("opentype"),local('Museo Slab 700'),local('Museo Slab'); font-weight:700; font-style:normal; }
+        @font-face { font-family:'Copie de Museo_Slab_3'; src:url("Copie%20de%20Museo_Slab_3.otf") format("opentype"),local('Museo Slab 700'),local('Museo Slab'); font-weight:900; font-style:normal; }
         #topControlPanel { zoom: 0.8; }
         input[type=number]::-webkit-inner-spin-button, input[type=number]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
         input[type=number] { -moz-appearance: textfield; }
@@ -73,7 +73,7 @@
                         </div>
                         <div class="flex justify-between items-center py-1 border-b border-gray-100">
                             <span class="font-semibold text-gray-600">Chargement Police :</span>
-                            <span id="fontStatus" class="font-bold text-green-700 bg-green-50 px-2 py-0.5 rounded border border-green-200">✓ <span id="activeFontBadgeName">Museo Slab</span></span>
+                            <span id="fontStatus" class="font-bold text-green-700 bg-green-50 px-2 py-0.5 rounded border border-green-200">✓ <span id="activeFontBadgeName">Copie de Museo_Slab_3</span></span>
                         </div>
                         <div class="flex justify-between items-center py-1 border-b border-gray-100">
                             <span class="font-semibold text-gray-600">Extraction IA / PDF :</span>
@@ -381,7 +381,7 @@
             <div class="flex flex-wrap justify-between items-center border-b pb-3 gap-2">
                 <div>
                     <h3 class="text-sm font-extrabold text-gray-800 uppercase">🔤 Gestionnaire de Polices d'écriture (R2)</h3>
-                    <p class="text-[11px] text-gray-500">Choisis la police active, dépose une police sur R2 ou supprime avec code</p>
+                    <p class="text-[11px] text-gray-500">Police par défaut : Copie de Museo_Slab_3 • Dépose une nouvelle police sur R2 ou supprime avec code</p>
                 </div>
                 <div class="flex items-center gap-2">
                     <label class="text-xs font-bold bg-emerald-600 hover:bg-emerald-700 text-white px-3 py-1.5 rounded-lg cursor-pointer shadow-sm">
@@ -454,7 +454,6 @@
         let postersList = [];
         let rawLeftImage4 = null, trimmedLeftImage4 = null, labelImage4 = 'Les Prix Bas';
         let rawTopImageA4 = null, trimmedTopImageA4 = null, labelImageA4 = 'Les Prix Bas (A4)';
-        // Image de fond globale pour le mode Stock Rayon
         let activeBgStockImg = null, activeBgStockLabel = 'Aucun', activeBgStockIsR2 = false;
 
         let dateColor = '#FFFFFF', showDate = false, showMechanic = false, applyMechanicPriceCalc = false, showAlcoholGlobal = false, isA4PortraitMode = false, currentGalleryTarget = 'global';
@@ -463,49 +462,40 @@
         let deletedStaticFiles = JSON.parse(localStorage.getItem('superu_deleted_static_files') || '[]');
         let rawGithubLeftItems = [], rawGithubA4Items = [], rawGithubBgItems = [];
         let dynamicPresets4PerPage = [], dynamicPresetsA4Portrait = [], dynamicPresetsBackgrounds = [];
-        let activeFontFamilyName = 'Museo Slab';
-        let availableFontsList = [{ id: 'default_museo', name: 'Museo Slab', isSystem: true }, { id: 'default_montserrat', name: 'Montserrat', isSystem: true }, { id: 'default_arvo', name: 'Arvo', isSystem: true }];
 
-        const getActiveFontSlab = () => `"${activeFontFamilyName}", "Museo Slab", "Arvo", serif`;
+        // Police par défaut : Copie de Museo_Slab_3 (uniquement 2 polices de base dans la liste + dépôt R2)
+        let activeFontFamilyName = 'Copie de Museo_Slab_3';
+        let availableFontsList = [
+            { id: 'default_museo_3', name: 'Copie de Museo_Slab_3', isSystem: true },
+            { id: 'default_montserrat', name: 'Montserrat', isSystem: true }
+        ];
+
+        const getActiveFontSlab = () => `"${activeFontFamilyName}", "Copie de Museo_Slab_3", "Museo Slab", serif`;
         const safeFileUrl = f => f.split('/').map(encodeURIComponent).join('/');
         const ensureWebpFileName = f => `${(f || 'image').replace(/\.[^.]+$/, '')}.webp`;
         const readFileAsDataURL = file => new Promise(res => { const r = new FileReader(); r.onload = e => res(e.target.result); r.readAsDataURL(file); });
 
         // ============================================================================
-        // CHARGEMENT FORCÉ DE LA POLICE MUSEO SLAB DE BASE DEPUIS LES FICHIERS .OTF
+        // CHARGEMENT FORCÉ DE LA POLICE PAR DÉFAUT "Copie de Museo_Slab_3"
         // ============================================================================
         async function autoLoadMuseoSlabFonts() {
             if (window.location.protocol === 'file:') return;
-            const fontCandidates = [
-                { file: 'Copie de Museo_Slab.otf', weight: '500' },
-                { file: 'Copie de Museo_Slab.otf', weight: '900' },
-                { file: 'Copie de Museo_Slab_0.otf', weight: '500' },
-                { file: 'Copie de Museo_Slab_1.otf', weight: '500' },
-                { file: 'Copie de Museo_Slab_2.otf', weight: '500' },
-                { file: 'Copie de Museo_Slab_3.otf', weight: '700' },
-                { file: 'Copie de Museo_Slab_4.otf', weight: '900' },
-                { file: 'Copie de Museo_Slab_500italic.otf', weight: '500' },
-                { file: 'Copie de Museo_Slab_700italic.otf', weight: '700' },
-                { file: 'Copie de Museo_Slab_900italic.otf', weight: '900' }
-            ];
-            let loadedAny = false;
-            await Promise.all(fontCandidates.map(async item => {
-                try {
-                    const response = await fetch(safeFileUrl(item.file));
-                    if (response.ok) {
-                        const buffer = await response.arrayBuffer();
-                        const fontFace = new FontFace('Museo Slab', buffer, { weight: item.weight, style: 'normal' });
-                        await fontFace.load();
-                        document.fonts.add(fontFace);
-                        loadedAny = true;
+            try {
+                const response = await fetch(safeFileUrl('Copie de Museo_Slab_3.otf'));
+                if (response.ok) {
+                    const buffer = await response.arrayBuffer();
+                    for (const w of ['500', '700', '900']) {
+                        const ff1 = new FontFace('Copie de Museo_Slab_3', buffer.slice(0), { weight: w, style: 'normal' });
+                        const ff2 = new FontFace('Museo Slab', buffer.slice(0), { weight: w, style: 'normal' });
+                        await Promise.all([ff1.load(), ff2.load()]);
+                        document.fonts.add(ff1);
+                        document.fonts.add(ff2);
                     }
-                } catch (e) {}
-            }));
-            if (loadedAny) {
-                activeFontFamilyName = 'Museo Slab';
-                if ($('activeFontBadgeName')) $('activeFontBadgeName').textContent = 'Museo Slab';
-                renderAllPosters();
-            }
+                    activeFontFamilyName = 'Copie de Museo_Slab_3';
+                    if ($('activeFontBadgeName')) $('activeFontBadgeName').textContent = 'Copie de Museo_Slab_3';
+                    renderAllPosters();
+                }
+            } catch (e) {}
         }
 
         function isPosterPromoActive(item) {
@@ -513,6 +503,20 @@
                 return item.detectedPromo.active;
             }
             return showMechanic;
+        }
+
+        // Calcule le vrai pourcentage de remise dès qu'un prix barré supérieur au prix rouge est présent sur l'étiquette
+        function getEffectivePosterDiscount(item) {
+            const crossed = (item.crossedPrice && Number(item.crossedPrice) > 0) ? Number(item.crossedPrice) : null;
+            const mainP = Number(item.oldPrice) || 0;
+            if (crossed && mainP > 0 && crossed > mainP) {
+                const realPct = Math.max(1, Math.round(((crossed - mainP) / crossed) * 100));
+                return `-${realPct}%`;
+            }
+            if (item.detectedPromo && !item.detectedPromo.isGlobalSync && item.detectedPromo.discount) {
+                return item.detectedPromo.discount;
+            }
+            return $('inputDiscount').value.trim();
         }
 
         $('btnAddBlankPoster').onclick = () => {
@@ -564,7 +568,6 @@
             return w.startsWith('data:image/webp') ? w : canvas.toDataURL('image/png');
         }
 
-        // Convertit un canvas avec une opacité intégrée de 33% sur fond blanc avant l'envoi sur R2
         function canvasTo33PercentOpacityWebP(sourceCanvas, q = 0.88) {
             const c = document.createElement('canvas');
             c.width = sourceCanvas.width;
@@ -914,7 +917,7 @@
                 if (delBtn) delBtn.onclick = async () => {
                     if (await deleteSharedOrLocalItemWithPassword(fItem, null, fItem.name)) {
                         availableFontsList = availableFontsList.filter(f => f.id !== fItem.id);
-                        if (activeFontFamilyName === fItem.name) { activeFontFamilyName = 'Museo Slab'; $('activeFontBadgeName').textContent = 'Museo Slab'; }
+                        if (activeFontFamilyName === fItem.name) { activeFontFamilyName = 'Copie de Museo_Slab_3'; $('activeFontBadgeName').textContent = 'Copie de Museo_Slab_3'; }
                         renderFontManagerList(); renderAllPosters();
                     }
                 };
@@ -927,7 +930,14 @@
             $('fontUploadStatus').textContent = `⏳ Envoi sur R2...`;
             for (const file of files) {
                 const cleanName = file.name.replace(/\.[^.]+$/, '');
-                try { const ff = new FontFace(cleanName, await file.arrayBuffer()); await ff.load(); document.fonts.add(ff); } catch (err) {}
+                try {
+                    const buf = await file.arrayBuffer();
+                    for (const w of ['500', '700', '900']) {
+                        const ff = new FontFace(cleanName, buf.slice(0), { weight: w, style: 'normal' });
+                        await ff.load();
+                        document.fonts.add(ff);
+                    }
+                } catch (err) {}
                 const dataUrl = await readFileAsDataURL(file);
                 const uploaded = await uploadToR2OrLocal('fonts', cleanName, file.name, 'FONT', dataUrl, dataUrl);
                 if (uploaded && !availableFontsList.some(f => f.name === cleanName)) availableFontsList.push({ id: uploaded.key || cleanName, r2Key: uploaded.key, name: cleanName, fileName: file.name, isSystem: false });
@@ -1181,7 +1191,6 @@
             $('btnDownloadLabel').textContent = isA4PortraitMode ? '📄 TÉLÉCHARGER LE PDF (A4 PORTRAIT)' : '📄 TÉLÉCHARGER LE PDF (STOCK RAYON)';
             $('labelZoneImage').textContent = isA4PortraitMode ? '🖼️ 2. IMAGE HAUT (DOSSIER IMAGES A4)' : '🖼️ 2. IMAGE GAUCHE';
             $('globalGalleryLabel').textContent = `🖼️ ${isA4PortraitMode ? (labelImageA4 || 'Choisir visuel A4') : (labelImage4 || 'Choisir visuel')}`;
-            // Le bouton de fond d'étiquette n'est affiché qu'en mode Stock Rayon
             $('btnOpenBgModal').classList.toggle('hidden', isA4PortraitMode);
             buildVisualGallery(); renderAllPosters();
         };
@@ -1282,7 +1291,6 @@
 
         function buildBgGallery(filterText = '') {
             const q = filterText.trim().toLowerCase();
-            // 1. Fonds déposés sur R2 (folder === 'bg_stock')
             const savedBgs = savedUserImages.filter(it => it.folder === 'bg_stock' && (!q || (it.label || '').toLowerCase().includes(q)));
             $('savedBgCountBadge').textContent = savedBgs.length;
             $('savedBgSection').classList.toggle('hidden', !savedBgs.length);
@@ -1298,7 +1306,6 @@
                 sGrid.appendChild(w);
             });
 
-            // 2. Fonds préchargés depuis le dossier GitHub "Fonds"
             const pGrid = $('bgGalleryGrid'); pGrid.innerHTML = '';
             const filteredPresets = dynamicPresetsBackgrounds.filter(p => !q || p.label.toLowerCase().includes(q));
             $('presetBgCountBadge').textContent = filteredPresets.length;
@@ -1331,7 +1338,6 @@
             renderAllPosters();
         };
 
-        // Dépôt d'un nouveau fond sur R2 avec application automatique d'une opacité de 33%
         $('inputAddBgImage').onchange = async function(e) {
             const files = Array.from(e.target.files); if (!files.length) return;
             for (const file of files) {
@@ -1646,6 +1652,7 @@
                     crossedPrice = null;
                 }
 
+                // Affiche TOUJOURS le vrai pourcentage de promo dans le cercle rouge lorsqu'un prix barré est détecté !
                 let autoDetectedPromo = null;
                 if (crossedPrice && crossedPrice > mainPrice) {
                     const pct = Math.max(1, Math.round(((crossedPrice - mainPrice) / crossedPrice) * 100));
@@ -1653,7 +1660,7 @@
                         active: true,
                         isGlobalSync: false,
                         presetKey: $('selectMechanicPreset').value || 'remise_imm',
-                        discount: showMechanic ? $('inputDiscount').value.trim() : `-${pct}%`,
+                        discount: `-${pct}%`,
                         text: $('inputDiscountText').value.trim() || 'DE REMISE|IMMÉDIATE',
                         unitLabel: $('inputUnitLabel').value.trim() || 'LE PRODUIT'
                     };
@@ -1727,7 +1734,8 @@
                         crossedOldPrice = Math.max(rawOld, rawPromo);
                     }
                     let discStr = (lbl.promoDiscount || '').trim();
-                    if (!discStr && crossedOldPrice && crossedOldPrice > mainRedPrice) {
+                    // Si un prix barré est détecté, calcule toujours le vrai pourcentage de promo
+                    if (crossedOldPrice && crossedOldPrice > mainRedPrice) {
                         const pct = Math.max(1, Math.round(((crossedOldPrice - mainRedPrice) / crossedOldPrice) * 100));
                         discStr = `-${pct}%`;
                     }
@@ -1739,7 +1747,7 @@
                             active: true,
                             isGlobalSync: false,
                             presetKey: lbl.promoPresetKey || 'remise_imm',
-                            discount: discStr || $('inputDiscount').value.trim(),
+                            discount: discStr,
                             text: lbl.promoText || $('inputDiscountText').value.trim() || 'DE REMISE|IMMÉDIATE',
                             unitLabel: lbl.promoPresetKey === '2_plus_1' ? 'LES 3 PRODUITS' : (lbl.promoPresetKey === '1_plus_1' ? 'LE LOT DE 2' : 'LE PRODUIT')
                         };
@@ -1964,8 +1972,9 @@
             const FONT_SLAB = getActiveFontSlab();
             const isMech = isPosterPromoActive(item);
             const hasCustomPromo = Boolean(item.detectedPromo && !item.detectedPromo.isGlobalSync);
-            const discIn = hasCustomPromo ? item.detectedPromo.discount : $('inputDiscount').value.trim();
-            const discTxt = hasCustomPromo ? item.detectedPromo.text : $('inputDiscountText').value.trim();
+            // Affiche toujours le vrai pourcentage calculé lorsqu'un prix barré est détecté sur l'étiquette !
+            const discIn = getEffectivePosterDiscount(item);
+            const discTxt = hasCustomPromo ? (item.detectedPromo.text || 'DE REMISE|IMMÉDIATE') : $('inputDiscountText').value.trim();
             const presetK = hasCustomPromo ? item.detectedPromo.presetKey : $('selectMechanicPreset').value;
             const uLabel = (hasCustomPromo && applyMechanicPriceCalc) ? item.detectedPromo.unitLabel : $('inputUnitLabel').value;
             const showCont = $('chkShowContenance').checked, dateRaw = $('inputDates').value.trim();
@@ -2026,13 +2035,11 @@
             canvas.width = 1200; canvas.height = 420;
             ctx.fillStyle = '#FFFFFF'; ctx.fillRect(0, 0, 1200, 420);
 
-            // DESSIN DU FOND D'ARRIÈRE-PLAN EN MODE STOCK RAYON (sur toute la zone droite de l'étiquette : x=412 à 1200)
             if (activeBgStockImg?.complete && activeBgStockImg.naturalWidth > 0) {
                 ctx.save();
                 ctx.beginPath();
                 ctx.rect(412, 0, 788, 420);
                 ctx.clip();
-                // Si l'image a été déposée sur R2, l'opacité de 33% est déjà cuite dedans ; sinon (dossier Fonds), on l'affiche telle quelle
                 const bgScale = Math.max(788 / activeBgStockImg.width, 420 / activeBgStockImg.height);
                 const bgW = activeBgStockImg.width * bgScale;
                 const bgH = activeBgStockImg.height * bgScale;
@@ -2099,9 +2106,7 @@
             postersList.forEach((item, index) => {
                 const isCustom = Boolean(item.useCustomLeftImage), isAlc = item.showAlcohol18 !== null ? item.showAlcohol18 : showAlcoholGlobal;
                 const hasP = isPosterPromoActive(item);
-                const promoBadgeDiscount = (item.detectedPromo && !item.detectedPromo.isGlobalSync && item.detectedPromo.discount)
-                    ? item.detectedPromo.discount
-                    : $('inputDiscount').value.trim();
+                const promoBadgeDiscount = getEffectivePosterDiscount(item);
                 const crossedVal = (item.crossedPrice && Number(item.crossedPrice) > 0) ? Number(item.crossedPrice).toFixed(2) : '';
 
                 const card = document.createElement('div');
@@ -2142,8 +2147,26 @@
                 } else if (f === 'crossedPrice') {
                     const v = parseFloat(this.value);
                     postersList[i].crossedPrice = (v && v > 0) ? v : null;
+                    if (postersList[i].crossedPrice && postersList[i].crossedPrice > postersList[i].oldPrice) {
+                        const pct = Math.max(1, Math.round(((postersList[i].crossedPrice - postersList[i].oldPrice) / postersList[i].crossedPrice) * 100));
+                        postersList[i].detectedPromo = {
+                            active: true,
+                            isGlobalSync: false,
+                            presetKey: $('selectMechanicPreset').value || 'remise_imm',
+                            discount: `-${pct}%`,
+                            text: $('inputDiscountText').value.trim() || 'DE REMISE|IMMÉDIATE',
+                            unitLabel: $('inputUnitLabel').value.trim() || 'LE PRODUIT'
+                        };
+                    }
                 } else if (f === 'baseUnitPrice') postersList[i].baseUnitPrice = parseFloat(this.value) || 0;
                 else postersList[i][f] = this.value.trim();
+
+                const promoBtn = this.closest('.bg-white')?.querySelector('.btn-toggle-item-promo');
+                if (promoBtn) {
+                    const hasP = isPosterPromoActive(postersList[i]);
+                    promoBtn.textContent = `🎯 ${hasP ? `Promo ${getEffectivePosterDiscount(postersList[i])}` : 'Sans promo'}`;
+                    promoBtn.className = `btn-toggle-item-promo font-extrabold px-2 py-1 rounded border shrink-0 transition ${hasP ? 'bg-red-600 text-white border-red-700 hover:bg-red-700' : 'bg-gray-100 text-gray-600 border-gray-300 hover:bg-gray-200'}`;
+                }
                 drawSinglePoster($(`posterCanvas_${i}`), postersList[i]);
             });
             document.querySelectorAll('.btn-toggle-item-promo').forEach(b => b.onclick = function() {
@@ -2160,7 +2183,7 @@
                         active: true,
                         isGlobalSync: false,
                         presetKey: $('selectMechanicPreset').value,
-                        discount: $('inputDiscount').value.trim(),
+                        discount: getEffectivePosterDiscount(postersList[i]),
                         text: $('inputDiscountText').value.trim(),
                         unitLabel: $('inputUnitLabel').value.trim()
                     };
