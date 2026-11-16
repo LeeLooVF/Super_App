@@ -91,11 +91,16 @@
 
             <!-- LIGNE 1 DE CONFIGURATION -->
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 items-center">
-                <!-- Colonne 1 : Déposer PDF / Photo -->
+                <!-- Colonne 1 : Déposer PDF / Photo (Extraction IA Gemini Vision) -->
                 <div class="bg-blue-50 p-2.5 rounded-lg border border-blue-200 h-full flex flex-col justify-between">
-                    <label class="block text-xs font-bold text-blue-900 uppercase mb-1.5">
-                        📷 1. DÉPOSER PDF / PHOTO
-                    </label>
+                    <div class="flex justify-between items-center mb-1.5">
+                        <label class="block text-xs font-bold text-blue-900 uppercase">
+                            📷 1. DÉPOSER PDF / PHOTO (IA GEMINI)
+                        </label>
+                        <button type="button" id="btnConfigGeminiKey" class="text-[10px] font-bold text-blue-700 hover:text-blue-900 bg-blue-100 hover:bg-blue-200 px-1.5 py-0.5 rounded transition" title="Configurer ou remplacer la clé API Gemini locale si non définie sur Cloudflare">
+                            🔑 Clé IA
+                        </button>
+                    </div>
                     <input type="file" id="inputBlueLabel" accept=".jpeg,.jpg,.png,.pdf,.webp,.bmp,image/*,application/pdf" multiple
                         class="w-full text-xs text-blue-800 file:mr-2 file:py-1.5 file:px-3 file:rounded-md file:border-0 file:text-xs file:font-bold file:bg-blue-600 file:text-white hover:file:bg-blue-700 cursor-pointer">
                 </div>
@@ -535,6 +540,19 @@
             }
             return code;
         }
+
+        // Bouton de configuration rapide de la clé API Gemini (optionnel si déjà dans Cloudflare Pages)
+        document.getElementById('btnConfigGeminiKey').addEventListener('click', () => {
+            const current = localStorage.getItem('superu_gemini_api_key') || '';
+            const input = prompt(
+                "🔑 Clé API Gemini (optionnelle si GEMINI_API_KEY est déjà configurée dans Cloudflare Pages > Settings > Variables) :",
+                current
+            );
+            if (input !== null) {
+                localStorage.setItem('superu_gemini_api_key', input.trim());
+                alert(input.trim() ? "✅ Clé API Gemini locale enregistrée !" : "ℹ️ Clé locale effacée (le serveur utilisera la variable Cloudflare).");
+            }
+        });
 
         // ============================================================================
         // COMPRESSION AUTOMATIQUE EN WEBP AVANT ENVOI SUR R2
@@ -1456,7 +1474,6 @@
             renderAllPosters();
         });
 
-        // Bouton Activé / Désactivé pour le calcul de prix de la mécanique
         const btnTogglePriceCalc = document.getElementById('btnTogglePriceCalc');
         btnTogglePriceCalc.addEventListener('click', () => {
             applyMechanicPriceCalc = !applyMechanicPriceCalc;
@@ -3086,33 +3103,124 @@
             return cells;
         }
 
+        // ============================================================================
+        // EXTRACTION AUTOMATIQUE PAR IA GEMINI VISION (AVEC FALLBACK OCR SI HORS-LIGNE)
+        // ============================================================================
+        async function extractPageWithGemini(pageCanvas) {
+            const maxDim = 2400;
+            let outCanvas = pageCanvas;
+            if (pageCanvas.width > maxDim || pageCanvas.height > maxDim) {
+                const scale = Math.min(maxDim / pageCanvas.width, maxDim / pageCanvas.height);
+                outCanvas = document.createElement('canvas');
+                outCanvas.width = Math.round(pageCanvas.width * scale);
+                outCanvas.height = Math.round(pageCanvas.height * scale);
+                const ctx = outCanvas.getContext('2d');
+                ctx.imageSmoothingEnabled = true;
+                ctx.imageSmoothingQuality = 'high';
+                ctx.drawImage(pageCanvas, 0, 0, outCanvas.width, outCanvas.height);
+            }
+
+            const imageDataUrl = outCanvas.toDataURL('image/jpeg', 0.90);
+            let storedKey = localStorage.getItem('superu_gemini_api_key') || '';
+
+            const callApi = async (keyToUse) => {
+                const res = await fetch(R2_API_ENDPOINT, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        action: 'extract_labels_gemini',
+                        imageDataUrl,
+                        apiKey: keyToUse
+                    })
+                });
+                return await res.json();
+            };
+
+            let json = await callApi(storedKey);
+
+            if (!json.ok && json.error === 'MISSING_API_KEY') {
+                const userKey = prompt("✨ Pour activer l'extraction ultra-précise Gemini IA, colle ta clé API Gemini (AIzaSy...) :");
+                if (userKey && userKey.trim()) {
+                    storedKey = userKey.trim();
+                    localStorage.setItem('superu_gemini_api_key', storedKey);
+                    json = await callApi(storedKey);
+                }
+            }
+
+            if (json && json.ok && Array.isArray(json.labels)) {
+                return json.labels.map(lbl => {
+                    const uType = ['kg', 'l', 'pièce'].includes((lbl.unitType || '').toLowerCase())
+                        ? lbl.unitType.toLowerCase()
+                        : 'pièce';
+                    const cleanEan = (lbl.gencode || '').replace(/\D/g, '');
+                    const hasPromo = Boolean(lbl.hasPromo && lbl.promoDiscount);
+
+                    return {
+                        productName: (lbl.productName || 'PRODUIT').toUpperCase().trim(),
+                        oldPrice: Number(lbl.oldPrice) > 0 ? Number(lbl.oldPrice) : 1.99,
+                        promoMainPrice: lbl.promoMainPrice && Number(lbl.promoMainPrice) > 0 ? Number(lbl.promoMainPrice) : null,
+                        baseUnitPrice: Number(lbl.baseUnitPrice) > 0 ? Number(lbl.baseUnitPrice) : (Number(lbl.oldPrice) || 1.99),
+                        unitQty: 1,
+                        unitType: uType,
+                        contenanceText: lbl.contenanceText || '',
+                        gencode: cleanEan,
+                        useCustomLeftImage: false,
+                        customRawImg: null,
+                        customTrimmedImg: null,
+                        customImageLabel: '',
+                        showAlcohol18: null,
+                        detectedPromo: hasPromo ? {
+                            active: true,
+                            presetKey: lbl.promoPresetKey || 'remise_imm',
+                            discount: lbl.promoDiscount,
+                            text: lbl.promoText || 'DE REMISE|IMMÉDIATE',
+                            unitLabel: (lbl.promoPresetKey === '2_plus_1') ? 'LES 3 PRODUITS' : ((lbl.promoPresetKey === '1_plus_1') ? 'LE LOT DE 2' : 'LE PRODUIT')
+                        } : null
+                    };
+                });
+            }
+
+            throw new Error(json?.error || "Échec Gemini");
+        }
+
         document.getElementById('inputBlueLabel').addEventListener('change', async function(e) {
             const files = Array.from(e.target.files);
             if (files.length === 0) return;
 
             const status = document.getElementById('ocrStatus');
             status.classList.remove('hidden');
-            status.textContent = "⏳ Initialisation de l'analyse haute précision...";
+            status.textContent = "✨ Analyse IA Gemini Vision en cours (0 erreur prix & EAN)...";
 
             try {
-                const worker = await Tesseract.createWorker('fra');
                 let allDetected = [];
 
                 for (const file of files) {
                     const pages = await loadFileToPages(file);
 
                     for (let p = 0; p < pages.length; p++) {
+                        status.textContent = `✨ Lecture IA Gemini — Page ${p + 1} / ${pages.length} (${file.name})...`;
                         const pageCanvas = pages[p].canvas;
+
+                        try {
+                            const geminiLabels = await extractPageWithGemini(pageCanvas);
+                            if (geminiLabels && geminiLabels.length > 0) {
+                                allDetected = allDetected.concat(geminiLabels);
+                                continue;
+                            }
+                        } catch (geminiErr) {
+                            console.warn("Repli sur l'analyse locale :", geminiErr);
+                        }
+
+                        // Repli automatique local si hors-ligne
                         const textItems = pages[p].textItems;
                         const aspect = pageCanvas.height / pageCanvas.width;
+                        const worker = await Tesseract.createWorker('fra');
 
                         if (aspect > 1.15) {
                             const cells = sliceSheetInto3x7Grid(pageCanvas, textItems);
-                            const pageResults = [];
-
                             for (let idx = 0; idx < cells.length; idx++) {
                                 const cell = cells[idx];
-                                status.textContent = `⏳ Lecture case ${idx + 1} / ${cells.length} (Page ${p + 1})...`;
+                                status.textContent = `⏳ Lecture locale case ${idx + 1} / ${cells.length} (Page ${p + 1})...`;
 
                                 if (cell.nativeText && cell.nativeText.length > 15) {
                                     const parsed = parseSingleLabelBlock(cell.nativeText, cell.nativeTopLine, cell.nativeBottomEan);
@@ -3127,7 +3235,7 @@
                                             const topLines = titleRes.data.text.split('\n').map(cleanProductFirstLine).filter(isProductTitleCandidate);
                                             if (topLines.length > 0) parsed.productName = topLines[0];
                                         }
-                                        pageResults.push(parsed);
+                                        allDetected.push(parsed);
                                     }
                                     continue;
                                 }
@@ -3139,22 +3247,17 @@
                                 ]);
 
                                 const parsed = parseSingleLabelBlock(fullRes.data.text, titleRes.data.text, eanRes.data.text);
-                                if (parsed) {
-                                    pageResults.push(parsed);
-                                }
+                                if (parsed) allDetected.push(parsed);
                             }
-
-                            allDetected = allDetected.concat(pageResults);
                         } else {
-                            status.textContent = `⏳ Analyse de l'étiquette (${file.name})...`;
+                            status.textContent = `⏳ Analyse locale de l'étiquette (${file.name})...`;
                             const { data } = await worker.recognize(pageCanvas.toDataURL('image/png'));
                             const single = parseSingleLabelBlock(data.text);
                             if (single) allDetected.push(single);
                         }
+                        await worker.terminate();
                     }
                 }
-
-                await worker.terminate();
 
                 if (allDetected.length > 0) {
                     postersList = allDetected;
@@ -3729,472 +3832,365 @@
             const autoTrim = document.getElementById('chkAutoTrim').checked;
             let activeImg = null;
             if (item.useCustomLeftImage && item.customRawImg) {
-                activeImg = autoTrim ? (item.customTrimmedImg || item.customRawImg) : item.customRawImg;
-            } else if (isA4PortraitMode) {
-                activeImg = autoTrim ? (trimmedTopImageA4 || rawTopImageA4) : rawTopImageA4;
-            } else {
-                activeImg = autoTrim ? (trimmedLeftImage4 || rawLeftImage4) : rawLeftImage4;
-            }
+                activeImg = autoTrimVoici le fichier `index.html` complet intégrant l'extraction automatique par **Gemini Vision** (ainsi que le bouton **Stop Rayon / A4 Portrait**, la racine **Général**, le code secret masqué, le bouton **Calcul prix : Activé / Désactivé**, la compression WebP automatique et la synchronisation R2) :
 
-            if (isA4PortraitMode) {
-                if (canvas.width !== 840 || canvas.height !== 1188) {
-                    canvas.width = 840;
-                    canvas.height = 1188;
-                }
-                drawA4PortraitPoster(canvas, item, pricing, activeImg, dateRaw, discountInput, rawDiscText, unitLabelText, isItemMechanicShown, showContenance, displayAlcohol);
-                return;
-            }
-
-            if (canvas.width !== 1200 || canvas.height !== 420) {
-                canvas.width = 1200;
-                canvas.height = 420;
-            }
-
-            const ctx = canvas.getContext('2d');
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-            // 1. Fond blanc
-            ctx.fillStyle = '#FFFFFF';
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-            // 2. Zone Rouge Gauche
-            const leftWidth = 412;
-            ctx.fillStyle = '#EE1C25';
-            ctx.fillRect(0, 0, leftWidth, canvas.height);
-
-            if (activeImg && activeImg.complete && activeImg.naturalWidth > 0) {
-                drawLeftZoneImage(ctx, activeImg, leftWidth, canvas.height);
-            }
-
-            // Dates
-            if (showDate && dateRaw) {
-                const dateLines = dateRaw.split('|').map(s => s.trim());
-                ctx.fillStyle = dateColor;
-                ctx.font = `500 18px ${FONT_SLAB}`;
-                ctx.textAlign = 'center';
-                dateLines.forEach((line, index) => {
-                    ctx.fillText(line, leftWidth / 2, 35 + (index * 22));
-                });
-            }
-
-            // 3. Cercle Mécanique Promo
-            const circleX = 782;
-            const circleY = 185;
-            const radius = 114;
-
-            if (isItemMechanicShown) {
-                ctx.fillStyle = '#EE1C25';
-                ctx.beginPath();
-                ctx.arc(circleX, circleY, radius, 0, Math.PI * 2);
-                ctx.fill();
-
-                const discountStr = discountInput;
-                const hasDiscPhrase = rawDiscText.length > 0;
-                const mainYOffset = hasDiscPhrase ? 2 : 26;
-
-                ctx.fillStyle = '#FFFFFF';
-                ctx.textAlign = 'center';
-
-                if (discountStr.endsWith('%')) {
-                    const numPart = discountStr.slice(0, -1);
-                    const mainFontSize = hasDiscPhrase ? 74 : 84;
-                    const pctFontSize = hasDiscPhrase ? 42 : 48;
-
-                    ctx.font = `900 ${mainFontSize}px ${FONT_SLAB}`;
-                    const numW = ctx.measureText(numPart).width;
-                    ctx.font = `900 ${pctFontSize}px ${FONT_SLAB}`;
-                    const pctW = ctx.measureText('%').width;
-
-                    const startX = circleX - ((numW + pctW) / 2);
-                    ctx.textAlign = 'left';
-                    ctx.font = `900 ${mainFontSize}px ${FONT_SLAB}`;
-                    ctx.fillText(numPart, startX, circleY + mainYOffset);
-
-                    ctx.font = `900 ${pctFontSize}px ${FONT_SLAB}`;
-                    ctx.fillText('%', startX + numW + 2, circleY + mainYOffset - 26);
-                } else if (discountStr.length > 0) {
-                    const customFontSize = discountStr.length > 7 ? 38 : (discountStr.length > 5 ? 48 : (hasDiscPhrase ? 62 : 72));
-                    ctx.font = `900 ${customFontSize}px ${FONT_SLAB}`;
-                    ctx.textAlign = 'center';
-                    ctx.fillText(discountStr, circleX, circleY + mainYOffset);
-                }
-
-                if (hasDiscPhrase) {
-                    const discTextLines = rawDiscText.split('|');
-                    const phraseFontSize = discTextLines.some(l => l.trim().length > 14) ? 18 : 21;
-                    ctx.font = `700 ${phraseFontSize}px ${FONT_SLAB}`;
-                    ctx.textAlign = 'center';
-                    discTextLines.forEach((line, idx) => {
-                        ctx.fillText(line.trim(), circleX, circleY + 32 + (idx * 23));
-                    });
-                }
-            }
-
-            // 4. Prix + Mention sous prix + Prix à l'unité + Contenance
-            if (isItemMechanicShown) {
-                const priceCenterX = 550;
-                const maxPriceRightX = circleX - radius - 12;
-
-                if (pricing.hasCrossedPrice) {
-                    drawFormattedPrice(ctx, pricing.crossedPrice, priceCenterX + 15, 162, true, maxPriceRightX);
-                    drawFormattedPrice(ctx, pricing.mainPrice, priceCenterX, 264, false, maxPriceRightX);
-                } else {
-                    drawFormattedPrice(ctx, pricing.mainPrice, priceCenterX, 232, false, maxPriceRightX);
-                }
-
-                ctx.fillStyle = '#EE1C25';
-                ctx.font = `800 15px ${FONT_SANS}`;
-                ctx.textAlign = 'center';
-                ctx.fillText(unitLabelText.toUpperCase(), priceCenterX + 5, 294);
-
-                ctx.fillStyle = '#000000';
-                ctx.font = `600 15px ${FONT_SANS}`;
-                ctx.fillText(pricing.unitPriceText, priceCenterX + 5, 314);
-
-                if (showContenance && item.contenanceText) {
-                    ctx.fillStyle = '#374151';
-                    ctx.font = `700 14px ${FONT_SANS}`;
-                    ctx.fillText(`Contenance : ${item.contenanceText}`, priceCenterX + 5, 334);
-                }
-            } else {
-                const soloPriceCenterX = 565;
-                drawFormattedPrice(ctx, pricing.mainPrice, soloPriceCenterX, 230, false, 715);
-
-                ctx.fillStyle = '#EE1C25';
-                ctx.font = `800 16px ${FONT_SANS}`;
-                ctx.textAlign = 'center';
-                ctx.fillText(unitLabelText.toUpperCase(), soloPriceCenterX, 265);
-
-                ctx.fillStyle = '#000000';
-                ctx.font = `600 16px ${FONT_SANS}`;
-                ctx.fillText(pricing.unitPriceText, soloPriceCenterX, 287);
-
-                if (showContenance && item.contenanceText) {
-                    ctx.fillStyle = '#374151';
-                    ctx.font = `700 15px ${FONT_SANS}`;
-                    ctx.fillText(`Contenance : ${item.contenanceText}`, soloPriceCenterX, 309);
-                }
-            }
-
-            // 5. Nom du produit
-            const titleStartX = isItemMechanicShown ? 912 : 740;
-            const maxRightWidth = 1180 - titleStartX;
-            ctx.fillStyle = '#000000';
-
-            drawFittedProductTitle(ctx, item.productName, titleStartX, 68, maxRightWidth, 315, 34, 17, 'left');
-
-            // 6. Bandeau -18 ans Alcool en bas
-            if (displayAlcohol) {
-                drawAlcohol18Banner(ctx, 422, 348, 0.72);
-            }
-
-            // 7. Bas de l'étiquette
-            if (showDate && dateRaw.includes('*')) {
-                ctx.fillStyle = '#000000';
-                ctx.font = `500 11px ${FONT_SANS}`;
-                ctx.textAlign = 'left';
-                ctx.fillText("* Selon jour d'ouverture de votre magasin", 422, displayAlcohol ? 404 : 396);
-            }
-
-            if (item.gencode) {
-                drawVisualBarcode(ctx, item.gencode, 922, 398, 250, 42);
-            }
-
-            // 8. LIGNE DE COUPE NOIRE EN BAS DE L'ÉTIQUETTE
-            ctx.strokeStyle = '#000000';
-            ctx.lineWidth = 4;
-            ctx.beginPath();
-            ctx.moveTo(0, canvas.height - 2);
-            ctx.lineTo(canvas.width, canvas.height - 2);
-            ctx.stroke();
+```html
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Generateur d'étiquette</title>
+    <!-- Tailwind CSS -->
+    <script src="[https://cdn.tailwindcss.com](https://cdn.tailwindcss.com)"></script>
+    <!-- Polices Museo Slab & Montserrat -->
+    <link href="[https://fonts.cdnfonts.com/css/museo-slab](https://fonts.cdnfonts.com/css/museo-slab)" rel="stylesheet">
+    <link href="[https://fonts.googleapis.com/css2?family=Arvo:ital,wght@0,400;0,700;1,400&family=Montserrat:wght@500;600;700;800;900&display=swap](https://fonts.googleapis.com/css2?family=Arvo:ital,wght@0,400;0,700;1,400&family=Montserrat:wght@500;600;700;800;900&display=swap)" rel="stylesheet">
+    <!-- PDF.js & Tesseract.js & jsPDF & JsBarcode -->
+    <script src="[https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js](https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js)"></script>
+    <script src="[https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js](https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js)"></script>
+    <script src="[https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js](https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js)"></script>
+    <script src="[https://cdn.jsdelivr.net/npm/jsbarcode@3.11.6/dist/JsBarcode.all.min.js](https://cdn.jsdelivr.net/npm/jsbarcode@3.11.6/dist/JsBarcode.all.min.js)"></script>
+    <style>
+        @font-face {
+            font-family: 'Museo Slab';
+            src: url("Copie de Museo_Slab_500.otf") format("opentype"),
+                 url("Copie de Museo_Slab.otf") format("opentype"),
+                 url("Copie de Museo_Slab_2.otf") format("opentype"),
+                 local('Museo Slab'), local('MuseoSlab-500'),
+                 url('[https://fonts.cdnfonts.com/s/13918/Museo_Slab_500.woff](https://fonts.cdnfonts.com/s/13918/Museo_Slab_500.woff)') format('woff');
+            font-weight: 500;
+            font-style: normal;
         }
+        @font-face {
+            font-family: 'Museo Slab';
+            src: url("Copie de Museo_Slab_700.otf") format("opentype"),
+                 url("Copie de Museo_Slab_3.otf") format("opentype"),
+                 local('Museo Slab 700'), local('MuseoSlab-700'),
+                 url('[https://fonts.cdnfonts.com/s/13918/Museo_Slab_700.woff](https://fonts.cdnfonts.com/s/13918/Museo_Slab_700.woff)') format('woff');
+            font-weight: 700;
+            font-style: normal;
+        }
+        @font-face {
+            font-family: 'Museo Slab';
+            src: url("Copie de Museo_Slab_900.otf") format("opentype"),
+                 url("Copie de Museo_Slab_4.otf") format("opentype"),
+                 local('Museo Slab 900'), local('MuseoSlab-900'),
+                 url('[https://fonts.cdnfonts.com/s/13918/Museo_Slab_900.woff](https://fonts.cdnfonts.com/s/13918/Museo_Slab_900.woff)') format('woff');
+            font-weight: 900;
+            font-style: normal;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 min-h-screen p-4 md:p-6 font-sans text-gray-800">
+    <div class="max-w-7xl mx-auto space-y-6">
 
-        function renderAllPosters() {
-            const container = document.getElementById('postersContainer');
-            container.innerHTML = '';
-
-            document.getElementById('badgeCount').textContent = `${postersList.length} étiquette${postersList.length > 1 ? 's' : ''}`;
-
-            postersList.forEach((item, index) => {
-                if (!item.contenanceText) {
-                    item.contenanceText = formatContenanceString(item.unitQty, item.unitType, item.productName);
-                }
-
-                const card = document.createElement('div');
-                card.className = 'bg-white p-5 rounded-xl shadow-md space-y-3';
-
-                const isCustomActive = Boolean(item.useCustomLeftImage);
-                const customLabelText = item.customImageLabel ? item.customImageLabel : 'Visuel';
-                const isItemAlcohol = item.showAlcohol18 !== null ? item.showAlcohol18 : showAlcoholGlobal;
-                const hasItemPromo = Boolean(item.detectedPromo && item.detectedPromo.active);
-
-                const header = document.createElement('div');
-                header.className = 'flex flex-wrap items-center border-b pb-2 gap-2';
-                header.innerHTML = `
-                    <span class="bg-gray-800 text-white text-xs font-bold px-2.5 py-1 rounded">
-                        #${index + 1}
+        <!-- BANDEAU DE CONFIGURATION GLOBALE -->
+        <div class="bg-white p-5 rounded-xl shadow-md border-t-4 border-red-600 space-y-4 sticky top-2 z-20">
+            <div class="flex flex-wrap justify-between items-center border-b pb-3 gap-2">
+                <div class="flex flex-wrap items-center gap-2.5">
+                    <h1 class="text-lg font-bold text-gray-800 uppercase tracking-wide">
+                        Generateur d'étiquette
+                    </h1>
+                    <span id="badgeCount" class="text-xs bg-red-100 text-red-700 font-bold px-2.5 py-1 rounded-full">
+                        1 étiquette
                     </span>
-                    <input type="text" data-idx="${index}" data-field="productName" value="${item.productName.replace(/"/g, '&quot;')}" 
-                        class="poster-edit-input flex-1 min-w-[160px] text-xs font-bold uppercase border rounded px-2.5 py-1 text-gray-800 focus:ring-2 focus:ring-red-500"
-                        title="Nom du produit (1re ligne)" placeholder="Nom du produit" />
-
-                    <!-- BOUTON PROMO INDIVIDUELLE AUTO-DÉTECTÉE -->
-                    <button type="button" data-idx="${index}" class="btn-toggle-item-promo text-[11px] font-extrabold px-2 py-1 rounded border transition ${hasItemPromo ? 'bg-red-600 text-white border-red-700' : 'bg-gray-100 text-gray-600 border-gray-300 hover:bg-gray-200'}" title="Activer ou désactiver la promo sur cette étiquette">
-                        🎯 ${hasItemPromo ? `Promo ${item.detectedPromo.discount}` : 'Sans promo'}
+                    <!-- BOUTON BASCULE STOP RAYON / A4 PORTRAIT -->
+                    <button type="button" id="btnToggleA4Mode" class="text-xs font-extrabold px-3 py-1.5 rounded-lg border-2 border-gray-800 bg-white text-gray-800 hover:bg-gray-800 hover:text-white transition flex items-center gap-1.5 shadow-sm" title="Basculer entre le format Stop Rayon (4 par page) et le format A4 Portrait (1 par page)">
+                        <span>📐 Mode : Stop Rayon</span>
+                        <span class="bg-red-600 text-white text-[10px] px-1.5 py-0.5 rounded">Basculer A4 Portrait</span>
                     </button>
+                    <!-- BOUTON MENTION ALCOOL -18 ANS -->
+                    <button type="button" id="btnToggleAlcohol18" class="text-xs font-extrabold px-3 py-1.5 rounded-lg border-2 border-orange-300 bg-orange-50 text-orange-800 hover:bg-orange-100 transition flex items-center gap-1.5 shadow-sm">
+                        <span class="bg-orange-600 text-white text-[10px] font-black px-1.5 py-0.5 rounded">-18</span>
+                        <span id="alcoholBtnLabel">Alcool : Masqué</span>
+                    </button>
+                    <!-- BOUTON BIBLIOTHÈQUE DE FICHIERS DÉJÀ CRÉÉS (PARTAGÉE R2) -->
+                    <button type="button" id="btnOpenReadyDocsModal" class="text-xs font-extrabold px-3 py-1.5 rounded-lg border-2 border-indigo-600 bg-indigo-600 text-white hover:bg-indigo-700 transition flex items-center gap-1.5 shadow-sm">
+                        <span>📚 Bibliothèque Fichiers Créés</span>
+                        <span id="readyDocsCountBadge" class="bg-white text-indigo-700 text-[10px] px-1.5 py-0.5 rounded-full font-black">0</span>
+                    </button>
+                </div>
+                <div class="flex items-center gap-2">
+                    <span id="r2SyncBadge" class="text-[11px] font-bold text-emerald-700 bg-emerald-50 px-2.5 py-1 rounded border border-emerald-200">
+                        ☁️ R2 Connecté
+                    </span>
+                    <span id="ocrStatus" class="text-xs font-bold text-blue-700 bg-blue-50 px-3 py-1.5 rounded-lg border border-blue-200 hidden"></span>
+                    <span id="fontStatus" class="text-[11px] font-semibold text-green-700 bg-green-50 px-2.5 py-1 rounded border border-green-200">
+                        ✓ Police : <span id="activeFontBadgeName">Museo Slab</span>
+                    </span>
+                    <!-- BOUTON OUVERTURE GESTIONNAIRE DE POLICES R2 -->
+                    <button type="button" id="btnOpenFontModal" class="text-xs bg-gray-100 hover:bg-gray-200 text-gray-800 font-bold py-1.5 px-3 rounded-lg cursor-pointer border border-gray-300 transition flex items-center gap-1 shadow-sm">
+                        🔤 Polices .OTF / R2
+                    </button>
+                </div>
+            </div>
 
-                    <!-- BOUTON OPTIONNEL D'IMAGE INDIVIDUELLE -->
-                    <div class="flex items-center gap-1.5 px-2 py-0.5 rounded-lg border ${isCustomActive ? 'border-green-500 bg-green-50/60' : 'border-gray-200 bg-gray-50'}">
-                        <span class="text-[11px] font-bold text-gray-600">Img perso:</span>
-                        <button type="button" data-idx="${index}" class="btn-toggle-item-img text-[11px] font-bold px-2 py-0.5 rounded transition ${isCustomActive ? 'bg-green-600 text-white' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'}">
-                            ${isCustomActive ? 'Activé' : 'Désactivé'}
-                        </button>
-                        <button type="button" data-idx="${index}" class="btn-open-item-gallery ${isCustomActive ? '' : 'hidden'} text-[11px] font-bold px-2 py-0.5 rounded bg-white border border-green-400 text-green-900 hover:bg-green-100 transition">
-                            🖼️ ${customLabelText}
-                        </button>
-                        <label class="${isCustomActive ? '' : 'hidden'} text-[11px] font-bold px-2 py-0.5 rounded bg-red-600 text-white hover:bg-red-700 cursor-pointer transition" title="Déposer un fichier">
-                            📁 Fichier
-                            <input type="file" data-idx="${index}" accept=".jpeg,.jpg,.png,.pdf,.webp,.gif,.bmp,.svg,image/*,application/pdf" class="input-item-left-file hidden">
+            <!-- LIGNE 1 DE CONFIGURATION -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 items-center">
+                <!-- Colonne 1 : Déposer PDF / Photo -->
+                <div class="bg-blue-50 p-2.5 rounded-lg border border-blue-200 h-full flex flex-col justify-between">
+                    <label class="block text-xs font-bold text-blue-900 uppercase mb-1.5">
+                        📷 1. DÉPOSER PDF / PHOTO (IA GEMINI)
+                    </label>
+                    <input type="file" id="inputBlueLabel" accept=".jpeg,.jpg,.png,.pdf,.webp,.bmp,image/*,application/pdf" multiple
+                        class="w-full text-xs text-blue-800 file:mr-2 file:py-1.5 file:px-3 file:rounded-md file:border-0 file:text-xs file:font-bold file:bg-blue-600 file:text-white hover:file:bg-blue-700 cursor-pointer">
+                </div>
+
+                <!-- Colonne 2 : Image Gauche / Image A4 -->
+                <div class="bg-red-50/50 p-2.5 rounded-lg border border-red-100 h-full flex flex-col justify-between">
+                    <div class="flex justify-between items-center mb-1.5">
+                        <label id="labelZoneImage" class="block text-xs font-bold text-gray-700 uppercase">
+                            🖼️ 2. IMAGE GAUCHE
+                        </label>
+                        <label class="flex items-center gap-1 text-[11px] text-gray-600 cursor-pointer leading-tight">
+                            <input type="checkbox" id="chkAutoTrim" checked class="rounded text-red-600">
+                            <span>Plein cadre auto</span>
                         </label>
                     </div>
+                    <div class="flex items-center gap-1.5">
+                        <button type="button" id="btnOpenGlobalGallery" class="w-1/2 py-1.5 px-2.5 bg-white hover:bg-red-50 border border-red-300 rounded-md text-xs font-bold text-gray-800 flex items-center justify-between shadow-sm transition">
+                            <span id="globalGalleryLabel" class="truncate">🖼️ Les Prix Bas</span>
+                            <span class="text-[10px] text-gray-500 ml-1">▼</span>
+                        </button>
+                        <input type="file" id="inputLeftImage" accept=".jpeg,.jpg,.png,.pdf,.webp,.gif,.bmp,.svg,image/*,application/pdf" 
+                            class="w-1/2 text-[11px] text-gray-600 file:mr-1.5 file:py-1.5 file:px-2.5 file:rounded-md file:border-0 file:text-[11px] file:font-bold file:bg-red-600 file:text-white hover:file:bg-red-700 cursor-pointer"
+                            title="Déposer une nouvelle image (convertie automatiquement en WebP léger sur R2)">
+                    </div>
+                </div>
 
-                    <!-- BOUTON -18 ANS ALCOOL SUR L'ÉTIQUETTE -->
-                    <button type="button" data-idx="${index}" class="btn-toggle-item-alcohol text-[11px] font-extrabold px-2 py-1 rounded border transition ${isItemAlcohol ? 'bg-orange-600 text-white border-orange-700' : 'bg-orange-50 text-orange-800 border-orange-200 hover:bg-orange-100'}">
-                        -18 ${isItemAlcohol ? 'ON' : 'OFF'}
-                    </button>
+                <!-- Colonne 3 : Dates de l'offre + Bouton à droite -->
+                <div class="flex flex-col justify-between h-full pt-0.5">
+                    <div class="flex justify-between items-center mb-1.5">
+                        <label class="block text-xs font-bold text-gray-700 uppercase">
+                            📅 DATES DE L'OFFRE
+                        </label>
+                        <button type="button" id="btnToggleDate" class="text-[11px] font-bold px-2.5 py-1 rounded bg-red-100 text-red-800 border border-red-300 hover:bg-red-200 transition">
+                            🚫 Date masquée
+                        </button>
+                    </div>
+                    <input type="text" id="inputDates" value="DU MARDI 9 AU DIMANCHE 21 | SEPTEMBRE 2025*" disabled
+                        class="w-full p-2 border rounded-lg text-xs font-semibold focus:ring-2 focus:ring-red-500 opacity-50 bg-gray-100">
+                </div>
 
-                    <label class="flex items-center gap-1 text-xs font-semibold text-gray-600">
-                        Prix (€):
-                        <input type="number" step="0.01" data-idx="${index}" data-field="oldPrice" value="${item.oldPrice.toFixed(2)}" 
-                            class="poster-edit-input w-20 text-xs font-bold border rounded px-2 py-1 text-pink-700 bg-pink-50" />
+                <!-- Colonne 4 : Couleur de la date -->
+                <div class="flex flex-col justify-between h-full pt-0.5">
+                    <label class="block text-xs font-bold text-gray-700 uppercase mb-1.5">
+                        🎨 COULEUR DE LA DATE
                     </label>
-                    <label class="flex items-center gap-1 text-xs font-semibold text-gray-600">
-                        Prix Unité (€):
-                        <input type="number" step="0.01" data-idx="${index}" data-field="baseUnitPrice" value="${(item.baseUnitPrice || item.oldPrice).toFixed(2)}" 
-                            class="poster-edit-input w-20 text-xs font-bold border rounded px-2 py-1 text-amber-800 bg-amber-50" />
-                    </label>
-                    <label class="flex items-center gap-1 text-xs font-semibold text-gray-600">
-                        Unité:
-                        <select data-idx="${index}" data-field="unitType" class="poster-edit-input text-xs font-bold border rounded px-1.5 py-1 bg-yellow-50 text-yellow-900">
-                            <option value="pièce" ${item.unitType === 'pièce' ? 'selected' : ''}>Pièce</option>
-                            <option value="kg" ${item.unitType === 'kg' ? 'selected' : ''}>Kg</option>
-                            <option value="l" ${item.unitType === 'l' ? 'selected' : ''}>Litre</option>
+                    <div class="flex gap-2">
+                        <button type="button" id="btnDateWhite" class="flex-1 py-2 px-3 rounded-lg border-2 border-red-600 bg-gray-800 text-white text-xs font-bold flex items-center justify-center gap-1.5">
+                            <span class="w-3 h-3 rounded-full bg-white inline-block"></span> Blanc
+                        </button>
+                        <button type="button" id="btnDateBlack" class="flex-1 py-2 px-3 rounded-lg border border-gray-300 bg-white text-gray-900 text-xs font-bold flex items-center justify-center gap-1.5">
+                            <span class="w-3 h-3 rounded-full bg-black inline-block"></span> Noir
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- LIGNE 2 DE CONFIGURATION : MENU DÉROULANT DES MÉCANIQUES PROMO + BOUTON CALCUL PRIX ACTIVÉ/DÉSACTIVÉ -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 items-end pt-3 border-t border-gray-100">
+                <div>
+                    <div class="flex justify-between items-center mb-1.5">
+                        <label class="block text-xs font-bold text-gray-700 uppercase">
+                            ⚙️ MÉCANIQUE & VALEUR
+                        </label>
+                        <!-- BOUTON ACTIVÉ / DÉSACTIVÉ MODIFICATION DU PRIX PAR LA MÉCANIQUE -->
+                        <button type="button" id="btnTogglePriceCalc" class="text-[11px] font-bold px-2.5 py-0.5 rounded bg-green-100 text-green-800 border border-green-300 hover:bg-green-200 transition" title="Quand Désactivé : aucun prix n'est modifié ni barré par la mécanique, seul le cercle rouge est visible">
+                            Calcul prix : Activé
+                        </button>
+                    </div>
+                    <div class="flex gap-1.5">
+                        <select id="selectMechanicPreset" disabled class="w-2/3 p-2 border rounded-lg text-xs font-bold text-gray-800 bg-gray-100 opacity-50 focus:ring-2 focus:ring-red-500 cursor-pointer">
+                            <optgroup label="Remise immédiate">
+                                <option value="remise_imm" selected>Remise immédiate (-X%)</option>
+                                <option value="remise_imm_choix">Remise immédiate (Au choix)</option>
+                                <option value="remise_euros">Remise immédiate en € (-X€)</option>
+                            </optgroup>
+                            <optgroup label="Offres sur le 2ème produit">
+                                <option value="2eme_50">-50% sur le 2ème produit</option>
+                                <option value="2eme_50_choix">-50% sur le 2ème au choix</option>
+                                <option value="2eme_60">-60% sur le 2ème produit</option>
+                                <option value="2eme_60_choix">-60% sur le 2ème au choix</option>
+                                <option value="2eme_68">-68% sur le 2ème produit</option>
+                                <option value="2eme_70">-70% sur le 2ème produit</option>
+                                <option value="2eme_80">-80% sur le 2ème produit</option>
+                            </optgroup>
+                            <optgroup label="Lots gratuits (1+1, 2+1...)">
+                                <option value="1_plus_1">1 + 1 GRATUIT</option>
+                                <option value="1_plus_1_choix">1 + 1 GRATUIT (Au choix)</option>
+                                <option value="2_plus_1">2 + 1 OFFERT / GRATUIT</option>
+                                <option value="2_plus_1_choix">2 + 1 GRATUIT (Au choix)</option>
+                            </optgroup>
+                            <optgroup label="Lots & Prix spéciaux">
+                                <option value="le_lot">Le Lot (Prix du lot)</option>
+                                <option value="le_lot_choix">Le Lot au choix</option>
+                                <option value="lot_de_2">Le Lot de 2</option>
+                                <option value="lot_de_3">Le Lot de 3</option>
+                                <option value="carte_u">Cumulez sur Carte U (%)</option>
+                                <option value="prix_choc">Prix Choc / Prix Bas</option>
+                            </optgroup>
                         </select>
-                    </label>
-                    <label class="flex items-center gap-1 text-xs font-semibold text-gray-600">
-                        Cont.:
-                        <input type="text" data-idx="${index}" data-field="contenanceText" value="${(item.contenanceText || '').replace(/"/g, '&quot;')}" 
-                            class="poster-edit-input w-20 text-xs font-bold border rounded px-2 py-1 text-emerald-800 bg-emerald-50" placeholder="ex: 100 g" />
-                    </label>
-                    <label class="flex items-center gap-1 text-xs font-semibold text-gray-600">
-                        EAN:
-                        <input type="text" data-idx="${index}" data-field="gencode" value="${item.gencode || ''}" 
-                            class="poster-edit-input w-32 text-xs font-bold border rounded px-2 py-1 text-blue-800 bg-blue-50" placeholder="Code-barres" />
-                    </label>
-                    <button type="button" data-idx="${index}" class="btn-save-to-library text-xs font-bold px-2.5 py-1 rounded bg-indigo-50 hover:bg-indigo-600 text-indigo-700 hover:text-white border border-indigo-200 transition" title="Choisir le dossier ou sous-dossier et enregistrer en WebP dans Affiches générées">
-                        ☁️ Biblio
+                        <input type="text" id="inputDiscount" value="-34%" disabled
+                            class="w-1/3 p-2 border rounded-lg text-sm font-bold text-red-600 text-center opacity-50 bg-gray-100">
+                    </div>
+                </div>
+
+                <div>
+                    <div class="flex justify-between items-center mb-1.5">
+                        <label class="block text-xs font-bold text-gray-700 uppercase">
+                            MÉCANIQUE (TEXTE CERCLE)
+                        </label>
+                        <button type="button" id="btnToggleDiscountText" class="min-w-[88px] text-center text-[11px] font-bold px-3 py-0.5 rounded bg-red-100 text-red-800 border border-red-300 hover:bg-red-200 transition">
+                            masquée
+                        </button>
+                    </div>
+                    <input type="text" id="inputDiscountText" value="DE REMISE|IMMÉDIATE" disabled
+                        class="w-full p-2 border rounded-lg text-xs font-semibold opacity-50 bg-gray-100">
+                </div>
+
+                <div>
+                    <div class="flex justify-between items-center mb-1.5">
+                        <label class="block text-xs font-bold text-gray-700 uppercase">
+                            📌 MENTION SOUS PRIX
+                        </label>
+                        <label class="flex items-center gap-1 text-[11px] font-bold text-blue-700 cursor-pointer">
+                            <input type="checkbox" id="chkShowContenance" checked class="rounded text-blue-600">
+                            <span>Afficher contenance</span>
+                        </label>
+                    </div>
+                    <input type="text" id="inputUnitLabel" value="LE PRODUIT" 
+                        class="w-full p-2 border rounded-lg text-xs font-bold text-red-600 uppercase">
+                </div>
+
+                <div>
+                    <button id="btnDownloadPdfA4" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-2.5 px-4 rounded-lg shadow transition duration-200 text-xs uppercase tracking-wider flex items-center justify-center gap-2">
+                        <span id="btnDownloadLabel">📄 TÉLÉCHARGER LE PDF (STOP RAYON)</span>
                     </button>
-                    <button type="button" data-idx="${index}" class="btn-delete-poster text-xs font-bold px-2.5 py-1 rounded bg-red-50 hover:bg-red-600 text-red-600 hover:text-white border border-red-200 transition" title="Supprimer">
-                        🗑️
+                </div>
+            </div>
+        </div>
+
+        <!-- LISTE DES GRANDES ÉTIQUETTES GÉNÉRÉES -->
+        <div id="postersContainer" class="space-y-6"></div>
+
+    </div>
+
+    <!-- FENÊTRE MODALE 1 : GALERIE VISUELLE PARTAGÉE -->
+    <div id="visualGalleryModal" class="fixed inset-0 bg-black/60 z-50 hidden flex items-center justify-center p-4 backdrop-blur-sm">
+        <div class="bg-white rounded-2xl shadow-2xl max-w-5xl w-full max-h-[90vh] flex flex-col overflow-hidden border-t-4 border-red-600">
+            <div class="flex flex-wrap justify-between items-center px-5 py-3.5 border-b bg-gray-50 gap-3">
+                <div>
+                    <h2 id="galleryModalTitle" class="text-sm font-extrabold text-gray-800 uppercase tracking-wide">
+                        🖼️ Choisir un visuel
+                    </h2>
+                    <p class="text-[11px] text-gray-500">
+                        Compression WebP automatique & Synchronisation R2 pour toute l'équipe
+                    </p>
+                </div>
+                <div class="flex flex-wrap items-center gap-2">
+                    <input type="text" id="inputSearchGallery" placeholder="🔍 Filtrer (ex: Prix bas, Alsace...)" 
+                        class="text-xs border rounded-lg px-3 py-1.5 w-48 focus:ring-2 focus:ring-red-500">
+                    <button type="button" id="btnRefreshSharedGallery" class="text-xs font-bold bg-gray-200 hover:bg-gray-300 text-gray-800 px-2.5 py-1.5 rounded-lg transition" title="Rafraîchir depuis R2 et GitHub">
+                        🔄
                     </button>
-                `;
+                    <label class="text-xs font-bold bg-red-600 hover:bg-red-700 text-white px-3 py-1.5 rounded-lg cursor-pointer shadow-sm transition">
+                        ☁️ Déposer sur R2 (WebP auto)
+                        <input type="file" id="inputAddGalleryImage" accept=".jpeg,.jpg,.png,.pdf,.webp,.gif,.bmp,.svg,image/*,application/pdf" multiple class="hidden">
+                    </label>
+                    <button type="button" id="btnCloseGalleryModal" class="text-gray-500 hover:text-red-600 font-bold text-lg px-2.5 py-1 rounded-lg hover:bg-red-50 transition">
+                        ✕
+                    </button>
+                </div>
+            </div>
 
-                const canvasWrapper = document.createElement('div');
-                canvasWrapper.className = 'overflow-x-auto w-full flex justify-center border border-gray-200 bg-gray-100 p-4 rounded-lg';
+            <div class="p-5 overflow-y-auto space-y-5 bg-gray-100/70 flex-1">
+                <!-- SECTION 1 : IMAGES DÉPOSÉES SUR LE STOCKAGE R2 -->
+                <div id="savedGallerySection" class="hidden space-y-2">
+                    <div class="flex justify-between items-center">
+                        <h3 class="text-xs font-extrabold uppercase text-blue-800 bg-blue-100 px-2.5 py-1 rounded-md inline-block">
+                            ☁️ Visuels déposés sur R2 (<span id="savedCountBadge">0</span>)
+                        </h3>
+                    </div>
+                    <div id="savedGalleryGrid" class="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-3"></div>
+                </div>
 
-                const canvas = document.createElement('canvas');
-                canvas.width = isA4PortraitMode ? 840 : 1200;
-                canvas.height = isA4PortraitMode ? 1188 : 420;
-                canvas.id = `posterCanvas_${index}`;
-                canvas.className = isA4PortraitMode ? 'max-w-[420px] h-auto shadow-md bg-white' : 'max-w-full h-auto shadow-md bg-white';
+                <!-- SECTION 2 : DÉTECTION AUTOMATIQUE DU DOSSIER (IMAGES GAUCHE OU IMAGES A4) -->
+                <div class="space-y-2">
+                    <h3 id="galleryFolderHeading" class="text-xs font-extrabold uppercase text-gray-700 bg-gray-200 px-2.5 py-1 rounded-md inline-block">
+                        📁 Visuels détectés automatiquement (<span id="presetCountBadge">0</span>)
+                    </h3>
+                    <div id="galleryGrid" class="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-3"></div>
+                </div>
+            </div>
 
-                canvasWrapper.appendChild(canvas);
-                card.appendChild(header);
-                card.appendChild(canvasWrapper);
-                container.appendChild(card);
+            <div class="px-5 py-3 border-t bg-white flex justify-between items-center">
+                <button type="button" id="btnClearVisualSelection" class="text-xs font-bold text-red-600 hover:text-red-800 px-3 py-1.5 rounded border border-red-200 hover:bg-red-50 transition">
+                    🗑️ Aucun visuel (Fond rouge uni)
+                </button>
+                <button type="button" id="btnCancelGalleryModal" class="text-xs font-bold bg-gray-200 hover:bg-gray-300 text-gray-800 px-4 py-1.5 rounded-lg transition">
+                    Fermer
+                </button>
+            </div>
+        </div>
+    </div>
 
-                drawSinglePoster(canvas, item);
-            });
+    <!-- FENÊTRE MODALE 2 : BIBLIOTHÈQUE PARTAGÉE (GÉNÉRAL COMME RACINE CONTENANT TOUS LES DOSSIERS) -->
+    <div id="readyDocsModal" class="fixed inset-0 bg-black/65 z-50 hidden flex items-center justify-center p-4 backdrop-blur-sm">
+        <div class="bg-white rounded-2xl shadow-2xl max-w-6xl w-full max-h-[92vh] flex flex-col overflow-hidden border-t-4 border-indigo-600">
+            <!-- En-tête + Bouton bascule Fichiers Déposés / Affiches Générées -->
+            <div class="flex flex-wrap justify-between items-center px-5 py-3.5 border-b bg-gray-50 gap-3">
+                <div class="flex flex-wrap items-center gap-3">
+                    <h2 class="text-sm font-extrabold text-indigo-900 uppercase tracking-wide">
+                        📚 Bibliothèque Partagée R2
+                    </h2>
+                    <div class="inline-flex rounded-xl bg-gray-200 p-1 border border-gray-300">
+                        <button type="button" id="btnTabDeposited" class="text-xs font-extrabold px-3.5 py-1.5 rounded-lg bg-indigo-600 text-white shadow transition flex items-center gap-1.5">
+                            📥 Fichiers déposés (<span id="countDepositedBadge">0</span>)
+                        </button>
+                        <button type="button" id="btnTabGenerated" class="text-xs font-extrabold px-3.5 py-1.5 rounded-lg text-gray-700 hover:text-indigo-800 transition flex items-center gap-1.5">
+                            ✨ Affiches générées (<span id="countGeneratedBadge">0</span>)
+                        </button>
+                    </div>
+                </div>
 
-            document.querySelectorAll('.poster-edit-input').forEach(input => {
-                input.addEventListener('input', function() {
-                    const idx = parseInt(this.getAttribute('data-idx'), 10);
-                    const field = this.getAttribute('data-field');
-                    if (field === 'productName') {
-                        postersList[idx].productName = this.value.toUpperCase();
-                    } else if (field === 'oldPrice') {
-                        const val = parseFloat(this.value) || 0;
-                        postersList[idx].oldPrice = val;
-                        postersList[idx].promoMainPrice = null;
-                        if (postersList[idx].unitType === 'pièce') {
-                            postersList[idx].baseUnitPrice = val;
-                        }
-                    } else if (field === 'baseUnitPrice') {
-                        postersList[idx].baseUnitPrice = parseFloat(this.value) || 0;
-                    } else if (field === 'unitType') {
-                        postersList[idx].unitType = this.value;
-                    } else if (field === 'contenanceText') {
-                        postersList[idx].contenanceText = this.value;
-                    } else if (field === 'gencode') {
-                        postersList[idx].gencode = this.value.trim();
-                    }
-                    const c = document.getElementById(`posterCanvas_${idx}`);
-                    if (c) drawSinglePoster(c, postersList[idx]);
-                });
-            });
+                <div class="flex flex-wrap items-center gap-2">
+                    <input type="text" id="inputSearchReadyDocs" placeholder="🔍 Rechercher un fichier..." 
+                        class="text-xs border rounded-lg px-3 py-1.5 w-40 focus:ring-2 focus:ring-indigo-500">
+                    <!-- BOUTON CRÉATION DOSSIER DANS GÉNÉRAL -->
+                    <button type="button" id="btnCreateNewRootFolder" class="text-xs font-bold bg-amber-500 hover:bg-amber-600 text-white px-2.5 py-1.5 rounded-lg shadow-sm transition flex items-center gap-1">
+                        📁+ Dossier
+                    </button>
+                    <!-- BOUTON CRÉATION SOUS-DOSSIER -->
+                    <button type="button" id="btnCreateNewChildSubFolder" class="text-xs font-bold bg-orange-500 hover:bg-orange-600 text-white px-2.5 py-1.5 rounded-lg shadow-sm transition flex items-center gap-1">
+                        📂+ Sous-dossier
+                    </button>
+                    <!-- BOUTON RENOMMER LE DOSSIER ACTIF -->
+                    <button type="button" id="btnRenameCurrentFolder" class="hidden text-xs font-bold bg-blue-600 hover:bg-blue-700 text-white px-2.5 py-1.5 rounded-lg shadow-sm transition flex items-center gap-1" title="Renommer ou déplacer ce dossier (Code requis)">
+                        ✏️ Renommer dossier
+                    </button>
+                    <!-- BOUTON SUPPRIMER LE DOSSIER ACTIF -->
+                    <button type="button" id="btnDeleteCurrentFolder" class="hidden text-xs font-bold bg-red-600 hover:bg-red-700 text-white px-2.5 py-1.5 rounded-lg shadow-sm transition flex items-center gap-1" title="Supprimer ce dossier, ses sous-dossiers et ses fichiers (Code requis)">
+                        🗑️ Suppr. dossier
+                    </button>
+                    <label class="text-xs font-bold bg-indigo-600 hover:bg-indigo-700 text-white px-3 py-1.5 rounded-lg cursor-pointer shadow-sm transition flex items-center gap-1.5">
+                        ☁️ Déposer ici
+                        <input type="file" id="inputUploadReadyDocs" accept=".pdf,.svg,.png,.jpg,.jpeg,.webp,.bmp,.gif,image/*,application/pdf,image/svg+xml" multiple class="hidden">
+                    </label>
+                    <button type="button" id="btnCloseReadyDocsModal" class="text-gray-500 hover:text-red-600 font-bold text-lg px-2.5 py-1 rounded-lg hover:bg-red-50 transition">
+                        ✕
+                    </button>
+                </div>
+            </div>
 
-            document.querySelectorAll('.btn-toggle-item-promo').forEach(btn => {
-                btn.addEventListener('click', function() {
-                    const idx = parseInt(this.getAttribute('data-idx'), 10);
-                    if (postersList[idx].detectedPromo && postersList[idx].detectedPromo.active) {
-                        postersList[idx].detectedPromo.active = false;
-                    } else {
-                        postersList[idx].detectedPromo = {
-                            active: true,
-                            presetKey: document.getElementById('selectMechanicPreset').value,
-                            discount: document.getElementById('inputDiscount').value.trim(),
-                            text: document.getElementById('inputDiscountText').value.trim(),
-                            unitLabel: document.getElementById('inputUnitLabel').value.trim()
-                        };
-                    }
-                    renderAllPosters();
-                });
-            });
-
-            document.querySelectorAll('.btn-toggle-item-alcohol').forEach(btn => {
-                btn.addEventListener('click', function() {
-                    const idx = parseInt(this.getAttribute('data-idx'), 10);
-                    const currentVal = postersList[idx].showAlcohol18 !== null ? postersList[idx].showAlcohol18 : showAlcoholGlobal;
-                    postersList[idx].showAlcohol18 = !currentVal;
-                    renderAllPosters();
-                });
-            });
-
-            document.querySelectorAll('.btn-save-to-library').forEach(btn => {
-                btn.addEventListener('click', function() {
-                    const idx = parseInt(this.getAttribute('data-idx'), 10);
-                    openSaveDestinationModal(idx);
-                });
-            });
-
-            document.querySelectorAll('.btn-delete-poster').forEach(btn => {
-                btn.addEventListener('click', function() {
-                    const idx = parseInt(this.getAttribute('data-idx'), 10);
-                    if (postersList.length <= 1) {
-                        alert("Il doit rester au moins 1 étiquette dans la liste.");
-                        return;
-                    }
-                    postersList.splice(idx, 1);
-                    renderAllPosters();
-                });
-            });
-
-            document.querySelectorAll('.btn-toggle-item-img').forEach(btn => {
-                btn.addEventListener('click', function() {
-                    const idx = parseInt(this.getAttribute('data-idx'), 10);
-                    postersList[idx].useCustomLeftImage = !postersList[idx].useCustomLeftImage;
-                    renderAllPosters();
-                    if (postersList[idx].useCustomLeftImage && !postersList[idx].customRawImg) {
-                        openVisualGallery(idx);
-                    }
-                });
-            });
-
-            document.querySelectorAll('.btn-open-item-gallery').forEach(btn => {
-                btn.addEventListener('click', function() {
-                    const idx = parseInt(this.getAttribute('data-idx'), 10);
-                    openVisualGallery(idx);
-                });
-            });
-
-            document.querySelectorAll('.input-item-left-file').forEach(fileInput => {
-                fileInput.addEventListener('change', async function(e) {
-                    const file = e.target.files[0];
-                    if (!file) return;
-                    const idx = parseInt(this.getAttribute('data-idx'), 10);
-                    const cleanName = file.name.replace(/\.[^.]+$/, '');
-                    const pages = await loadFileToPages(file);
-                    const webpDataUrl = canvasToWebPDataUrl(pages[0].canvas, 0.88);
-                    const targetFolder = isA4PortraitMode ? 'top_a4' : 'left_4';
-
-                    await uploadToR2OrLocal(targetFolder, cleanName, ensureWebpFileName(file.name), 'IMAGE', webpDataUrl, webpDataUrl);
-
-                    const img = new Image();
-                    img.onload = () => {
-                        postersList[idx].useCustomLeftImage = true;
-                        postersList[idx].customRawImg = img;
-                        postersList[idx].customTrimmedImg = autoTrimWhiteBorders(img);
-                        postersList[idx].customImageLabel = cleanName.slice(0, 12);
-                        postersList[idx].customTrimmedImg.onload = renderAllPosters;
-                        setTimeout(renderAllPosters, 80);
-                    };
-                    img.src = webpDataUrl;
-                });
-            });
-        }
-
-        // EXPORT PDF A4
-        document.getElementById('btnDownloadPdfA4').addEventListener('click', async function() {
-            const { jsPDF } = window.jspdf;
-            const pdf = new jsPDF('p', 'mm', 'a4');
-            
-            const pageWidth = 210;
-            const pageHeight = 297;
-
-            if (isA4PortraitMode) {
-                for (let i = 0; i < postersList.length; i++) {
-                    if (i > 0) pdf.addPage();
-                    const canvas = document.getElementById(`posterCanvas_${i}`);
-                    if (!canvas) continue;
-                    const imgData = canvas.toDataURL('image/jpeg', 0.98);
-                    pdf.addImage(imgData, 'JPEG', 0, 0, pageWidth, pageHeight);
-                }
-                pdf.save('etiquettes_A4_Portrait.pdf');
-            } else {
-                const posterHeightMm = pageHeight / 4;
-                const maxPerPage = 4;
-
-                for (let i = 0; i < postersList.length; i++) {
-                    const pageIndex = Math.floor(i / maxPerPage);
-                    const posOnPage = i % maxPerPage;
-
-                    if (pageIndex > 0 && posOnPage === 0) {
-                        pdf.addPage();
-                    }
-
-                    const canvas = document.getElementById(`posterCanvas_${i}`);
-                    if (!canvas) continue;
-
-                    const imgData = canvas.toDataURL('image/jpeg', 0.98);
-                    const posY = posOnPage * posterHeightMm;
-
-                    pdf.addImage(imgData, 'JPEG', 0, posY, pageWidth, posterHeightMm);
-                }
-
-                pdf.save('etiquettes_Stop_Rayon.pdf');
-            }
-        });
-
-        ['inputDates', 'inputDiscount', 'inputDiscountText', 'inputUnitLabel'].forEach(id => {
-            document.getElementById(id).addEventListener('input', () => {
-                postersList.forEach((item, idx) => {
-                    const c = document.getElementById(`posterCanvas_${idx}`);
-                    if (c) drawSinglePoster(c, item);
-                });
-            });
-        });
-
-        window.addEventListener('DOMContentLoaded', async () => {
-            await discoverFolderImagesAutomatically();
-            await syncAllFromR2();
-            buildVisualGallery();
-            autoLoadMuseoSlabFonts();
-            loadDefaultModeImages();
-            renderAllPosters();
-        });
-        document.fonts.ready.then(() => {
-            renderAllPosters();
-        });
-    </script>
-</body>
-</html>
+            <!-- BARRE DES DOSSIERS RACINES ET SOUS-DOSSIERS -->
+            <div class="px-5 py-2.5 bg-indigo-50/70 border-b space-y-2">
+                <div class="flex flex-wrap items-center gap-1.5">
+                    <span class="text-[11px] font-extrabold uppercase text-indigo-900 mr-1">📁 Dossiers :</span>
+                    <div id="libraryRootFoldersBar" class="flex flex-wrap items-center gap-1.5"></div>
+                </div>
+                <div id="librarySubFoldersRow" class="flex flex-wrap items-center justify-between gap-2 pt-1.5 border-t border-indigo-100">
+                    <div class="flex flex-wrap items-center gap-1.5">
+                        <span class="text-[11px] font-bold text-indigo-700">↳ Chemin actif :</span>
+                        <div id="libraryBreadcrumbBar" class="flex flex-wrap items-center gap-1 text-xs font-extrabold text-indigo-90
