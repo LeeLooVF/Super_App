@@ -24,7 +24,6 @@
 
     <!-- ÉCRAN DE VERROUILLAGE AVEC IMAGE DE MATTHIEU ET MODALE -->
     <div id="authOverlay" class="fixed inset-0 bg-black/85 z-[100] flex flex-col items-center justify-center p-4 backdrop-blur-md">
-        <!-- Image de Matthieu intégrée à la racine GitHub -->
         <div class="mb-3 text-center">
             <img src="Matthieu.png" alt="Matthieu" class="max-h-48 w-auto object-contain mx-auto drop-shadow-2xl">
         </div>
@@ -153,7 +152,7 @@
                                 <option value="remise_60_2eme">-60% DE REMISE SUR LE 2ÈME PRODUIT AU CHOIX</option>
                                 <option value="remise_50_2eme_identique">-50% DE REMISE SUR LE 2ÈME PRODUIT IDENTIQUE</option>
                             </optgroup>
-                            <optgroup label="Offres Carte U (corrigées)">
+                            <optgroup label="Offres Carte U">
                                 <option value="carte_u_68_identique">68% SUR LE 2ÈME PRODUIT IDENTIQUE VERSÉS SUR CARTE U</option>
                                 <option value="carte_u_20_verse">SOIT 1,60€ VERSÉS SUR CARTE U (20%)</option>
                                 <option value="carte_u_34_verse">34% VERSÉS SUR CARTE U</option>
@@ -453,25 +452,24 @@
         function checkAuth() {
             const isAuth = sessionStorage.getItem('superu_auth_passed') === 'true';
             if (isAuth) {
-                $('authOverlay').classList.add('hidden');
-            } else {
-                $('authOverlay').classList.remove('hidden');
+                const overlay = document.getElementById('authOverlay');
+                if (overlay) overlay.style.display = 'none';
             }
         }
 
         document.addEventListener('DOMContentLoaded', () => {
             checkAuth();
-            const submitBtn = $('btnSubmitAuth');
-            const pwdInput = $('inputAuthPassword');
-            const errBox = $('authErrorMsg');
+            const submitBtn = document.getElementById('btnSubmitAuth');
+            const pwdInput = document.getElementById('inputAuthPassword');
+            const errBox = document.getElementById('authErrorMsg');
 
             if (submitBtn && pwdInput) {
                 const handleLogin = () => {
                     const pwd = pwdInput.value.trim();
                     if (pwd === ADMIN_PASSCODE || pwd === 'Matthieu') {
                         sessionStorage.setItem('superu_auth_passed', 'true');
-                        $('authOverlay').classList.add('hidden');
-                        if (errBox) errBox.classList.add('hidden');
+                        const overlay = document.getElementById('authOverlay');
+                        if (overlay) overlay.style.display = 'none';
                     } else {
                         if (errBox) errBox.classList.remove('hidden');
                     }
@@ -481,17 +479,20 @@
             }
         });
 
-        // Mécaniques mises à jour avec les textes et codes graphiques exacts (correction.jpg)
+        // Mécaniques mises à jour avec les libellés exacts des 4 images de référence (correction.jpg)
         const MECHANIC_PRESETS = {
             remise_20:                  { discount: '-20%', text: 'DE REMISE|IMMÉDIATE', unitLabel: 'LE PRODUIT', mode: 'pct_single' },
             remise_34:                  { discount: '-34%', text: 'DE REMISE|IMMÉDIATE', unitLabel: 'LE PRODUIT', mode: 'pct_single' },
             remise_50:                  { discount: '-50%', text: 'DE REMISE|IMMÉDIATE', unitLabel: 'LE PRODUIT', mode: 'pct_single' },
             remise_60_2eme:             { discount: '-60%', text: 'DE REMISE IMMÉDIATE|SUR LE 2ÈME PRODUIT|AU CHOIX', unitLabel: 'LE 2ÈME PRODUIT AU CHOIX', mode: 'nth_2', nthPct: 60 },
             remise_50_2eme_identique:   { discount: '-50%', text: 'DE REMISE IMMÉDIATE|SUR LE 2ÈME|PRODUIT IDENTIQUE', unitLabel: 'LE 2ÈME PRODUIT IDENTIQUE', mode: 'nth_2', nthPct: 50 },
+            
+            // Les 4 mécaniques Carte U exactement calquées sur les visuels de référence
             carte_u_68_identique:       { discount: '68%',  text: 'SUR LE 2ÈME PRODUIT|IDENTIQUE VERSÉS SUR|CARTE U', unitLabel: 'LE 2ÈME PRODUIT IDENTIQUE', mode: 'direct_lot', isCarteU: true },
             carte_u_20_verse:           { discount: '20%',  text: 'SOIT 1,60€ VERSÉS SUR|CARTE U', unitLabel: 'LE PRODUIT', mode: 'direct_lot', isCarteU: true },
             carte_u_34_verse:           { discount: '34%',  text: 'VERSÉS SUR|CARTE U', unitLabel: 'LE PRODUIT', mode: 'direct_lot', isCarteU: true },
             carte_u_20_immed:           { discount: '-20%', text: 'DE REMISE|IMMÉDIATE AVEC|CARTE U', unitLabel: 'LE PRODUIT', mode: 'pct_single', isCarteU: true },
+
             remise_2_euros:             { discount: '-2€',  text: 'DE REMISE|IMMÉDIATE', unitLabel: 'LE PRODUIT', mode: 'euro_single' },
             prix_coutant:               { discount: 'PRIX', text: 'COÛTANT', unitLabel: 'LE PRODUIT', mode: 'direct_lot' },
             prix_bas:                   { discount: 'PRIX', text: 'BAS', unitLabel: 'LE PRODUIT', mode: 'direct_lot' },
@@ -1346,7 +1347,7 @@
                 activeBgStockLabel = labelName;
                 activeBgStockIsR2 = isR2Baked33;
                 $('bgBtnLabel').textContent = `🎨 Fond : ${labelName}`;
-                $('btnOpenBgModal').className = 'text-[11px] font-extrabold px-3 py-1.5 rounded-lg border-2 border-purple-600 bg-purple-600 text-white transition flex items-center gap-1.5 shadow-sm shrink-0';
+                $('btnOpenBgModal').className = 'text-[11px] font-extrabold px-3.5 py-1.5 rounded-lg border-2 border-purple-600 bg-purple-600 text-white transition flex items-center gap-1.5 shadow-sm shrink-0';
                 $('bgGalleryModal').classList.add('hidden');
                 renderAllPosters();
             };
@@ -1410,7 +1411,7 @@
             activeBgStockLabel = 'Aucun';
             activeBgStockIsR2 = false;
             $('bgBtnLabel').textContent = '🎨 Fond : Aucun';
-            $('btnOpenBgModal').className = 'text-[11px] font-extrabold px-3 py-1.5 rounded-lg border-2 border-purple-300 bg-purple-50 text-purple-900 hover:bg-purple-100 transition flex items-center gap-1.5 shadow-sm shrink-0';
+            $('btnOpenBgModal').className = 'text-[11px] font-extrabold px-3.5 py-1.5 rounded-lg border-2 border-purple-300 bg-purple-50 text-purple-900 hover:bg-purple-100 transition flex items-center gap-1.5 shadow-sm shrink-0';
             $('bgGalleryModal').classList.add('hidden');
             renderAllPosters();
         };
@@ -1928,6 +1929,334 @@
             ctx.font = `600 5.5px ${FONT_SANS}`; ctx.fillText('DES CONTRÔLES SONT', 49, 35); ctx.fillText('RÉALISÉS EN CAISSE', 49, 41);
             ctx.font = `900 10.5px ${FONT_SLAB}`; ctx.fillText("L'ABUS D'ALCOOL EST DANGEREUX POUR LA SANTÉ, À CONSOMMER AVEC MODÉRATION.", 136, 40);
             ctx.restore();
+        }
+
+        function drawFormattedPrice(ctx, priceNumber, preferredCenterX, baselineY, isOldPrice, maxRightX = 656, scaleFactor = 1.0, isCarteUPromos = false) {
+            const FONT_SLAB = getActiveFontSlab();
+            const [euros, rawCents] = priceNumber.toFixed(2).split('.');
+            const cents = ',' + rawCents;
+            const isFour = euros.length >= 2;
+            const euroF = Math.round((isOldPrice ? (isFour ? 56 : 62) : (isFour ? 108 : 124)) * scaleFactor);
+            const centF = Math.round((isOldPrice ? (isFour ? 30 : 32) : (isFour ? 48 : 55)) * scaleFactor);
+            const symF = Math.round((isOldPrice ? (isFour ? 25 : 28) : (isFour ? 44 : 50)) * scaleFactor);
+
+            if (isOldPrice) {
+                ctx.fillStyle = '#000000';
+            } else if (isCarteUPromos) {
+                ctx.fillStyle = '#008585';
+            } else {
+                ctx.fillStyle = '#EE1C25';
+            }
+
+            ctx.font = `900 ${euroF}px ${FONT_SLAB}`; const eW = ctx.measureText(euros).width;
+            ctx.font = `900 ${centF}px ${FONT_SLAB}`; const cW = ctx.measureText(cents).width;
+            const totalW = eW + cW + 4;
+            let startX = Math.max(40, Math.min(preferredCenterX - totalW / 2, maxRightX - totalW));
+
+            ctx.textAlign = 'left';
+            ctx.font = `900 ${euroF}px ${FONT_SLAB}`; ctx.fillText(euros, startX, baselineY);
+            ctx.font = `900 ${symF}px ${FONT_SLAB}`; ctx.fillText('€', startX + eW + 2, baselineY - Math.round((isOldPrice ? (isFour ? 26 : 29) : (isFour ? 50 : 58)) * scaleFactor));
+            ctx.font = `900 ${centF}px ${FONT_SLAB}`; ctx.fillText(cents, startX + eW + 2, baselineY);
+
+            if (isOldPrice) {
+                ctx.strokeStyle = '#000000'; ctx.lineWidth = 4.5 * scaleFactor;
+                ctx.beginPath(); ctx.moveTo(startX - 5, baselineY - 5); ctx.lineTo(startX + totalW + 6, baselineY - Math.round(40 * scaleFactor)); ctx.stroke();
+            }
+        }
+
+        function drawFittedProductTitle(ctx, text, x, startY, maxWidth, maxBottomY, maxFont = 34, minFont = 17, align = 'left') {
+            const FONT_SLAB = getActiveFontSlab(), cleanText = (text || 'PRODUIT').toUpperCase().trim();
+            ctx.textAlign = align;
+            for (let fs = maxFont; fs >= minFont; fs--) {
+                const lh = Math.round(fs * 1.18); ctx.font = `900 ${fs}px ${FONT_SLAB}`;
+                const words = cleanText.split(/\s+/), lines = []; let cur = '', ok = true;
+                for (const w of words) {
+                    if (ctx.measureText(w).width > maxWidth) { ok = false; break; }
+                    const test = cur ? `${cur} ${w}` : w;
+                    if (ctx.measureText(test).width > maxWidth && cur) { lines.push(cur); cur = w; } else cur = test;
+                }
+                if (cur) lines.push(cur);
+                if (ok && startY + (lines.length - 1) * lh <= maxBottomY) {
+                    lines.forEach((l, i) => ctx.fillText(l, x, startY + i * lh)); return;
+                }
+            }
+            ctx.font = `900 ${minFont - 1}px ${FONT_SLAB}`; ctx.fillText(cleanText.slice(0, 28), x, startY);
+        }
+
+        function drawVisualBarcode(ctx, gencode, x, y, maxWidth, barHeight = 44) {
+            const clean = (gencode || '').replace(/\s+/g, ''); if (!clean) return;
+            const bc = document.createElement('canvas');
+            try {
+                const fmt = (/^\d{13}$/.test(clean) && isValidEAN13Checksum(clean)) ? "EAN13" : "CODE128";
+                JsBarcode(bc, clean, { format: fmt, width: 2.1, height: barHeight, displayValue: true, fontSize: 18, fontOptions: "bold", font: "Montserrat, Arial, sans-serif", textMargin: 2, margin: 0, background: "#FFFFFF", lineColor: "#000000" });
+                const tW = Math.min(maxWidth, bc.width), tH = bc.height * (tW / bc.width);
+                ctx.fillStyle = '#FFFFFF';
+                ctx.fillRect(x - 4, y - tH + 2, tW + 8, tH + 6);
+                ctx.drawImage(bc, x, y - tH + 6, tW, tH);
+            } catch (e) { ctx.fillStyle = '#000000'; ctx.font = `700 18px ${FONT_SANS}`; ctx.textAlign = 'left'; ctx.fillText(clean, x, y); }
+        }
+
+        function computePromoPricing(item, presetKey, discountInput, isMechanicShown) {
+            const uType = item.unitType || 'pièce', prefix = uType === 'pièce' ? 'La pièce' : (uType === 'l' ? 'Le L' : 'Le kg');
+            const baseUnit = item.baseUnitPrice > 0 ? item.baseUnitPrice : item.oldPrice;
+            const manualCrossed = (item.crossedPrice && Number(item.crossedPrice) > 0) ? Number(item.crossedPrice) : null;
+
+            if (!isMechanicShown || !applyMechanicPriceCalc) {
+                return {
+                    hasCrossedPrice: Boolean(manualCrossed),
+                    crossedPrice: manualCrossed || (item.crossedPrice || item.oldPrice),
+                    mainPrice: item.oldPrice,
+                    unitPriceText: `${prefix} : ${baseUnit.toFixed(2).replace('.', ',')} €`
+                };
+            }
+
+            const refStartPrice = manualCrossed ? manualCrossed : item.oldPrice;
+            const refStartUnit = (manualCrossed && item.oldPrice > 0)
+                ? baseUnit * (manualCrossed / item.oldPrice)
+                : baseUnit;
+
+            const preset = MECHANIC_PRESETS[presetKey] || { mode: 'pct_single' };
+            const pctM = discountInput.match(/(\d+(?:[.,]\d+)?)\s*%/), eurM = discountInput.match(/(\d+(?:[.,]\d+)?)\s*€/);
+
+            if (preset.mode === 'nth_2') {
+                const p = pctM ? parseFloat(pctM[1].replace(',', '.')) : (preset.nthPct || 50);
+                return {
+                    hasCrossedPrice: true,
+                    crossedPrice: refStartPrice,
+                    mainPrice: refStartPrice * (1 - p / 100),
+                    unitPriceText: `${prefix} par 2 : ${(refStartUnit * (1 - p / 200)).toFixed(2).replace('.', ',')} €`
+                };
+            }
+            if (preset.mode === 'bogo_1_1') {
+                return {
+                    hasCrossedPrice: true,
+                    crossedPrice: refStartPrice * 2,
+                    mainPrice: refStartPrice,
+                    unitPriceText: `${prefix} par 2 : ${(refStartUnit / 2).toFixed(2).replace('.', ',')} €`
+                };
+            }
+            if (preset.mode === 'bogo_2_1') {
+                return {
+                    hasCrossedPrice: true,
+                    crossedPrice: refStartPrice * 3,
+                    mainPrice: refStartPrice * 2,
+                    unitPriceText: `${prefix} par 3 : ${((refStartUnit * 2) / 3).toFixed(2).replace('.', ',')} €`
+                };
+            }
+            if (preset.mode === 'bogo_3_1') {
+                return {
+                    hasCrossedPrice: true,
+                    crossedPrice: refStartPrice * 4,
+                    mainPrice: refStartPrice * 3,
+                    unitPriceText: `${prefix} par 4 : ${((refStartUnit * 3) / 4).toFixed(2).replace('.', ',')} €`
+                };
+            }
+            if (preset.mode === 'euro_single' || (!pctM && eurM)) {
+                const off = eurM ? parseFloat(eurM[1].replace(',', '.')) : 0;
+                const np = Math.max(0, refStartPrice - off);
+                return {
+                    hasCrossedPrice: off > 0 || Boolean(manualCrossed),
+                    crossedPrice: refStartPrice,
+                    mainPrice: np,
+                    unitPriceText: `${prefix} : ${(refStartUnit * (refStartPrice > 0 ? np / refStartPrice : 1)).toFixed(2).replace('.', ',')} €`
+                };
+            }
+            const pct = pctM ? parseFloat(pctM[1].replace(',', '.')) : 0;
+            return {
+                hasCrossedPrice: pct > 0 || Boolean(manualCrossed),
+                crossedPrice: refStartPrice,
+                mainPrice: refStartPrice * (1 - pct / 100),
+                unitPriceText: `${prefix} : ${(refStartUnit * (1 - pct / 100)).toFixed(2).replace('.', ',')} €`
+            };
+        }
+
+        async function drawPromoCircle(ctx, circleX, circleY, radius, discountStr, rawDiscText, isA4, presetKey = '') {
+            const FONT_SLAB = getActiveFontSlab(), hasPhrase = rawDiscText.length > 0;
+            const presetInfo = MECHANIC_PRESETS[presetKey] || {};
+
+            if (presetInfo.isCarteU) {
+                // Rendu spécial pour les cercles Carte U (Fond turquoise + texte centré + logo Carte U en bas)
+                ctx.fillStyle = '#008585';
+                ctx.beginPath(); ctx.arc(circleX, circleY, radius, 0, Math.PI * 2); ctx.fill();
+
+                ctx.fillStyle = '#FFFFFF';
+                ctx.textAlign = 'center';
+                
+                // Si la ligne comporte plusieurs parties séparées par '|'
+                const lines = rawDiscText.split('|');
+                if (lines.length > 1) {
+                    ctx.font = `900 ${isA4 ? 54 : 38}px ${FONT_SLAB}`;
+                    ctx.fillText(discountStr, circleX, circleY - (isA4 ? 45 : 30));
+                    ctx.font = `800 ${isA4 ? 26 : 18}px ${FONT_SLAB}`;
+                    lines.forEach((l, idx) => {
+                        ctx.fillText(l.trim(), circleX, circleY - (isA4 ? 10 : 0) + idx * (isA4 ? 28 : 20));
+                    });
+                } else {
+                    ctx.font = `900 ${isA4 ? 76 : 56}px ${FONT_SLAB}`;
+                    ctx.fillText(discountStr, circleX, circleY - (isA4 ? 20 : 15));
+                }
+
+                const uImg = await loadCarteUImage();
+                if (uImg) {
+                    const imgW = isA4 ? 180 : 120;
+                    const imgH = imgW * (uImg.height / uImg.width);
+                    ctx.drawImage(uImg, circleX - imgW / 2, circleY + (isA4 ? 20 : 10), imgW, imgH);
+                }
+                return;
+            }
+
+            ctx.fillStyle = '#EE1C25'; ctx.beginPath(); ctx.arc(circleX, circleY, radius, 0, Math.PI * 2); ctx.fill();
+            ctx.fillStyle = '#FFFFFF';
+            const mainY = circleY + (hasPhrase ? (isA4 ? 5 : 2) : (isA4 ? 35 : 26));
+            if (discountStr.endsWith('%')) {
+                const num = discountStr.slice(0, -1), mF = isA4 ? (hasPhrase ? 105 : 120) : (hasPhrase ? 74 : 84), pF = isA4 ? (hasPhrase ? 58 : 66) : (hasPhrase ? 42 : 48);
+                ctx.font = `900 ${mF}px ${FONT_SLAB}`; const nW = ctx.measureText(num).width;
+                ctx.font = `900 ${pF}px ${FONT_SLAB}`; const pW = ctx.measureText('%').width;
+                const sX = circleX - (nW + pW) / 2;
+                ctx.textAlign = 'left'; ctx.font = `900 ${mF}px ${FONT_SLAB}`; ctx.fillText(num, sX, mainY);
+                ctx.font = `900 ${pF}px ${FONT_SLAB}`; ctx.fillText('%', sX + nW + 2, mainY - (isA4 ? 38 : 26));
+            } else if (discountStr) {
+                const cF = discountStr.length > 7 ? (isA4 ? 54 : 38) : (discountStr.length > 5 ? (isA4 ? 70 : 48) : (isA4 ? 102 : 64));
+                ctx.font = `900 ${cF}px ${FONT_SLAB}`; ctx.textAlign = 'center'; ctx.fillText(discountStr, circleX, mainY);
+            }
+            if (hasPhrase) {
+                const lines = rawDiscText.split('|');
+                ctx.font = `800 ${isA4 ? 32 : (lines.some(l => l.trim().length > 14) ? 18 : 21)}px ${FONT_SLAB}`;
+                ctx.textAlign = 'center';
+                lines.forEach((l, i) => ctx.fillText(l.trim(), circleX, circleY + (isA4 ? 55 : 32) + i * (isA4 ? 36 : 23)));
+            }
+        }
+
+        async function drawSinglePoster(canvas, item) {
+            const FONT_SLAB = getActiveFontSlab();
+            const isMech = isPosterPromoActive(item);
+            const hasCustomPromo = Boolean(item.detectedPromo && !item.detectedPromo.isGlobalSync && !forceManualGlobalDiscount);
+            const discIn = getEffectivePosterDiscount(item);
+            const discTxt = hasCustomPromo ? (item.detectedPromo.text || 'DE REMISE|IMMÉDIATE') : $('inputDiscountText').value.trim();
+            const presetK = hasCustomPromo ? item.detectedPromo.presetKey : $('selectMechanicPreset').value;
+            const presetObj = MECHANIC_PRESETS[presetK] || {};
+            const isCarteUPromos = Boolean(presetObj.isCarteU || item.detectedPromo?.isCarteU);
+
+            let uLabel = (hasCustomPromo && applyMechanicPriceCalc) ? item.detectedPromo.unitLabel : $('inputUnitLabel').value;
+            if (isCarteUPromos) {
+                uLabel = "LE PRODUIT € CARTE U DÉDUITS";
+            }
+
+            const showCont = $('chkShowContenance').checked, dateRaw = $('inputDates').value.trim();
+            const pricing = computePromoPricing(item, presetK, discIn, isMech);
+            const dispAlc = item.showAlcohol18 !== null ? item.showAlcohol18 : showAlcoholGlobal;
+            const autoTrim = $('chkAutoTrim').checked;
+            const activeImg = (item.useCustomLeftImage && item.customRawImg) ? (autoTrim ? item.customTrimmedImg : item.customRawImg) : (isA4PortraitMode ? (autoTrim ? trimmedTopImageA4 : rawTopImageA4) : (autoTrim ? trimmedLeftImage4 : rawLeftImage4));
+
+            const ctx = canvas.getContext('2d');
+            if (isA4PortraitMode) {
+                canvas.width = 840; canvas.height = 1188;
+                ctx.fillStyle = '#FFFFFF'; ctx.fillRect(0, 0, 840, 1188);
+                ctx.fillStyle = '#EE1C25'; ctx.fillRect(0, 0, 840, 235);
+                if (activeImg?.complete && activeImg.naturalWidth > 0) {
+                    ctx.save(); ctx.beginPath(); ctx.rect(0, 0, 840, 235); ctx.clip();
+                    const s = Math.max(840 / activeImg.width, 235 / activeImg.height);
+                    ctx.drawImage(activeImg, (840 - activeImg.width * s) / 2, (235 - activeImg.height * s) / 2, activeImg.width * s, activeImg.height * s);
+                    ctx.restore();
+                }
+
+                if (isMech) {
+                    await drawPromoCircle(ctx, 605, 490, 165, discIn, discTxt, true, presetK);
+                    if (pricing.hasCrossedPrice) { drawFormattedPrice(ctx, pricing.crossedPrice, 300, 395, true, 422, 1.35, false); drawFormattedPrice(ctx, pricing.mainPrice, 285, 555, false, 422, 1.35, isCarteUPromos); }
+                    else drawFormattedPrice(ctx, pricing.mainPrice, 285, 500, false, 422, 1.35, isCarteUPromos);
+                    ctx.fillStyle = isCarteUPromos ? '#008585' : '#EE1C25';
+                    ctx.font = `800 22px ${FONT_SANS}`; ctx.textAlign = 'center'; ctx.fillText(uLabel.toUpperCase(), 285, 598);
+                    ctx.fillStyle = '#000000'; ctx.font = `600 21px ${FONT_SANS}`; ctx.fillText(pricing.unitPriceText, 285, 628);
+                    if (showCont && item.contenanceText) { ctx.fillStyle = '#374151'; ctx.font = `700 19px ${FONT_SANS}`; ctx.fillText(`Contenance : ${item.contenanceText}`, 285, 655); }
+                } else {
+                    if (pricing.hasCrossedPrice) { drawFormattedPrice(ctx, pricing.crossedPrice, 435, 395, true, 780, 1.35, false); drawFormattedPrice(ctx, pricing.mainPrice, 420, 555, false, 780, 1.55, isCarteUPromos); }
+                    else drawFormattedPrice(ctx, pricing.mainPrice, 420, 500, false, 780, 1.65, isCarteUPromos);
+                    ctx.fillStyle = isCarteUPromos ? '#008585' : '#EE1C25';
+                    ctx.font = `800 25px ${FONT_SANS}`; ctx.textAlign = 'center'; ctx.fillText(uLabel.toUpperCase(), 420, pricing.hasCrossedPrice ? 598 : 555);
+                    ctx.fillStyle = '#000000'; ctx.font = `600 23px ${FONT_SANS}`; ctx.fillText(pricing.unitPriceText, 420, pricing.hasCrossedPrice ? 630 : 588);
+                    if (showCont && item.contenanceText) { ctx.fillStyle = '#374151'; ctx.font = `700 21px ${FONT_SANS}`; ctx.fillText(`Contenance : ${item.contenanceText}`, 420, pricing.hasCrossedPrice ? 660 : 620); }
+                }
+
+                const maxTitleBottomY = showDate ? 985 : 1020;
+                ctx.fillStyle = '#000000';
+                drawFittedProductTitle(ctx, item.productName, 52, 765, 736, maxTitleBottomY, 62, 28, 'left');
+
+                if (showDate && dateRaw) {
+                    const dateLines = dateRaw.split('|').map(s => s.trim()).filter(Boolean);
+                    const dateStartY = dispAlc ? (dateLines.length > 1 ? 1042 : 1065) : (dateLines.length > 1 ? 1095 : 1120);
+                    ctx.fillStyle = dateColor === '#FFFFFF' ? '#000000' : dateColor;
+                    ctx.font = `800 21px ${FONT_SLAB}`;
+                    ctx.textAlign = 'center';
+                    dateLines.forEach((l, i) => ctx.fillText(l, 420, dateStartY + i * 26));
+                }
+
+                if (dispAlc) drawAlcohol18Banner(ctx, 38, 1098, 1.05);
+                if (showDate && dateRaw.includes('*')) { ctx.fillStyle = '#000000'; ctx.font = `500 15px ${FONT_SANS}`; ctx.textAlign = 'left'; ctx.fillText("* Selon jour d'ouverture de votre magasin", 42, 1172); }
+                if (item.gencode) drawVisualBarcode(ctx, item.gencode, dispAlc ? 580 : 530, dispAlc ? 1093 : 1166, dispAlc ? 220 : 270, dispAlc ? 42 : 52);
+                return;
+            }
+
+            // Mode Stock Rayon (1200 x 420)
+            canvas.width = 1200; canvas.height = 420;
+            ctx.fillStyle = '#FFFFFF'; ctx.fillRect(0, 0, 1200, 420);
+
+            if (activeBgStockImg?.complete && activeBgStockImg.naturalWidth > 0) {
+                ctx.save();
+                ctx.beginPath();
+                ctx.rect(412, 0, 788, 420);
+                ctx.clip();
+                const bgScale = Math.max(788 / activeBgStockImg.width, 420 / activeBgStockImg.height);
+                const bgW = activeBgStockImg.width * bgScale;
+                const bgH = activeBgStockImg.height * bgScale;
+                ctx.drawImage(activeBgStockImg, 412 + (788 - bgW) / 2, (420 - bgH) / 2, bgW, bgH);
+                ctx.restore();
+            }
+
+            ctx.fillStyle = '#EE1C25'; ctx.fillRect(0, 0, 412, 420);
+            if (activeImg?.complete && activeImg.naturalWidth > 0) {
+                ctx.save(); ctx.beginPath(); ctx.rect(0, 0, 412, 420); ctx.clip();
+                const s = Math.max(412 / activeImg.width, 420 / activeImg.height);
+                ctx.drawImage(activeImg, (412 - activeImg.width * s) / 2, (420 - activeImg.height * s) / 2, activeImg.width * s, activeImg.height * s);
+                ctx.restore();
+            }
+            if (showDate && dateRaw) {
+                ctx.fillStyle = dateColor; ctx.font = `500 18px ${FONT_SLAB}`; ctx.textAlign = 'center';
+                dateRaw.split('|').forEach((l, i) => ctx.fillText(l.trim(), 206, 35 + i * 22));
+            }
+            if (isMech) {
+                await drawPromoCircle(ctx, 782, 185, 114, discIn, discTxt, false, presetK);
+                if (pricing.hasCrossedPrice) {
+                    drawFormattedPrice(ctx, pricing.crossedPrice, 565, 162, true, 656, 1.0, false);
+                    drawFormattedPrice(ctx, pricing.mainPrice, 550, 264, false, 656, 1.0, isCarteUPromos);
+                } else {
+                    drawFormattedPrice(ctx, pricing.mainPrice, 550, 232, false, 656, 1.0, isCarteUPromos);
+                }
+                ctx.fillStyle = isCarteUPromos ? '#008585' : '#EE1C25';
+                ctx.font = `800 15px ${FONT_SANS}`; ctx.textAlign = 'center'; ctx.fillText(uLabel.toUpperCase(), 555, 294);
+                ctx.fillStyle = '#000000'; ctx.font = `600 15px ${FONT_SANS}`; ctx.fillText(pricing.unitPriceText, 555, 314);
+                if (showCont && item.contenanceText) { ctx.fillStyle = '#374151'; ctx.font = `700 14px ${FONT_SANS}`; ctx.fillText(`Contenance : ${item.contenanceText}`, 555, 334); }
+            } else {
+                if (pricing.hasCrossedPrice) {
+                    drawFormattedPrice(ctx, pricing.crossedPrice, 580, 162, true, 715, 1.0, false);
+                    drawFormattedPrice(ctx, pricing.mainPrice, 565, 264, false, 715, 1.0, isCarteUPromos);
+                    ctx.fillStyle = isCarteUPromos ? '#008585' : '#EE1C25';
+                    ctx.font = `800 15px ${FONT_SANS}`; ctx.textAlign = 'center'; ctx.fillText(uLabel.toUpperCase(), 565, 294);
+                    ctx.fillStyle = '#000000'; ctx.font = `600 15px ${FONT_SANS}`; ctx.fillText(pricing.unitPriceText, 565, 314);
+                    if (showCont && item.contenanceText) { ctx.fillStyle = '#374151'; ctx.font = `700 14px ${FONT_SANS}`; ctx.fillText(`Contenance : ${item.contenanceText}`, 565, 334); }
+                } else {
+                    drawFormattedPrice(ctx, pricing.mainPrice, 565, 230, false, 715, 1.0, isCarteUPromos);
+                    ctx.fillStyle = isCarteUPromos ? '#008585' : '#EE1C25';
+                    ctx.font = `800 16px ${FONT_SANS}`; ctx.textAlign = 'center'; ctx.fillText(uLabel.toUpperCase(), 565, 265);
+                    ctx.fillStyle = '#000000'; ctx.font = `600 16px ${FONT_SANS}`; ctx.fillText(pricing.unitPriceText, 565, 287);
+                    if (showCont && item.contenanceText) { ctx.fillStyle = '#374151'; ctx.font = `700 15px ${FONT_SANS}`; ctx.fillText(`Contenance : ${item.contenanceText}`, 565, 309); }
+                }
+            }
+            const tX = isMech ? 912 : 740;
+            ctx.fillStyle = '#000000'; drawFittedProductTitle(ctx, item.productName, tX, 68, 1180 - tX, 315, 34, 17, 'left');
+            if (dispAlc) drawAlcohol18Banner(ctx, 422, 348, 0.72);
+            if (showDate && dateRaw.includes('*')) { ctx.fillStyle = '#000000'; ctx.font = `500 11px ${FONT_SANS}`; ctx.textAlign = 'left'; ctx.fillText("* Selon jour d'ouverture de votre magasin", 422, dispAlc ? 404 : 396); }
+            if (item.gencode) drawVisualBarcode(ctx, item.gencode, 922, 398, 250, 42);
+            ctx.strokeStyle = '#000000'; ctx.lineWidth = 4; ctx.beginPath(); ctx.moveTo(0, 418); ctx.lineTo(1200, 418); ctx.stroke();
         }
 
         function renderAllPosters() {
