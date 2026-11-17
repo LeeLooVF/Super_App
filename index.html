@@ -24,31 +24,30 @@
     <div class="max-w-7xl mx-auto space-y-5">
         <!-- BANDEAU DE CONFIGURATION GLOBALE (RÉDUIT À 80%) -->
         <div id="topControlPanel" class="bg-white p-4 rounded-xl shadow-md border-t-4 border-red-600 space-y-3 sticky top-2 z-20">
-            <!-- BARRE SUPÉRIEURE ORGANISÉE SELON VisuelCorrection.png -->
+            <!-- BARRE SUPÉRIEURE -->
             <div class="flex flex-wrap justify-between items-center border-b pb-2.5 gap-2">
                 <div class="flex flex-wrap items-center gap-2">
                     <h1 class="text-base font-extrabold text-gray-800 tracking-wide shrink-0">Generateur</h1>
                     <span id="badgeCount" class="text-[11px] bg-red-100 text-red-700 font-bold px-2.5 py-1 rounded-full shrink-0">0 / 50 étiquette</span>
-                    <button type="button" id="btnAddBlankPoster" class="text-[11px] font-extrabold px-2 py-1.5 rounded-lg border-2 border-emerald-600 bg-emerald-600 text-white hover:bg-emerald-700 transition shadow-sm shrink-0" title="Ajouter une étiquette manuellement">
-                        ➕ Étiquette
-                    </button>
-                    <button type="button" id="btnClearAllPosters" class="text-[11px] font-extrabold px-2 py-1.5 rounded-lg border-2 border-red-200 bg-red-50 text-red-700 hover:bg-red-600 hover:text-white transition shadow-sm shrink-0" title="Supprimer toutes les étiquettes de la liste">
-                        🗑️ Tout vider
-                    </button>
+                    <!-- BOUTON MODE STOCK RAYON / A4 PORTRAIT -->
                     <button type="button" id="btnToggleA4Mode" class="text-[11px] font-extrabold px-3 py-1.5 rounded-lg border-2 border-gray-800 bg-white text-gray-800 hover:bg-gray-800 hover:text-white transition flex items-center gap-1.5 shadow-sm shrink-0">
                         <span>Mode : Stock Rayon</span><span class="bg-red-600 text-white text-[10px] px-1.5 py-0.5 rounded">Basculer A4 Portrait</span>
                     </button>
+                    <!-- BOUTON BIBLIOTHÈQUE -->
                     <button type="button" id="btnOpenReadyDocsModal" class="text-[11px] font-extrabold px-3 py-1.5 rounded-lg border-2 border-purple-600 bg-purple-600 text-white hover:bg-purple-700 transition flex items-center gap-1.5 shadow-sm shrink-0">
                         <span>📚 Bibliothèque</span><span id="readyDocsCountBadge" class="bg-white text-purple-700 text-[10px] px-1.5 py-0.5 rounded-full font-black">29</span>
                     </button>
-                    <button type="button" id="btnOpenBgModal" class="text-[11px] font-extrabold px-3 py-1.5 rounded-lg border-2 border-purple-300 bg-purple-50 text-purple-900 hover:bg-purple-100 transition flex items-center gap-1.5 shadow-sm shrink-0" title="Ajouter un fond en arrière-plan sur toutes les étiquettes Stock Rayon">
+                    <!-- BOUTON FOND D'ÉTIQUETTE -->
+                    <button type="button" id="btnOpenBgModal" class="text-[11px] font-extrabold px-3 py-1.5 rounded-lg border-2 border-purple-300 bg-purple-50 text-purple-900 hover:bg-purple-100 transition flex items-center gap-1.5 shadow-sm shrink-0">
                         <span id="bgBtnLabel" class="truncate max-w-[130px]">🎨 Fond : Aucun</span>
                     </button>
+                    <!-- BOUTON -18 ALCOOL -->
                     <button type="button" id="btnToggleAlcohol18" class="text-[11px] font-extrabold px-3 py-1.5 rounded-lg border-2 border-orange-300 bg-orange-50 text-orange-800 hover:bg-orange-100 transition flex items-center gap-1.5 shadow-sm shrink-0">
                         <span class="bg-orange-600 text-white text-[10px] font-black px-1.5 py-0.5 rounded">-18</span><span id="alcoholBtnLabel">Alcool</span>
                     </button>
                 </div>
 
+                <!-- BLOC DROIT : POLICES, STATUT ET ÉTAT DES SERVICES -->
                 <div class="flex flex-wrap items-center gap-2">
                     <button type="button" id="btnOpenFontModal" class="text-[11px] bg-gray-100 hover:bg-gray-200 text-gray-800 font-extrabold py-1.5 px-3 rounded-lg cursor-pointer border-2 border-gray-300 transition flex items-center gap-1.5 shadow-sm shrink-0">
                         🔤 Polices .OTF / R2
@@ -86,7 +85,7 @@
                 </div>
             </div>
 
-            <!-- LIGNE 1 -->
+            <!-- LIGNE 1 : DÉPÔT PDF, IMAGE, DATES, COULEUR DATE -->
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3 items-center">
                 <div class="bg-blue-50 p-2 rounded-lg border border-blue-200 h-full flex flex-col justify-between">
                     <label class="block text-xs font-bold text-blue-900 uppercase mb-1">📷 Dépôt PDF (50 max )</label>
@@ -120,7 +119,7 @@
                 </div>
             </div>
 
-            <!-- LIGNE 2 -->
+            <!-- LIGNE 2 : MÉCANIQUE & VALEUR -->
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3 items-end pt-2 border-t border-gray-100">
                 <div>
                     <div class="flex justify-between items-center mb-1">
@@ -129,7 +128,7 @@
                     </div>
                     <div class="flex gap-1.5">
                         <select id="selectMechanicPreset" disabled class="w-2/3 p-1.5 border rounded-lg text-xs font-bold text-gray-800 bg-gray-100 opacity-50 cursor-pointer">
-                            <optgroup label="Remises immédiates">
+                            <optgroup label="Remises immédiates en %">
                                 <option value="remise_20">-20% DE REMISE IMMÉDIATE</option>
                                 <option value="remise_34" selected>-34% DE REMISE IMMÉDIATE</option>
                                 <option value="remise_50">-50% DE REMISE IMMÉDIATE</option>
@@ -137,10 +136,10 @@
                                 <option value="remise_50_2eme_identique">-50% DE REMISE SUR LE 2ÈME PRODUIT IDENTIQUE</option>
                             </optgroup>
                             <optgroup label="Offres Carte U">
-                                <option value="carte_u_68_identique">68% SUR LE 2ÈME PRODUIT IDENTIQUE VERSÉS SUR CARTE U</option>
-                                <option value="carte_u_20_verse">SOIT 1,60€ VERSÉS SUR CARTE U (20%)</option>
-                                <option value="carte_u_34_verse">34% VERSÉS SUR CARTE U</option>
                                 <option value="carte_u_20_immed">-20% DE REMISE IMMÉDIATE AVEC CARTE U</option>
+                                <option value="carte_u_soit_verse">SOIT 1,60€ VERSÉS SUR CARTE U (20%)</option>
+                                <option value="carte_u_34_verse">34% VERSÉS SUR CARTE U</option>
+                                <option value="carte_u_68_identique">68% SUR LE 2ÈME PRODUIT IDENTIQUE VERSÉS SUR CARTE U</option>
                             </optgroup>
                             <optgroup label="Remises en euros & Prix spéciaux">
                                 <option value="remise_2_euros">-2€ DE REMISE IMMÉDIATE</option>
@@ -182,6 +181,7 @@
                     <button type="button" id="btnClearAllPosters" class="w-1/2 bg-red-50 hover:bg-red-600 text-red-700 hover:text-white border border-red-200 font-bold py-2 px-2 rounded-lg shadow transition text-xs uppercase flex items-center justify-center gap-1">🗑️ Tout vider</button>
                 </div>
             </div>
+            <!-- LIGNE BOUTON TÉLÉCHARGER LE PDF -->
             <div>
                 <button id="btnDownloadPdfA4" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-lg shadow transition text-xs uppercase tracking-wider flex items-center justify-center gap-2">
                     <span id="btnDownloadLabel">📄 TÉLÉCHARGER LE PDF (STOCK RAYON)</span>
@@ -192,7 +192,7 @@
         <div id="postersContainer" class="space-y-6"></div>
     </div>
 
-    <!-- MODALE 1 : GALERIE VISUELLE -->
+    <!-- MODALE 1 : GALERIE VISUELLE (IMAGES GAUCHE & IMAGES A4) -->
     <div id="visualGalleryModal" class="fixed inset-0 bg-black/60 z-50 hidden flex items-center justify-center p-4 backdrop-blur-sm">
         <div class="bg-white rounded-2xl shadow-2xl max-w-5xl w-full max-h-[90vh] flex flex-col overflow-hidden border-t-4 border-red-600">
             <div class="flex flex-wrap justify-between items-center px-5 py-3.5 border-b bg-gray-50 gap-3">
@@ -237,7 +237,7 @@
                 </div>
                 <div class="flex flex-wrap items-center gap-2">
                     <input type="text" id="inputSearchBgGallery" placeholder="🔍 Filtrer un fond..." class="text-xs border rounded-lg px-3 py-1.5 w-48">
-                    <button type="button" id="btnRefreshBgGallery" class="text-xs font-bold bg-gray-200 hover:bg-gray-300 px-2.5 py-1.5 rounded-lg" title="Rafraîchir le dossier Fonds et R2">🔄</button>
+                    <button type="button" id="btnRefreshBgGallery" class="text-xs font-bold bg-gray-200 hover:bg-gray-300 px-2.5 py-1.5 rounded-lg">🔄</button>
                     <label class="text-xs font-bold bg-purple-600 hover:bg-purple-700 text-white px-3 py-1.5 rounded-lg cursor-pointer shadow-sm">
                         ☁️ Déposer un Fond sur R2 (Opacité 33% auto)
                         <input type="file" id="inputAddBgImage" accept=".jpeg,.jpg,.png,.pdf,.webp,.gif,.bmp,.svg,image/*,application/pdf" multiple class="hidden">
@@ -313,7 +313,7 @@
         </div>
     </div>
 
-    <!-- MODALE 3 : DÉPLACER / RENOMMER UN FICHIER SUR R2 -->
+    <!-- MODALE 3 : DÉPLACER / RENOMMER UN FICHIER SUR R2 (SANS ACCÈS RESTREINT) -->
     <div id="moveRenameFileModal" class="fixed inset-0 bg-black/65 z-[58] hidden flex items-center justify-center p-4 backdrop-blur-sm">
         <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full p-5 space-y-4 border-t-4 border-blue-600">
             <div class="flex justify-between items-center border-b pb-2.5">
@@ -339,10 +339,6 @@
                 <div>
                     <label class="block text-[11px] font-semibold text-gray-500 mb-1">Ou nouveau chemin (ex: <code class="bg-gray-100 px-1 rounded">Fêtes/Pâques</code>) :</label>
                     <input type="text" id="inputMoveCustomSubFolder" placeholder="Optionnel : nouveau dossier/sous-dossier" class="w-full p-2 border rounded-lg text-xs">
-                </div>
-                <div>
-                    <label class="block text-xs font-extrabold text-red-700 uppercase mb-1">🔒 Code de sécurité requis :</label>
-                    <input type="password" id="inputMovePasscode" placeholder="Saisir le code administrateur" autocomplete="off" class="w-full p-2 border-2 border-red-200 rounded-lg text-xs font-bold">
                 </div>
             </div>
             <div class="flex justify-end gap-2 pt-2 border-t">
@@ -386,7 +382,7 @@
             <div class="flex flex-wrap justify-between items-center border-b pb-3 gap-2">
                 <div>
                     <h3 class="text-sm font-extrabold text-gray-800 uppercase">🔤 Gestionnaire de Polices d'écriture (R2)</h3>
-                    <p class="text-[11px] text-gray-500">Police par défaut : Copie de Museo_Slab_3 • Dépose une nouvelle police sur R2 ou supprime avec code</p>
+                    <p class="text-[11px] text-gray-500">Police par défaut : Copie de Museo_Slab_3 • Dépose ou supprime librement une police sur R2</p>
                 </div>
                 <div class="flex items-center gap-2">
                     <label class="text-xs font-bold bg-emerald-600 hover:bg-emerald-700 text-white px-3 py-1.5 rounded-lg cursor-pointer shadow-sm">
@@ -414,7 +410,7 @@
             <div class="flex items-center gap-2.5">
                 <button type="button" id="btnPrintLightboxDoc" class="text-xs font-extrabold bg-emerald-600 text-white px-4 py-2 rounded-lg shadow">🖨️ Imprimer</button>
                 <button type="button" id="btnDownloadLightboxDoc" class="text-xs font-extrabold bg-indigo-600 text-white px-4 py-2 rounded-lg shadow">⬇️ Télécharger</button>
-                <button type="button" id="btnCloseLightboxModal" class="text-xs font-bold bg-gray-200 hover:bg-red-600 hover:text-white text-gray-800 px-3 py-2 rounded-lg">✕ Fermer</button>
+                <button type="button" id="btnCloseLightboxModal" class="text-xs font-bold bg-gray-200 hover:bg-red-600 hover:text-white px-3 py-2 rounded-lg">✕ Fermer</button>
             </div>
         </div>
         <div class="flex-1 flex items-center justify-center overflow-auto my-3 p-2">
@@ -428,53 +424,22 @@
         const R2_PUBLIC_BASE_URL = 'https://pub-06317316428d44fe94ff17808d4763df.r2.dev';
         const R2_API_ENDPOINT = '/api';
         const GITHUB_REPO_API = 'https://api.github.com/repos/LeeLooVF/Super_App/contents';
-        const ADMIN_PASSCODE = 'Bonesink124!';
         const MAX_LABELS_LIMIT = 50;
         const FONT_SANS = '"Montserrat", Arial, sans-serif';
         const DB_NAME = 'SuperU_PromoLabels_DB', STORE_NAME = 'saved_left_images', READY_DOCS_STORE = 'ready_created_files';
 
-        function checkAuth() {
-            const isAuth = sessionStorage.getItem('superu_auth_passed') === 'true';
-            if (isAuth) {
-                $('authOverlay').classList.add('hidden');
-            } else {
-                $('authOverlay').classList.remove('hidden');
-            }
-        }
-
-        document.addEventListener('DOMContentLoaded', () => {
-            checkAuth();
-            const submitBtn = $('btnSubmitAuth');
-            const pwdInput = $('inputAuthPassword');
-            const errBox = $('authErrorMsg');
-
-            if (submitBtn && pwdInput) {
-                const handleLogin = () => {
-                    const pwd = pwdInput.value.trim();
-                    if (pwd === ADMIN_PASSCODE || pwd === 'Matthieu') {
-                        sessionStorage.setItem('superu_auth_passed', 'true');
-                        $('authOverlay').classList.add('hidden');
-                        if (errBox) errBox.classList.add('hidden');
-                    } else {
-                        if (errBox) errBox.classList.remove('hidden');
-                    }
-                };
-                submitBtn.onclick = handleLogin;
-                pwdInput.onkeydown = e => { if (e.key === 'Enter') handleLogin(); };
-            }
-        });
-
-        // Mécaniques mises à jour avec les textes exacts et la mention Carte U
+        // Liste officielle des mécaniques (incluant les 4 mécaniques Carte U conformes aux captures)
         const MECHANIC_PRESETS = {
             remise_20:                  { discount: '-20%', text: 'DE REMISE|IMMÉDIATE', unitLabel: 'LE PRODUIT', mode: 'pct_single' },
             remise_34:                  { discount: '-34%', text: 'DE REMISE|IMMÉDIATE', unitLabel: 'LE PRODUIT', mode: 'pct_single' },
             remise_50:                  { discount: '-50%', text: 'DE REMISE|IMMÉDIATE', unitLabel: 'LE PRODUIT', mode: 'pct_single' },
             remise_60_2eme:             { discount: '-60%', text: 'DE REMISE IMMÉDIATE|SUR LE 2ÈME PRODUIT|AU CHOIX', unitLabel: 'LE 2ÈME PRODUIT AU CHOIX', mode: 'nth_2', nthPct: 60 },
             remise_50_2eme_identique:   { discount: '-50%', text: 'DE REMISE IMMÉDIATE|SUR LE 2ÈME|PRODUIT IDENTIQUE', unitLabel: 'LE 2ÈME PRODUIT IDENTIQUE', mode: 'nth_2', nthPct: 50 },
-            carte_u_68_identique:       { discount: '68%',  text: 'SUR LE 2ÈME PRODUIT|IDENTIQUE VERSÉS SUR|CARTE U', unitLabel: 'LE 2ÈME PRODUIT IDENTIQUE', mode: 'direct_lot', isCarteU: true },
-            carte_u_20_verse:           { discount: '20%',  text: 'SOIT 1,60€ VERSÉS SUR|CARTE U', unitLabel: 'LE PRODUIT', mode: 'direct_lot', isCarteU: true },
-            carte_u_34_verse:           { discount: '34%',  text: 'VERSÉS SUR|CARTE U', unitLabel: 'LE PRODUIT', mode: 'direct_lot', isCarteU: true },
-            carte_u_20_immed:           { discount: '-20%', text: 'DE REMISE|IMMÉDIATE AVEC|CARTE U', unitLabel: 'LE PRODUIT', mode: 'pct_single', isCarteU: true },
+            carte_u_20_immed:           { discount: '-20%', text: 'DE REMISE|IMMÉDIATE AVEC|CARTE U', unitLabel: 'LE PRODUIT', mode: 'pct_single', isCarteU: true, circleBg: '#EE1C25' },
+            carte_u_soit_verse:         { discount: '20%',  text: 'SOIT 1,60€ VERSÉS SUR|CARTE U', unitLabel: 'LE PRODUIT', mode: 'direct_lot', isCarteU: true, circleBg: '#008585' },
+            carte_u_20_verse:           { discount: '20%',  text: 'SOIT 1,60€ VERSÉS SUR|CARTE U', unitLabel: 'LE PRODUIT', mode: 'direct_lot', isCarteU: true, circleBg: '#008585' },
+            carte_u_34_verse:           { discount: '34%',  text: 'VERSÉS SUR|CARTE U', unitLabel: 'LE PRODUIT', mode: 'direct_lot', isCarteU: true, circleBg: '#008585' },
+            carte_u_68_identique:       { discount: '68%',  text: 'SUR LE 2ÈME PRODUIT|IDENTIQUE VERSÉS SUR|CARTE U', unitLabel: 'LE 2ÈME PRODUIT IDENTIQUE', mode: 'direct_lot', isCarteU: true, circleBg: '#008585' },
             remise_2_euros:             { discount: '-2€',  text: 'DE REMISE|IMMÉDIATE', unitLabel: 'LE PRODUIT', mode: 'euro_single' },
             prix_coutant:               { discount: 'PRIX', text: 'COÛTANT', unitLabel: 'LE PRODUIT', mode: 'direct_lot' },
             prix_bas:                   { discount: 'PRIX', text: 'BAS', unitLabel: 'LE PRODUIT', mode: 'direct_lot' },
@@ -515,6 +480,7 @@
         const ensureWebpFileName = f => `${(f || 'image').replace(/\.[^.]+$/, '')}.webp`;
         const readFileAsDataURL = file => new Promise(res => { const r = new FileReader(); r.onload = e => res(e.target.result); r.readAsDataURL(file); });
 
+        // Cache préchargé pour l'image CARTE_U.png
         let carteUImageObj = null;
         async function loadCarteUImage() {
             if (carteUImageObj) return carteUImageObj;
@@ -523,7 +489,11 @@
                 try {
                     const img = new Image();
                     if (window.location.protocol !== 'file:') img.crossOrigin = 'anonymous';
-                    await new Promise((res, rej) => { img.onload = res; img.onerror = rej; img.src = url; });
+                    await new Promise((res, rej) => {
+                        img.onload = res;
+                        img.onerror = rej;
+                        img.src = url;
+                    });
                     carteUImageObj = img;
                     return img;
                 } catch (e) {}
@@ -559,7 +529,9 @@
         }
 
         function getEffectivePosterDiscount(item) {
-            if (forceManualGlobalDiscount || item.detectedPromo?.isGlobalSync) {
+            const presetKey = item.detectedPromo?.presetKey || $('selectMechanicPreset').value;
+            const preset = MECHANIC_PRESETS[presetKey] || {};
+            if (forceManualGlobalDiscount || item.detectedPromo?.isGlobalSync || preset.isCarteU) {
                 return $('inputDiscount').value.trim();
             }
             const crossed = (item.crossedPrice && Number(item.crossedPrice) > 0) ? Number(item.crossedPrice) : null;
@@ -576,6 +548,7 @@
 
         $('btnAddBlankPoster').onclick = () => {
             if (postersList.length >= MAX_LABELS_LIMIT) return;
+            const selPreset = MECHANIC_PRESETS[$('selectMechanicPreset').value] || {};
             postersList.push({
                 productName: 'NOUVEAU PRODUIT',
                 oldPrice: 1.99,
@@ -596,7 +569,8 @@
                     presetKey: $('selectMechanicPreset').value,
                     discount: $('inputDiscount').value.trim(),
                     text: $('inputDiscountText').value.trim(),
-                    unitLabel: $('inputUnitLabel').value.trim()
+                    unitLabel: $('inputUnitLabel').value.trim(),
+                    isCarteU: Boolean(selPreset.isCarteU)
                 } : null
             });
             renderAllPosters();
@@ -610,13 +584,6 @@
         $('btnToggleServiceStatus').onclick = e => { e.stopPropagation(); $('serviceStatusPopover').classList.toggle('hidden'); };
         $('btnCloseServicePopover').onclick = () => $('serviceStatusPopover').classList.add('hidden');
         document.addEventListener('click', e => { if (!e.target.closest('#serviceStatusPopover') && !e.target.closest('#btnToggleServiceStatus')) $('serviceStatusPopover').classList.add('hidden'); });
-
-        function askDeletePasscode(desc = 'effectuer cette action') {
-            const code = prompt(`🔒 Sécurité : Entre le code administrateur pour ${desc} :`);
-            if (code === null) return null;
-            if (code !== ADMIN_PASSCODE) { alert("❌ Code incorrect ! Opération annulée."); return null; }
-            return code;
-        }
 
         function canvasToWebPDataUrl(canvas, q = 0.88) {
             const w = canvas.toDataURL('image/webp', q);
@@ -707,7 +674,7 @@
         const getCandidateUrls = preset => { const u = safeFileUrl(preset.file); return [u, `${R2_PUBLIC_BASE_URL}/${u}`]; };
 
         // ============================================================================
-        // BASE DE DONNÉES LOCALE & SYNCHRONISATION R2
+        // BASE DE DONNÉES LOCALE & SYNCHRONISATION R2 (SANS ACCÈS RESTREINT)
         // ============================================================================
         function openImageDB() {
             return new Promise((res, rej) => {
@@ -780,10 +747,8 @@
             const newSubRaw = prompt(`✏️ Nouveau nom ou chemin pour "${oldSubFolder}" :\n(Utilise "/" pour un sous-dossier, ex: "Fêtes/Noël")`, oldSubFolder);
             if (!newSubRaw || !newSubRaw.trim() || newSubRaw.trim() === oldSubFolder) return;
             const cleanNewSub = normalizeFolderPath(newSubRaw);
-            const code = askDeletePasscode(`renommer/déplacer le dossier "${oldSubFolder}" vers "${cleanNewSub}"`);
-            if (!code) return;
             try {
-                const res = await fetch(R2_API_ENDPOINT, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'rename_folder', folder: tabFolder, oldSubFolder, newSubFolder: cleanNewSub, code }) });
+                const res = await fetch(R2_API_ENDPOINT, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'rename_folder', folder: tabFolder, oldSubFolder, newSubFolder: cleanNewSub }) });
                 const json = await res.json();
                 if (!json.ok) return alert("Erreur serveur : " + (json.error || "Refusé"));
             } catch (e) {}
@@ -795,10 +760,8 @@
 
         async function deleteFolderAndSubfoldersWithPassword(tabFolder, targetSubFolder) {
             if (!targetSubFolder || targetSubFolder === 'Général') return alert("Le dossier racine 'Général' ne peut pas être supprimé.");
-            const code = askDeletePasscode(`supprimer le dossier "${targetSubFolder}" et tout son contenu`);
-            if (!code) return;
             try {
-                const res = await fetch(`${R2_API_ENDPOINT}?action=delete_folder&folder=${encodeURIComponent(tabFolder)}&subFolder=${encodeURIComponent(targetSubFolder)}&code=${encodeURIComponent(code)}`, { method: 'DELETE' });
+                const res = await fetch(`${R2_API_ENDPOINT}?action=delete_folder&folder=${encodeURIComponent(tabFolder)}&subFolder=${encodeURIComponent(targetSubFolder)}`, { method: 'DELETE' });
                 const json = await res.json();
                 if (!json.ok) return alert("Erreur : " + (json.error || "Suppression refusée"));
             } catch (e) {}
@@ -812,11 +775,9 @@
         }
 
         async function hideStaticGithubFileOnR2(filePath, labelName) {
-            const code = askDeletePasscode(`supprimer le visuel "${labelName}" pour tous les utilisateurs`);
-            if (!code) return;
             if (!deletedStaticFiles.includes(filePath)) { deletedStaticFiles.push(filePath); localStorage.setItem('superu_deleted_static_files', JSON.stringify(deletedStaticFiles)); }
             try {
-                const res = await fetch(R2_API_ENDPOINT, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'hide_static_file', filePath, code }) });
+                const res = await fetch(R2_API_ENDPOINT, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'hide_static_file', filePath }) });
                 const json = await res.json();
                 if (json?.ok && Array.isArray(json.deletedStaticFiles)) { deletedStaticFiles = json.deletedStaticFiles; localStorage.setItem('superu_deleted_static_files', JSON.stringify(deletedStaticFiles)); }
             } catch (e) {}
@@ -826,11 +787,9 @@
         }
 
         async function deleteSharedOrLocalItemWithPassword(item, storeName, displayName) {
-            const code = askDeletePasscode(`supprimer "${displayName || item.label || item.name}"`);
-            if (!code) return false;
             if (item.r2Key) {
                 try {
-                    const res = await fetch(`${R2_API_ENDPOINT}?key=${encodeURIComponent(item.r2Key)}&thumbKey=${encodeURIComponent(item.thumbKey || '')}&code=${encodeURIComponent(code)}`, { method: 'DELETE' });
+                    const res = await fetch(`${R2_API_ENDPOINT}?key=${encodeURIComponent(item.r2Key)}&thumbKey=${encodeURIComponent(item.thumbKey || '')}`, { method: 'DELETE' });
                     const json = await res.json();
                     if (!json.ok) { alert("Erreur : " + (json.error || "Refusé")); return false; }
                 } catch (e) {}
@@ -909,11 +868,11 @@
         }
 
         function updateLibraryBadgesAndUI() {
-            $('readyDocsCountBadge'].textContent = readyDepositedDocs.length + readyGeneratedDocs.length;
-            $('countDepositedBadge'].textContent = readyDepositedDocs.length;
-            $('countGeneratedBadge'].textContent = readyGeneratedDocs.length;
+            $('readyDocsCountBadge').textContent = readyDepositedDocs.length + readyGeneratedDocs.length;
+            $('countDepositedBadge').textContent = readyDepositedDocs.length;
+            $('countGeneratedBadge').textContent = readyGeneratedDocs.length;
             renderLibraryFoldersHierarchy();
-            renderReadyDocsGrid($('inputSearchReadyDocs']?.value || '');
+            renderReadyDocsGrid($('inputSearchReadyDocs')?.value || '');
         }
 
         // ============================================================================
@@ -929,28 +888,26 @@
             });
         }
 
-        $('selectMoveTargetTab'].onchange = function() { populateMoveTargetSubFolders(this.value, 'Général'); };
-        $('btnCloseMoveRenameModal'].onclick = $('btnCancelMoveRename'].onclick = () => { $('moveRenameFileModal'].classList.add('hidden'); pendingMoveRenameDoc = null; };
+        $('selectMoveTargetTab').onchange = function() { populateMoveTargetSubFolders(this.value, 'Général'); };
+        $('btnCloseMoveRenameModal').onclick = $('btnCancelMoveRename').onclick = () => { $('moveRenameFileModal').classList.add('hidden'); pendingMoveRenameDoc = null; };
 
-        $('btnConfirmMoveRename'].onclick = async function() {
+        $('btnConfirmMoveRename').onclick = async function() {
             if (!pendingMoveRenameDoc) return;
-            const code = $('inputMovePasscode'].value;
-            if (code !== ADMIN_PASSCODE) return alert("❌ Code de sécurité incorrect !");
-            const newLabel = $('inputMoveRenameLabel'].value.trim() || pendingMoveRenameDoc.name;
-            const newTab = $('selectMoveTargetTab'].value;
-            const typedCustom = $('inputMoveCustomSubFolder'].value.trim();
-            const newSub = typedCustom ? normalizeFolderPath(typedCustom) : ($('selectMoveTargetSubFolder'].value || 'Général');
+            const newLabel = $('inputMoveRenameLabel').value.trim() || pendingMoveRenameDoc.name;
+            const newTab = $('selectMoveTargetTab').value;
+            const typedCustom = $('inputMoveCustomSubFolder').value.trim();
+            const newSub = typedCustom ? normalizeFolderPath(typedCustom) : ($('selectMoveTargetSubFolder').value || 'Général');
 
             if (typedCustom && !(customSubFolders[newTab] || []).includes(newSub)) await createSubFolderOnR2(newTab, newSub);
             if (pendingMoveRenameDoc.r2Key) {
-                try { await fetch(R2_API_ENDPOINT, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'update_file_meta', key: pendingMoveRenameDoc.r2Key, newLabel, newFolder: newTab, newSubFolder: newSub, code }) }); } catch (e) {}
+                try { await fetch(R2_API_ENDPOINT, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'update_file_meta', key: pendingMoveRenameDoc.r2Key, newLabel, newFolder: newTab, newSubFolder: newSub }) }); } catch (e) {}
             }
-            $('moveRenameFileModal'].classList.add('hidden'); pendingMoveRenameDoc = null;
+            $('moveRenameFileModal').classList.add('hidden'); pendingMoveRenameDoc = null;
             await syncAllFromR2();
         };
 
-        $('btnOpenFontModal'].onclick = () => { renderFontManagerList(); $('fontManagerModal'].classList.remove('hidden'); };
-        $('btnCloseFontModal'].onclick = $('btnCancelFontModal'].onclick = () => $('fontManagerModal'].classList.add('hidden');
+        $('btnOpenFontModal').onclick = () => { renderFontManagerList(); $('fontManagerModal').classList.remove('hidden'); };
+        $('btnCloseFontModal').onclick = $('btnCancelFontModal').onclick = () => $('fontManagerModal').classList.add('hidden');
 
         function renderFontManagerList() {
             const c = $('fontListContainer'); c.innerHTML = '';
@@ -967,12 +924,12 @@
                         <button type="button" class="btn-use-font text-xs font-extrabold px-3 py-1.5 rounded-lg ${isSel ? 'bg-emerald-700 text-white' : 'bg-gray-200 text-gray-800'}">${isSel ? '✓ Utilisée' : 'Utiliser'}</button>
                         ${!fItem.isSystem ? `<button type="button" class="btn-del-font text-xs font-bold px-2.5 py-1.5 rounded-lg bg-red-50 text-red-600 border border-red-200">🗑️</button>` : ''}
                     </div>`;
-                row.querySelector('.btn-use-font'].onclick = () => { activeFontFamilyName = fItem.name; $('activeFontBadgeName'].textContent = fItem.name; renderFontManagerList(); renderAllPosters(); };
+                row.querySelector('.btn-use-font').onclick = () => { activeFontFamilyName = fItem.name; $('activeFontBadgeName').textContent = fItem.name; renderFontManagerList(); renderAllPosters(); };
                 const delBtn = row.querySelector('.btn-del-font');
                 if (delBtn) delBtn.onclick = async () => {
                     if (await deleteSharedOrLocalItemWithPassword(fItem, null, fItem.name)) {
                         availableFontsList = availableFontsList.filter(f => f.id !== fItem.id);
-                        if (activeFontFamilyName === fItem.name) { activeFontFamilyName = 'Copie de Museo_Slab_3'; $('activeFontBadgeName'].textContent = 'Copie de Museo_Slab_3'; }
+                        if (activeFontFamilyName === fItem.name) { activeFontFamilyName = 'Copie de Museo_Slab_3'; $('activeFontBadgeName').textContent = 'Copie de Museo_Slab_3'; }
                         renderFontManagerList(); renderAllPosters();
                     }
                 };
@@ -980,9 +937,9 @@
             });
         }
 
-        $('inputUploadFontR2'].onchange = async function(e) {
+        $('inputUploadFontR2').onchange = async function(e) {
             const files = Array.from(e.target.files); if (!files.length) return;
-            $('fontUploadStatus'].textContent = `⏳ Envoi sur R2...`;
+            $('fontUploadStatus').textContent = `⏳ Envoi sur R2...`;
             for (const file of files) {
                 const cleanName = file.name.replace(/\.[^.]+$/, '');
                 try {
@@ -996,10 +953,10 @@
                 const dataUrl = await readFileAsDataURL(file);
                 const uploaded = await uploadToR2OrLocal('fonts', cleanName, file.name, 'FONT', dataUrl, dataUrl);
                 if (uploaded && !availableFontsList.some(f => f.name === cleanName)) availableFontsList.push({ id: uploaded.key || cleanName, r2Key: uploaded.key, name: cleanName, fileName: file.name, isSystem: false });
-                activeFontFamilyName = cleanName; $('activeFontBadgeName'].textContent = cleanName;
+                activeFontFamilyName = cleanName; $('activeFontBadgeName').textContent = cleanName;
             }
-            $('fontUploadStatus'].textContent = '✅ Police activée !';
-            setTimeout(() => $('fontUploadStatus'].textContent = '', 3000);
+            $('fontUploadStatus').textContent = '✅ Police activée !';
+            setTimeout(() => $('fontUploadStatus').textContent = '', 3000);
             renderFontManagerList(); renderAllPosters(); this.value = '';
         };
 
@@ -1008,12 +965,12 @@
         // ============================================================================
         function setLibraryActiveTab(tab) {
             activeLibraryTab = tab; activeLibrarySubFolder = 'Général';
-            $('btnTabDeposited'].className = tab === 'ready_deposited' ? 'text-xs font-extrabold px-3.5 py-1.5 rounded-lg bg-indigo-600 text-white shadow' : 'text-xs font-extrabold px-3.5 py-1.5 rounded-lg text-gray-700';
-            $('btnTabGenerated'].className = tab === 'ready_generated' ? 'text-xs font-extrabold px-3.5 py-1.5 rounded-lg bg-indigo-600 text-white shadow' : 'text-xs font-extrabold px-3.5 py-1.5 rounded-lg text-gray-700';
-            renderLibraryFoldersHierarchy(); renderReadyDocsGrid($('inputSearchReadyDocs'].value);
+            $('btnTabDeposited').className = tab === 'ready_deposited' ? 'text-xs font-extrabold px-3.5 py-1.5 rounded-lg bg-indigo-600 text-white shadow' : 'text-xs font-extrabold px-3.5 py-1.5 rounded-lg text-gray-700';
+            $('btnTabGenerated').className = tab === 'ready_generated' ? 'text-xs font-extrabold px-3.5 py-1.5 rounded-lg bg-indigo-600 text-white shadow' : 'text-xs font-extrabold px-3.5 py-1.5 rounded-lg text-gray-700';
+            renderLibraryFoldersHierarchy(); renderReadyDocsGrid($('inputSearchReadyDocs').value);
         }
-        $('btnTabDeposited'].onclick = () => setLibraryActiveTab('ready_deposited');
-        $('btnTabGenerated'].onclick = () => setLibraryActiveTab('ready_generated');
+        $('btnTabDeposited').onclick = () => setLibraryActiveTab('ready_deposited');
+        $('btnTabGenerated').onclick = () => setLibraryActiveTab('ready_generated');
 
         function renderLibraryFoldersHierarchy() {
             const allPaths = customSubFolders[activeLibraryTab] || ['Général'];
@@ -1027,7 +984,7 @@
                 const btn = document.createElement('button');
                 btn.type = 'button'; btn.className = 'text-xs font-bold px-2.5 py-1';
                 btn.textContent = rootName === 'Général' ? '🏠 Général (Racine)' : `📁 ${rootName}`;
-                btn.onclick = () => { activeLibrarySubFolder = rootName; renderLibraryFoldersHierarchy(); renderReadyDocsGrid($('inputSearchReadyDocs'].value); };
+                btn.onclick = () => { activeLibrarySubFolder = rootName; renderLibraryFoldersHierarchy(); renderReadyDocsGrid($('inputSearchReadyDocs').value); };
                 wrap.appendChild(btn);
 
                 if (rootName !== 'Général') {
@@ -1045,7 +1002,7 @@
                 const b = document.createElement('button');
                 b.className = `px-1.5 py-0.5 rounded hover:bg-indigo-200 ${isLast ? 'bg-indigo-100 underline' : ''}`;
                 b.textContent = label;
-                b.onclick = () => { activeLibrarySubFolder = path; renderLibraryFoldersHierarchy(); renderReadyDocsGrid($('inputSearchReadyDocs'].value); };
+                b.onclick = () => { activeLibrarySubFolder = path; renderLibraryFoldersHierarchy(); renderReadyDocsGrid($('inputSearchReadyDocs').value); };
                 bcBar.appendChild(b);
             };
             addCrumb('Général', 'Général', activeLibrarySubFolder === 'Général');
@@ -1069,38 +1026,38 @@
                     const w = document.createElement('div');
                     w.className = 'inline-flex items-center rounded-lg border border-amber-300 bg-amber-50 text-amber-900 overflow-hidden shadow-sm';
                     w.innerHTML = `<button type="button" class="btn-open text-xs font-extrabold px-2.5 py-0.5">📂 ${cName}</button><button type="button" class="btn-ed text-[10px] px-1.5 py-0.5 border-l border-amber-200 hover:bg-blue-600 hover:text-white">✏️</button><button type="button" class="btn-dl text-[10px] font-black px-1.5 py-0.5 border-l border-amber-200 hover:bg-red-600 hover:text-white">✕</button>`;
-                    w.querySelector('.btn-open'].onclick = () => { activeLibrarySubFolder = cPath; renderLibraryFoldersHierarchy(); renderReadyDocsGrid($('inputSearchReadyDocs'].value); };
-                    w.querySelector('.btn-ed'].onclick = e => { e.stopPropagation(); renameOrMoveFolderWithPassword(activeLibraryTab, cPath); };
-                    w.querySelector('.btn-dl'].onclick = e => { e.stopPropagation(); deleteFolderAndSubfoldersWithPassword(activeLibraryTab, cPath); };
+                    w.querySelector('.btn-open').onclick = () => { activeLibrarySubFolder = cPath; renderLibraryFoldersHierarchy(); renderReadyDocsGrid($('inputSearchReadyDocs').value); };
+                    w.querySelector('.btn-ed').onclick = e => { e.stopPropagation(); renameOrMoveFolderWithPassword(activeLibraryTab, cPath); };
+                    w.querySelector('.btn-dl').onclick = e => { e.stopPropagation(); deleteFolderAndSubfoldersWithPassword(activeLibraryTab, cPath); };
                     childBar.appendChild(w);
                 });
             }
-            $('btnDeleteCurrentFolder'].classList.toggle('hidden', activeLibrarySubFolder === 'Général');
-            $('btnRenameCurrentFolder'].classList.toggle('hidden', activeLibrarySubFolder === 'Général');
+            $('btnDeleteCurrentFolder').classList.toggle('hidden', activeLibrarySubFolder === 'Général');
+            $('btnRenameCurrentFolder').classList.toggle('hidden', activeLibrarySubFolder === 'Général');
         }
 
-        $('btnCreateNewRootFolder'].onclick = async () => {
+        $('btnCreateNewRootFolder').onclick = async () => {
             const name = prompt(`📁 Nom du nouveau dossier dans "Général" :`);
             if (!name?.trim()) return;
             activeLibrarySubFolder = normalizeFolderPath(name.replace(/\//g, '-'));
             await createSubFolderOnR2(activeLibraryTab, activeLibrarySubFolder);
         };
-        $('btnCreateNewChildSubFolder'].onclick = async () => {
+        $('btnCreateNewChildSubFolder').onclick = async () => {
             const name = prompt(`📂 Créer un sous-dossier dans "${activeLibrarySubFolder}" :`);
             if (!name?.trim()) return;
             const c = name.trim().replace(/\//g, '-');
             activeLibrarySubFolder = activeLibrarySubFolder === 'Général' ? c : `${activeLibrarySubFolder}/${c}`;
             await createSubFolderOnR2(activeLibraryTab, activeLibrarySubFolder);
         };
-        $('btnRenameCurrentFolder'].onclick = () => renameOrMoveFolderWithPassword(activeLibraryTab, activeLibrarySubFolder);
-        $('btnDeleteCurrentFolder'].onclick = () => deleteFolderAndSubfoldersWithPassword(activeLibraryTab, activeLibrarySubFolder);
-        $('btnOpenReadyDocsModal'].onclick = () => { $('inputSearchReadyDocs'].value = ''; syncAllFromR2(); $('readyDocsModal'].classList.remove('hidden'); };
-        $('btnCloseReadyDocsModal'].onclick = $('btnCancelReadyDocsModal'].onclick = () => $('readyDocsModal'].classList.add('hidden');
-        $('inputSearchReadyDocs'].oninput = function() { renderReadyDocsGrid(this.value); };
+        $('btnRenameCurrentFolder').onclick = () => renameOrMoveFolderWithPassword(activeLibraryTab, activeLibrarySubFolder);
+        $('btnDeleteCurrentFolder').onclick = () => deleteFolderAndSubfoldersWithPassword(activeLibraryTab, activeLibrarySubFolder);
+        $('btnOpenReadyDocsModal').onclick = () => { $('inputSearchReadyDocs').value = ''; syncAllFromR2(); $('readyDocsModal').classList.remove('hidden'); };
+        $('btnCloseReadyDocsModal').onclick = $('btnCancelReadyDocsModal').onclick = () => $('readyDocsModal').classList.add('hidden');
+        $('inputSearchReadyDocs').oninput = function() { renderReadyDocsGrid(this.value); };
 
-        $('inputUploadReadyDocs'].onchange = async function(e) {
+        $('inputUploadReadyDocs').onchange = async function(e) {
             const files = Array.from(e.target.files); if (!files.length) return;
-            $('readyDocsUploadStatus'].textContent = `⏳ Compression WebP & Envoi sur R2...`;
+            $('readyDocsUploadStatus').textContent = `⏳ Compression WebP & Envoi sur R2...`;
             for (const file of files) {
                 const ext = (file.name.split('.').pop() || '').toUpperCase();
                 const rawDataUrl = await readFileAsDataURL(file);
@@ -1116,8 +1073,8 @@
                     await uploadToR2OrLocal(activeLibraryTab, file.name.replace(/\.[^.]+$/, ''), ensureWebpFileName(file.name), 'IMAGE', rawDataUrl, rawDataUrl, activeLibrarySubFolder);
                 }
             }
-            $('readyDocsUploadStatus'].textContent = '✅ Enregistré sur R2 !';
-            setTimeout(() => $('readyDocsUploadStatus'].textContent = '', 3500);
+            $('readyDocsUploadStatus').textContent = '✅ Enregistré sur R2 !';
+            setTimeout(() => $('readyDocsUploadStatus').textContent = '', 3500);
             this.value = '';
         };
 
@@ -1129,7 +1086,7 @@
             const filteredDocs = sourceList.filter(doc => normalizeFolderPath(doc.subFolder) === activeLibrarySubFolder && (!q || (doc.name || '').toLowerCase().includes(q)));
 
             const grid = $('readyDocsGrid'); grid.innerHTML = '';
-            $('readyDocsEmptyState'].classList.toggle('hidden', directSubFolders.length > 0 || filteredDocs.length > 0);
+            $('readyDocsEmptyState').classList.toggle('hidden', directSubFolders.length > 0 || filteredDocs.length > 0);
 
             directSubFolders.forEach(subFullPath => {
                 const subName = subFullPath.split('/').pop();
@@ -1147,7 +1104,7 @@
                 card.onclick = e => {
                     if (e.target.closest('.btn-ed')) { e.stopPropagation(); return renameOrMoveFolderWithPassword(activeLibraryTab, subFullPath); }
                     if (e.target.closest('.btn-dl')) { e.stopPropagation(); return deleteFolderAndSubfoldersWithPassword(activeLibraryTab, subFullPath); }
-                    activeLibrarySubFolder = subFullPath; renderLibraryFoldersHierarchy(); renderReadyDocsGrid($('inputSearchReadyDocs'].value);
+                    activeLibrarySubFolder = subFullPath; renderLibraryFoldersHierarchy(); renderReadyDocsGrid($('inputSearchReadyDocs').value);
                 };
                 grid.appendChild(card);
             });
@@ -1170,11 +1127,11 @@
                         </div>
                     </div>`;
                 card.onclick = e => {
-                    if (e.target.closest('.btn-mv')) { e.stopPropagation(); pendingMoveRenameDoc = doc; $('inputMoveRenameLabel'].value = doc.name || ''; const t = doc.folder === 'ready_generated' ? 'ready_generated' : 'ready_deposited'; $('selectMoveTargetTab'].value = t; populateMoveTargetSubFolders(t, normalizeFolderPath(doc.subFolder)); $('inputMoveCustomSubFolder'].value = ''; $('inputMovePasscode'].value = ''; return $('moveRenameFileModal'].classList.remove('hidden'); }
+                    if (e.target.closest('.btn-mv')) { e.stopPropagation(); pendingMoveRenameDoc = doc; $('inputMoveRenameLabel').value = doc.name || ''; const t = doc.folder === 'ready_generated' ? 'ready_generated' : 'ready_deposited'; $('selectMoveTargetTab').value = t; populateMoveTargetSubFolders(t, normalizeFolderPath(doc.subFolder)); $('inputMoveCustomSubFolder').value = ''; return $('moveRenameFileModal').classList.remove('hidden'); }
                     if (e.target.closest('.btn-dl')) { e.stopPropagation(); return deleteSharedOrLocalItemWithPassword(doc, READY_DOCS_STORE, doc.name); }
                     if (e.target.closest('.btn-pr')) { e.stopPropagation(); return printReadyDocument(doc); }
                     if (e.target.closest('.btn-dw')) { e.stopPropagation(); return downloadReadyDocument(doc); }
-                    currentLightboxDoc = doc; $('lightboxTitle'].textContent = doc.name; $('lightboxTypeBadge'].textContent = doc.fileType; $('lightboxImagePreview'].src = doc.previewDataUrl; $('docLightboxModal'].classList.remove('hidden');
+                    currentLightboxDoc = doc; $('lightboxTitle').textContent = doc.name; $('lightboxTypeBadge').textContent = doc.fileType; $('lightboxImagePreview').src = doc.previewDataUrl; $('docLightboxModal').classList.remove('hidden');
                 };
                 grid.appendChild(card);
             });
@@ -1182,78 +1139,80 @@
 
         function openSaveDestinationModal(idx) {
             pendingSavePosterIndex = idx;
-            $('inputSavePosterName'].value = postersList[idx].productName || `Affiche_${idx + 1}`;
-            $('inputNewDestFolder'].value = '';
+            $('inputSavePosterName').value = postersList[idx].productName || `Affiche_${idx + 1}`;
+            $('inputNewDestFolder').value = '';
             const sel = $('selectSaveDestinationFolder'); sel.innerHTML = '';
             (customSubFolders.ready_generated || ['Général']).forEach(f => {
                 const o = document.createElement('option'); o.value = f;
                 o.textContent = f === 'Général' ? '📁 Général (Racine)' : `${'—'.repeat(f.split('/').length)} 📂 ${f}`;
                 sel.appendChild(o);
             });
-            $('saveDestinationModal'].classList.remove('hidden');
+            $('saveDestinationModal').classList.remove('hidden');
         }
-        $('btnCloseSaveDestModal'].onclick = $('btnCancelSaveDest'].onclick = () => { $('saveDestinationModal'].classList.add('hidden'); pendingSavePosterIndex = null; };
-        $('btnConfirmSaveDest'].onclick = async function() {
+        $('btnCloseSaveDestModal').onclick = $('btnCancelSaveDest').onclick = () => { $('saveDestinationModal').classList.add('hidden'); pendingSavePosterIndex = null; };
+        $('btnConfirmSaveDest').onclick = async function() {
             if (pendingSavePosterIndex === null) return;
             const c = $(`posterCanvas_${pendingSavePosterIndex}`); if (!c) return;
-            const chosenName = $('inputSavePosterName'].value.trim() || `Affiche_${pendingSavePosterIndex + 1}`;
-            const typed = $('inputNewDestFolder'].value.trim();
-            const targetSub = typed ? normalizeFolderPath(typed) : ($('selectSaveDestinationFolder'].value || 'Général');
+            const chosenName = $('inputSavePosterName').value.trim() || `Affiche_${pendingSavePosterIndex + 1}`;
+            const typed = $('inputNewDestFolder').value.trim();
+            const targetSub = typed ? normalizeFolderPath(typed) : ($('selectSaveDestinationFolder').value || 'Général');
             this.disabled = true;
             if (typed && !customSubFolders.ready_generated.includes(targetSub)) await createSubFolderOnR2('ready_generated', targetSub);
             const webp = canvasToWebPDataUrl(c, 0.90);
             await uploadToR2OrLocal('ready_generated', chosenName, `${chosenName}.webp`, 'IMAGE', webp, webp, targetSub);
-            this.disabled = false; $('saveDestinationModal'].classList.add('hidden'); pendingSavePosterIndex = null;
+            this.disabled = false; $('saveDestinationModal').classList.add('hidden'); pendingSavePosterIndex = null;
         };
 
-        $('btnCloseLightboxModal'].onclick = () => { $('docLightboxModal'].classList.add('hidden'); currentLightboxDoc = null; };
+        $('btnCloseLightboxModal').onclick = () => { $('docLightboxModal').classList.add('hidden'); currentLightboxDoc = null; };
         function downloadReadyDocument(doc) { const a = document.createElement('a'); a.href = doc.rawDataUrl || doc.previewDataUrl; a.target = '_blank'; a.download = doc.fileName || doc.name || 'document'; document.body.appendChild(a); a.click(); document.body.removeChild(a); }
         function printReadyDocument(doc) {
             const w = window.open('', '_blank'); if (!w) return alert("Autorise les pop-ups pour imprimer.");
             w.document.write(`<!DOCTYPE html><html><head><title>${doc.name}</title><style>@page{margin:0}body{margin:0;display:flex;align-items:center;justify-content:center}img{max-width:100vw;max-height:100vh;object-fit:contain}</style></head><body><img src="${doc.previewDataUrl}" onload="setTimeout(()=>{window.print();window.close()},150)"></body></html>`);
             w.document.close();
         }
-        $('btnPrintLightboxDoc'].onclick = () => currentLightboxDoc && printReadyDocument(currentLightboxDoc);
-        $('btnDownloadLightboxDoc'].onclick = () => currentLightboxDoc && downloadReadyDocument(currentLightboxDoc);
+        $('btnPrintLightboxDoc').onclick = () => currentLightboxDoc && printReadyDocument(currentLightboxDoc);
+        $('btnDownloadLightboxDoc').onclick = () => currentLightboxDoc && downloadReadyDocument(currentLightboxDoc);
 
         // ============================================================================
-        // BOUTONS DE CONFIGURATION, GALERIE VISUELLE & GALERIE DES FONDS (STOCK RAYON)
+        // BOUTONS DE CONFIGURATION, GALERIE VISUELLE & GALERIE DES FONDS
         // ============================================================================
-        $('btnToggleAlcohol18'].onclick = () => {
+        $('btnToggleAlcohol18').onclick = () => {
             showAlcoholGlobal = !showAlcoholGlobal;
-            $('btnToggleAlcohol18'].className = showAlcoholGlobal
-                ? 'text-[11px] font-extrabold px-3.5 py-1.5 rounded-lg border-2 border-orange-600 bg-orange-600 text-white flex items-center gap-1.5 shadow-sm shrink-0'
-                : 'text-[11px] font-extrabold px-3.5 py-1.5 rounded-lg border-2 border-orange-300 bg-orange-50 text-orange-800 hover:bg-orange-100 flex items-center gap-1.5 shadow-sm shrink-0';
-            $('alcoholBtnLabel'].textContent = 'Alcool';
+            $('btnToggleAlcohol18').className = showAlcoholGlobal
+                ? 'text-[11px] font-extrabold px-3 py-1.5 rounded-lg border-2 border-orange-600 bg-orange-600 text-white flex items-center gap-1 shadow-sm shrink-0'
+                : 'text-[11px] font-extrabold px-3 py-1.5 rounded-lg border-2 border-orange-300 bg-orange-50 text-orange-800 hover:bg-orange-100 flex items-center gap-1 shadow-sm shrink-0';
+            $('alcoholBtnLabel').textContent = 'Alcool';
             renderAllPosters();
         };
 
-        $('btnTogglePriceCalc'].onclick = function() {
+        $('btnTogglePriceCalc').onclick = function() {
             applyMechanicPriceCalc = !applyMechanicPriceCalc;
             this.textContent = applyMechanicPriceCalc ? 'Calcul prix : Activé' : 'Calcul prix : Désactivé';
             this.className = applyMechanicPriceCalc ? 'text-[11px] font-bold px-2 py-0.5 rounded bg-green-100 text-green-800 border border-green-300' : 'text-[11px] font-bold px-2 py-0.5 rounded bg-amber-100 text-amber-900 border border-amber-400';
             renderAllPosters();
         };
 
-        $('btnToggleA4Mode'].onclick = function() {
+        $('btnToggleA4Mode').onclick = function() {
             isA4PortraitMode = !isA4PortraitMode;
             this.className = isA4PortraitMode
-                ? 'text-[11px] font-extrabold px-3.5 py-1.5 rounded-lg border-2 border-red-600 bg-red-600 text-white flex items-center gap-1.5 shadow-sm shrink-0'
-                : 'text-[11px] font-extrabold px-3.5 py-1.5 rounded-lg border-2 border-gray-800 bg-white text-gray-800 hover:bg-gray-800 hover:text-white transition flex items-center gap-1.5 shadow-sm shrink-0';
+                ? 'text-[11px] font-extrabold px-2.5 py-1 rounded-lg border-2 border-red-600 bg-red-600 text-white flex items-center gap-1 shadow-sm shrink-0'
+                : 'text-[11px] font-extrabold px-2.5 py-1 rounded-lg border-2 border-gray-800 bg-white text-gray-800 flex items-center gap-1 shadow-sm shrink-0';
             this.innerHTML = isA4PortraitMode
-                ? '<span>Mode : A4 Portrait</span><span class="bg-white text-red-600 text-[10px] px-1.5 py-0.5 rounded">Basculer Stock Rayon</span>'
-                : '<span>Mode : Stock Rayon</span><span class="bg-red-600 text-white text-[10px] px-1.5 py-0.5 rounded">Basculer A4 Portrait</span>';
-            $('btnDownloadLabel'].textContent = isA4PortraitMode ? '📄 TÉLÉCHARGER LE PDF (A4 PORTRAIT)' : '📄 TÉLÉCHARGER LE PDF (STOCK RAYON)';
-            $('labelZoneImage'].textContent = isA4PortraitMode ? '🖼️ IMAGE HAUT (A4)' : '🖼️ IMAGE';
-            $('globalGalleryLabel'].textContent = `🖼️ ${isA4PortraitMode ? (labelImageA4 || 'Choisir visuel A4') : (labelImage4 || 'Choisir visuel')}`;
-            $('btnOpenBgModal'].classList.toggle('hidden', isA4PortraitMode);
+                ? '<span>📄 Mode : A4 Portrait</span><span class="bg-white text-red-600 text-[10px] px-1.5 py-0.5 rounded">Basculer Stock Rayon</span>'
+                : '<span>📐 Mode : Stock Rayon</span><span class="bg-red-600 text-white text-[10px] px-1.5 py-0.5 rounded">Basculer A4 Portrait</span>';
+            $('btnDownloadLabel').textContent = isA4PortraitMode ? '📄 TÉLÉCHARGER LE PDF (A4 PORTRAIT)' : '📄 TÉLÉCHARGER LE PDF (STOCK RAYON)';
+            $('labelZoneImage').textContent = isA4PortraitMode ? '🖼️ 2. IMAGE HAUT (DOSSIER IMAGES A4)' : '🖼️ 2. IMAGE GAUCHE';
+            $('globalGalleryLabel').textContent = `🖼️ ${isA4PortraitMode ? (labelImageA4 || 'Choisir visuel A4') : (labelImage4 || 'Choisir visuel')}`;
+            $('btnOpenBgModal').classList.toggle('hidden', isA4PortraitMode);
             buildVisualGallery(); renderAllPosters();
         };
 
-        $('selectMechanicPreset'].onchange = function() {
+        $('selectMechanicPreset').onchange = function() {
             const p = MECHANIC_PRESETS[this.value]; if (!p) return;
             forceManualGlobalDiscount = true;
-            $('inputDiscount'].value = p.discount; $('inputDiscountText'].value = p.text; $('inputUnitLabel'].value = p.unitLabel;
+            $('inputDiscount').value = p.discount;
+            $('inputDiscountText').value = p.text;
+            $('inputUnitLabel').value = p.unitLabel;
             postersList.forEach(it => {
                 if (it.detectedPromo) {
                     it.detectedPromo.isGlobalSync = true;
@@ -1267,31 +1226,31 @@
             renderAllPosters();
         };
 
-        $('btnToggleDate'].onclick = function() {
+        $('btnToggleDate').onclick = function() {
             showDate = !showDate;
             this.textContent = showDate ? '👁️ Date affichée' : '🚫 Date masquée';
             this.className = showDate ? 'text-[11px] font-bold px-2 py-0.5 rounded bg-green-100 text-green-800 border border-green-300' : 'text-[11px] font-bold px-2 py-0.5 rounded bg-red-100 text-red-800 border border-red-300';
-            $('inputDates'].disabled = !showDate; $('inputDates'].classList.toggle('opacity-50', !showDate); $('inputDates'].classList.toggle('bg-gray-100', !showDate);
+            $('inputDates').disabled = !showDate; $('inputDates').classList.toggle('opacity-50', !showDate); $('inputDates').classList.toggle('bg-gray-100', !showDate);
             renderAllPosters();
         };
 
-        $('btnToggleDiscountText'].onclick = function() {
+        $('btnToggleDiscountText').onclick = function() {
             showMechanic = !showMechanic;
             this.textContent = showMechanic ? 'affichée' : 'masquée';
             this.className = showMechanic ? 'min-w-[88px] text-center text-[11px] font-bold px-2.5 py-0.5 rounded bg-green-100 text-green-800 border border-green-300' : 'min-w-[88px] text-center text-[11px] font-bold px-2.5 py-0.5 rounded bg-red-100 text-red-800 border border-red-300';
             ['selectMechanicPreset', 'inputDiscount', 'inputDiscountText'].forEach(id => { $(id).disabled = !showMechanic; $(id).classList.toggle('opacity-50', !showMechanic); $(id).classList.toggle('bg-gray-100', !showMechanic); });
 
-            const selPreset = MECHANIC_PRESETS[$('selectMechanicPreset'].value] || {};
+            const selPreset = MECHANIC_PRESETS[$('selectMechanicPreset').value] || {};
             postersList.forEach(it => {
                 if (showMechanic) {
                     if (!it.detectedPromo) {
                         it.detectedPromo = {
                             active: true,
                             isGlobalSync: true,
-                            presetKey: $('selectMechanicPreset'].value,
-                            discount: $('inputDiscount'].value.trim(),
-                            text: $('inputDiscountText'].value.trim(),
-                            unitLabel: $('inputUnitLabel'].value.trim(),
+                            presetKey: $('selectMechanicPreset').value,
+                            discount: $('inputDiscount').value.trim(),
+                            text: $('inputDiscountText').value.trim(),
+                            unitLabel: $('inputUnitLabel').value.trim(),
                             isCarteU: Boolean(selPreset.isCarteU)
                         };
                     } else {
@@ -1304,19 +1263,19 @@
             renderAllPosters();
         };
 
-        $('btnDateWhite'].onclick = () => {
+        $('btnDateWhite').onclick = () => {
             dateColor = '#FFFFFF';
-            $('btnDateWhite'].className = 'flex-1 py-1.5 px-3 rounded-lg border-2 border-red-600 bg-gray-800 text-white text-xs font-bold flex items-center justify-center gap-1.5';
-            $('btnDateBlack'].className = 'flex-1 py-1.5 px-3 rounded-lg border border-gray-300 bg-white text-gray-900 text-xs font-bold flex items-center justify-center gap-1.5';
+            $('btnDateWhite').className = 'flex-1 py-1.5 px-3 rounded-lg border-2 border-red-600 bg-gray-800 text-white text-xs font-bold flex items-center justify-center gap-1.5';
+            $('btnDateBlack').className = 'flex-1 py-1.5 px-3 rounded-lg border border-gray-300 bg-white text-gray-900 text-xs font-bold flex items-center justify-center gap-1.5';
             renderAllPosters();
         };
-        $('btnDateBlack'].onclick = () => {
+        $('btnDateBlack').onclick = () => {
             dateColor = '#000000';
-            $('btnDateBlack'].className = 'flex-1 py-1.5 px-3 rounded-lg border-2 border-red-600 bg-gray-100 text-gray-900 text-xs font-bold flex items-center justify-center gap-1.5';
-            $('btnDateWhite'].className = 'flex-1 py-1.5 px-3 rounded-lg border border-gray-300 bg-gray-700 text-white text-xs font-bold flex items-center justify-center gap-1.5 opacity-70';
+            $('btnDateBlack').className = 'flex-1 py-1.5 px-3 rounded-lg border-2 border-red-600 bg-gray-100 text-gray-900 text-xs font-bold flex items-center justify-center gap-1.5';
+            $('btnDateWhite').className = 'flex-1 py-1.5 px-3 rounded-lg border border-gray-300 bg-gray-700 text-white text-xs font-bold flex items-center justify-center gap-1.5 opacity-70';
             renderAllPosters();
         };
-        $('chkShowContenance'].onchange = $('chkAutoTrim'].onchange = renderAllPosters;
+        $('chkShowContenance').onchange = $('chkAutoTrim').onchange = renderAllPosters;
 
         // ============================================================================
         // GESTION DES FONDS D'ARRIÈRE-PLAN
@@ -1328,9 +1287,9 @@
                 activeBgStockImg = img;
                 activeBgStockLabel = labelName;
                 activeBgStockIsR2 = isR2Baked33;
-                $('bgBtnLabel'].textContent = `🎨 Fond : ${labelName}`;
-                $('btnOpenBgModal'].className = 'text-[11px] font-extrabold px-3.5 py-1.5 rounded-lg border-2 border-purple-600 bg-purple-600 text-white transition flex items-center gap-1.5 shadow-sm shrink-0';
-                $('bgGalleryModal'].classList.add('hidden');
+                $('bgBtnLabel').textContent = `🎨 Fond : ${labelName}`;
+                $('btnOpenBgModal').className = 'text-[11px] font-extrabold px-2.5 py-1 rounded-lg border-2 border-purple-600 bg-purple-600 text-white transition flex items-center gap-1 shadow-sm shrink-0';
+                $('bgGalleryModal').classList.add('hidden');
                 renderAllPosters();
             };
             img.src = dataUrl;
@@ -1352,8 +1311,8 @@
         function buildBgGallery(filterText = '') {
             const q = filterText.trim().toLowerCase();
             const savedBgs = savedUserImages.filter(it => it.folder === 'bg_stock' && (!q || (it.label || '').toLowerCase().includes(q)));
-            $('savedBgCountBadge'].textContent = savedBgs.length;
-            $('savedBgSection'].classList.toggle('hidden', !savedBgs.length);
+            $('savedBgCountBadge').textContent = savedBgs.length;
+            $('savedBgSection').classList.toggle('hidden', !savedBgs.length);
             const sGrid = $('savedBgGrid'); sGrid.innerHTML = '';
             savedBgs.forEach(saved => {
                 const w = document.createElement('div');
@@ -1368,37 +1327,37 @@
 
             const pGrid = $('bgGalleryGrid'); pGrid.innerHTML = '';
             const filteredPresets = dynamicPresetsBackgrounds.filter(p => !q || p.label.toLowerCase().includes(q));
-            $('presetBgCountBadge'].textContent = filteredPresets.length;
+            $('presetBgCountBadge').textContent = filteredPresets.length;
             filteredPresets.forEach(preset => {
                 const candidates = getCandidateUrls(preset);
                 const card = document.createElement('div');
-                card.className = 'relative bg-white border-2 border-purple-300 hover:border-purple-600 rounded-xl p-2 flex flex-col items-center gap-1.5 shadow-sm cursor-pointer group';
+                card.className = 'relative bg-white border-2 border-gray-200 hover:border-purple-600 rounded-xl p-2 flex flex-col items-center gap-1.5 shadow-sm cursor-pointer group';
                 card.innerHTML = `<button type="button" class="btn-del absolute top-1 right-1 bg-red-600 text-white text-[10px] font-bold w-5 h-5 rounded-full opacity-0 group-hover:opacity-90">✕</button><div class="w-full h-24 bg-gray-50 rounded-lg flex items-center justify-center overflow-hidden border border-gray-100"><img class="w-full h-full object-cover"></div><span class="text-[11px] font-extrabold text-gray-800 uppercase truncate w-full text-center">${preset.label}</span>`;
                 const img = card.querySelector('img'); let t = 0;
                 img.onerror = () => { t++; if (t < candidates.length) img.src = candidates[t]; else card.remove(); };
                 img.src = candidates[0];
-                card.querySelector('.btn-del'].onclick = e => { e.stopPropagation(); hideStaticGithubFileOnR2(preset.file, preset.label); };
+                card.querySelector('.btn-del').onclick = e => { e.stopPropagation(); hideStaticGithubFileOnR2(preset.file, preset.label); };
                 card.onclick = () => applyPresetBgWithFallback(candidates, preset.label);
                 pGrid.appendChild(card);
             });
         }
 
-        $('btnOpenBgModal'].onclick = () => { $('inputSearchBgGallery'].value = ''; syncAllFromR2(); buildBgGallery(''); $('bgGalleryModal'].classList.remove('hidden'); };
-        $('btnCloseBgModal'].onclick = $('btnCancelBgModal'].onclick = () => $('bgGalleryModal'].classList.add('hidden');
-        $('inputSearchBgGallery'].oninput = function() { buildBgGallery(this.value); };
-        $('btnRefreshBgGallery'].onclick = async () => { await discoverFolderImagesAutomatically(); await syncAllFromR2(); buildBgGallery($('inputSearchBgGallery']?.value || ''); };
+        $('btnOpenBgModal').onclick = () => { $('inputSearchBgGallery').value = ''; syncAllFromR2(); buildBgGallery(''); $('bgGalleryModal').classList.remove('hidden'); };
+        $('btnCloseBgModal').onclick = $('btnCancelBgModal').onclick = () => $('bgGalleryModal').classList.add('hidden');
+        $('inputSearchBgGallery').oninput = function() { buildBgGallery(this.value); };
+        $('btnRefreshBgGallery').onclick = async () => { await discoverFolderImagesAutomatically(); await syncAllFromR2(); buildBgGallery($('inputSearchBgGallery')?.value || ''); };
 
-        $('btnClearBgSelection'].onclick = () => {
+        $('btnClearBgSelection').onclick = () => {
             activeBgStockImg = null;
             activeBgStockLabel = 'Aucun';
             activeBgStockIsR2 = false;
-            $('bgBtnLabel'].textContent = '🎨 Fond : Aucun';
-            $('btnOpenBgModal'].className = 'text-[11px] font-extrabold px-3.5 py-1.5 rounded-lg border-2 border-purple-300 bg-purple-50 text-purple-900 hover:bg-purple-100 transition flex items-center gap-1.5 shadow-sm shrink-0';
-            $('bgGalleryModal'].classList.add('hidden');
+            $('bgBtnLabel').textContent = '🎨 Fond : Aucun';
+            $('btnOpenBgModal').className = 'text-[11px] font-extrabold px-2.5 py-1 rounded-lg border-2 border-purple-300 bg-purple-50 text-purple-900 hover:bg-purple-100 transition flex items-center gap-1 shadow-sm shrink-0';
+            $('bgGalleryModal').classList.add('hidden');
             renderAllPosters();
         };
 
-        $('inputAddBgImage'].onchange = async function(e) {
+        $('inputAddBgImage').onchange = async function(e) {
             const files = Array.from(e.target.files); if (!files.length) return;
             for (const file of files) {
                 const pages = await loadFileToPages(file);
@@ -1469,8 +1428,8 @@
         function renderSavedGallerySection(filterText = '') {
             const q = filterText.trim().toLowerCase(), targetFolder = isA4PortraitMode ? 'top_a4' : 'left_4';
             const filtered = savedUserImages.filter(it => (!it.folder || it.folder === targetFolder) && (!q || (it.label || '').toLowerCase().includes(q)));
-            $('savedCountBadge'].textContent = filtered.length;
-            $('savedGallerySection'].classList.toggle('hidden', !filtered.length);
+            $('savedCountBadge').textContent = filtered.length;
+            $('savedGallerySection').classList.toggle('hidden', !filtered.length);
             const grid = $('savedGalleryGrid'); grid.innerHTML = '';
             filtered.forEach(saved => {
                 const w = document.createElement('div');
@@ -1487,7 +1446,7 @@
         function buildVisualGallery(filterText = '') {
             const q = filterText.trim().toLowerCase(), grid = $('galleryGrid'); grid.innerHTML = '';
             const filtered = getActivePresetList().filter(p => !q || p.label.toLowerCase().includes(q));
-            $('galleryFolderHeading'].innerHTML = `📁 Visuels détectés dans "${isA4PortraitMode ? 'Images A4' : 'Images Gauche'}" (<span id="presetCountBadge">${filtered.length}</span>)`;
+            $('galleryFolderHeading').innerHTML = `📁 Visuels détectés dans "${isA4PortraitMode ? 'Images A4' : 'Images Gauche'}" (<span id="presetCountBadge">${filtered.length}</span>)`;
             filtered.forEach(preset => {
                 const candidates = getCandidateUrls(preset);
                 const card = document.createElement('div');
@@ -1496,7 +1455,7 @@
                 const img = card.querySelector('img'); let t = 0;
                 img.onerror = () => { t++; if (t < candidates.length) img.src = candidates[t]; else card.remove(); };
                 img.src = candidates[0];
-                card.querySelector('.btn-del'].onclick = e => { e.stopPropagation(); hideStaticGithubFileOnR2(preset.file, preset.label); };
+                card.querySelector('.btn-del').onclick = e => { e.stopPropagation(); hideStaticGithubFileOnR2(preset.file, preset.label); };
                 card.onclick = () => applyPresetVisualWithFallback(candidates, preset.label);
                 grid.appendChild(card);
             });
@@ -1510,11 +1469,11 @@
                 if (currentGalleryTarget === 'global') {
                     if (isA4PortraitMode) { rawTopImageA4 = img; trimmedTopImageA4 = trimmed; labelImageA4 = labelName; }
                     else { rawLeftImage4 = img; trimmedLeftImage4 = trimmed; labelImage4 = labelName; }
-                    $('globalGalleryLabel'].textContent = `🖼️ ${labelName}`;
+                    $('globalGalleryLabel').textContent = `🖼️ ${labelName}`;
                 } else if (postersList[currentGalleryTarget]) {
                     Object.assign(postersList[currentGalleryTarget], { useCustomLeftImage: true, customRawImg: img, customTrimmedImg: trimmed, customImageLabel: labelName });
                 }
-                $('visualGalleryModal'].classList.add('hidden');
+                $('visualGalleryModal').classList.add('hidden');
                 trimmed.onload = renderAllPosters; setTimeout(renderAllPosters, 60);
             };
             img.src = dataUrl;
@@ -1532,23 +1491,23 @@
             next();
         }
 
-        $('btnOpenGlobalGallery'].onclick = () => { currentGalleryTarget = 'global'; $('inputSearchGallery'].value = ''; syncAllFromR2(); buildVisualGallery(''); $('visualGalleryModal'].classList.remove('hidden'); };
-        $('btnCloseGalleryModal'].onclick = $('btnCancelGalleryModal'].onclick = () => $('visualGalleryModal'].classList.add('hidden');
-        $('inputSearchGallery'].oninput = function() { buildVisualGallery(this.value); };
-        $('btnRefreshSharedGallery'].onclick = async () => { await discoverFolderImagesAutomatically(); await syncAllFromR2(); buildVisualGallery($('inputSearchGallery']?.value || ''); };
+        $('btnOpenGlobalGallery').onclick = () => { currentGalleryTarget = 'global'; $('inputSearchGallery').value = ''; syncAllFromR2(); buildVisualGallery(''); $('visualGalleryModal').classList.remove('hidden'); };
+        $('btnCloseGalleryModal').onclick = $('btnCancelGalleryModal').onclick = () => $('visualGalleryModal').classList.add('hidden');
+        $('inputSearchGallery').oninput = function() { buildVisualGallery(this.value); };
+        $('btnRefreshSharedGallery').onclick = async () => { await discoverFolderImagesAutomatically(); await syncAllFromR2(); buildVisualGallery($('inputSearchGallery')?.value || ''); };
 
-        $('btnClearVisualSelection'].onclick = () => {
+        $('btnClearVisualSelection').onclick = () => {
             if (currentGalleryTarget === 'global') {
                 if (isA4PortraitMode) { rawTopImageA4 = trimmedTopImageA4 = null; labelImageA4 = ''; }
                 else { rawLeftImage4 = trimmedLeftImage4 = null; labelImage4 = ''; }
-                $('globalGalleryLabel'].textContent = '🖼️ Choisir visuel';
+                $('globalGalleryLabel').textContent = '🖼️ Choisir visuel';
             } else if (postersList[currentGalleryTarget]) {
                 Object.assign(postersList[currentGalleryTarget], { customRawImg: null, customTrimmedImg: null, customImageLabel: '' });
             }
-            $('visualGalleryModal'].classList.add('hidden'); renderAllPosters();
+            $('visualGalleryModal').classList.add('hidden'); renderAllPosters();
         };
 
-        $('inputAddGalleryImage'].onchange = $('inputLeftImage'].onchange = async function(e) {
+        $('inputAddGalleryImage').onchange = $('inputLeftImage').onchange = async function(e) {
             const files = Array.from(e.target.files); if (!files.length) return;
             const folder = isA4PortraitMode ? 'top_a4' : 'left_4';
             for (const file of files) {
@@ -1712,28 +1671,27 @@
                     crossedPrice = null;
                 }
 
+                const selPreset = MECHANIC_PRESETS[$('selectMechanicPreset').value] || {};
                 let autoDetectedPromo = null;
                 if (crossedPrice && crossedPrice > mainPrice) {
                     const pct = Math.max(1, Math.round(((crossedPrice - mainPrice) / crossedPrice) * 100));
-                    const selPreset = MECHANIC_PRESETS[$('selectMechanicPreset'].value] || {};
                     autoDetectedPromo = {
                         active: true,
-                        isGlobalSync: false,
-                        presetKey: $('selectMechanicPreset'].value || 'remise_34',
-                        discount: `-${pct}%`,
-                        text: $('inputDiscountText'].value.trim() || 'DE REMISE|IMMÉDIATE',
-                        unitLabel: $('inputUnitLabel'].value.trim() || 'LE PRODUIT',
+                        isGlobalSync: Boolean(selPreset.isCarteU),
+                        presetKey: $('selectMechanicPreset').value || 'remise_34',
+                        discount: selPreset.isCarteU ? $('inputDiscount').value.trim() : `-${pct}%`,
+                        text: $('inputDiscountText').value.trim() || 'DE REMISE|IMMÉDIATE',
+                        unitLabel: $('inputUnitLabel').value.trim() || 'LE PRODUIT',
                         isCarteU: Boolean(selPreset.isCarteU)
                     };
                 } else if (showMechanic) {
-                    const selPreset = MECHANIC_PRESETS[$('selectMechanicPreset'].value] || {};
                     autoDetectedPromo = {
                         active: true,
                         isGlobalSync: true,
-                        presetKey: $('selectMechanicPreset'].value,
-                        discount: $('inputDiscount'].value.trim(),
-                        text: $('inputDiscountText'].value.trim(),
-                        unitLabel: $('inputUnitLabel'].value.trim(),
+                        presetKey: $('selectMechanicPreset').value,
+                        discount: $('inputDiscount').value.trim(),
+                        text: $('inputDiscountText').value.trim(),
+                        unitLabel: $('inputUnitLabel').value.trim(),
                         isCarteU: Boolean(selPreset.isCarteU)
                     };
                 }
@@ -1786,6 +1744,7 @@
                 if (uKey?.trim()) { storedKey = uKey.trim(); localStorage.setItem('superu_gemini_api_key', storedKey); json = await callApi(storedKey); }
             }
             if (json?.ok && Array.isArray(json.labels)) {
+                const selPreset = MECHANIC_PRESETS[$('selectMechanicPreset').value] || {};
                 return json.labels.map(lbl => {
                     const uType = ['kg', 'l', 'pièce'].includes((lbl.unitType || '').toLowerCase()) ? lbl.unitType.toLowerCase() : 'pièce';
                     const rawOld = Number(lbl.oldPrice) > 0 ? Number(lbl.oldPrice) : 1.99;
@@ -1803,15 +1762,14 @@
                     }
                     const hasExplicitCirclePromo = Boolean((lbl.hasPromo && discStr) || crossedOldPrice);
 
-                    const selPreset = MECHANIC_PRESETS[$('selectMechanicPreset'].value] || {};
                     let autoPromoObj = null;
                     if (hasExplicitCirclePromo) {
                         autoPromoObj = {
                             active: true,
-                            isGlobalSync: false,
-                            presetKey: lbl.promoPresetKey || 'remise_34',
-                            discount: discStr,
-                            text: lbl.promoText || $('inputDiscountText'].value.trim() || 'DE REMISE|IMMÉDIATE',
+                            isGlobalSync: Boolean(selPreset.isCarteU),
+                            presetKey: $('selectMechanicPreset').value || lbl.promoPresetKey || 'remise_34',
+                            discount: selPreset.isCarteU ? $('inputDiscount').value.trim() : discStr,
+                            text: lbl.promoText || $('inputDiscountText').value.trim() || 'DE REMISE|IMMÉDIATE',
                             unitLabel: lbl.promoPresetKey === '2_plus_1' ? 'LES 3 PRODUITS' : 'LE PRODUIT',
                             isCarteU: Boolean(selPreset.isCarteU)
                         };
@@ -1819,10 +1777,10 @@
                         autoPromoObj = {
                             active: true,
                             isGlobalSync: true,
-                            presetKey: $('selectMechanicPreset'].value,
-                            discount: $('inputDiscount'].value.trim(),
-                            text: $('inputDiscountText'].value.trim(),
-                            unitLabel: $('inputUnitLabel'].value.trim(),
+                            presetKey: $('selectMechanicPreset').value,
+                            discount: $('inputDiscount').value.trim(),
+                            text: $('inputDiscountText').value.trim(),
+                            unitLabel: $('inputUnitLabel').value.trim(),
                             isCarteU: Boolean(selPreset.isCarteU)
                         };
                     }
@@ -1842,12 +1800,12 @@
             throw new Error(json?.error || "Échec Gemini");
         }
 
-        $('inputBlueLabel'].onchange = async function(e) {
+        $('inputBlueLabel').onchange = async function(e) {
             const files = Array.from(e.target.files); if (!files.length) return;
             forceManualGlobalDiscount = false;
             const status = $('ocrStatus'); status.classList.remove('hidden');
             status.textContent = "✨ Analyse PDF...";
-            if ($('aiServiceBadge')) $('aiServiceBadge'].textContent = "⏳ Analyse...";
+            if ($('aiServiceBadge')) $('aiServiceBadge').textContent = "⏳ Analyse...";
 
             let sharedWorker = null;
             const getOcrWorker = async () => {
@@ -1856,7 +1814,7 @@
             };
 
             try {
-                let allDetected = [], limitReached = false;
+                let allDetected = [];
                 outerLoop:
                 for (const file of files) {
                     const pages = await loadFileToPages(file);
@@ -1871,7 +1829,6 @@
                         }
                         if (allDetected.length >= MAX_LABELS_LIMIT) {
                             allDetected = allDetected.slice(0, MAX_LABELS_LIMIT);
-                            limitReached = true;
                             break outerLoop;
                         }
                     }
@@ -1884,12 +1841,12 @@
                     const cCount = postersList.filter(it => isPosterPromoActive(it)).length;
                     status.textContent = `✅ ${postersList.length} étiq. (${cCount} promo)`;
                 } else status.textContent = "⚠️ Aucune étiquette détectée.";
-                if ($('aiServiceBadge')) $('aiServiceBadge'].textContent = "✨ Prêt";
+                if ($('aiServiceBadge')) $('aiServiceBadge').textContent = "✨ Prêt";
                 renderAllPosters();
             } catch (err) {
                 if (sharedWorker) await sharedWorker.terminate();
                 status.textContent = "⚠️ Erreur : " + err.message;
-                if ($('aiServiceBadge')) $('aiServiceBadge'].textContent = "⚠️ Erreur";
+                if ($('aiServiceBadge')) $('aiServiceBadge').textContent = "⚠️ Erreur";
             }
         };
 
@@ -1913,11 +1870,472 @@
             ctx.restore();
         }
 
+        function drawFormattedPrice(ctx, priceNumber, preferredCenterX, baselineY, isOldPrice, maxRightX = 656, scaleFactor = 1.0, isCarteUPromos = false) {
+            const FONT_SLAB = getActiveFontSlab();
+            const [euros, rawCents] = priceNumber.toFixed(2).split('.');
+            const cents = ',' + rawCents;
+            const isFour = euros.length >= 2;
+            const euroF = Math.round((isOldPrice ? (isFour ? 56 : 62) : (isFour ? 108 : 124)) * scaleFactor);
+            const centF = Math.round((isOldPrice ? (isFour ? 30 : 32) : (isFour ? 48 : 55)) * scaleFactor);
+            const symF = Math.round((isOldPrice ? (isFour ? 25 : 28) : (isFour ? 44 : 50)) * scaleFactor);
+
+            if (isOldPrice) {
+                ctx.fillStyle = '#000000';
+            } else if (isCarteUPromos) {
+                ctx.fillStyle = '#008585';
+            } else {
+                ctx.fillStyle = '#EE1C25';
+            }
+
+            ctx.font = `900 ${euroF}px ${FONT_SLAB}`; const eW = ctx.measureText(euros).width;
+            ctx.font = `900 ${centF}px ${FONT_SLAB}`; const cW = ctx.measureText(cents).width;
+            const totalW = eW + cW + 4;
+            let startX = Math.max(40, Math.min(preferredCenterX - totalW / 2, maxRightX - totalW));
+
+            ctx.textAlign = 'left';
+            ctx.font = `900 ${euroF}px ${FONT_SLAB}`; ctx.fillText(euros, startX, baselineY);
+            ctx.font = `900 ${symF}px ${FONT_SLAB}`; ctx.fillText('€', startX + eW + 2, baselineY - Math.round((isOldPrice ? (isFour ? 26 : 29) : (isFour ? 50 : 58)) * scaleFactor));
+            ctx.font = `900 ${centF}px ${FONT_SLAB}`; ctx.fillText(cents, startX + eW + 2, baselineY);
+
+            if (isOldPrice) {
+                ctx.strokeStyle = '#000000'; ctx.lineWidth = 4.5 * scaleFactor;
+                ctx.beginPath(); ctx.moveTo(startX - 5, baselineY - 5); ctx.lineTo(startX + totalW + 6, baselineY - Math.round(40 * scaleFactor)); ctx.stroke();
+            }
+        }
+
+        function drawFittedProductTitle(ctx, text, x, startY, maxWidth, maxBottomY, maxFont = 34, minFont = 17, align = 'left') {
+            const FONT_SLAB = getActiveFontSlab(), cleanText = (text || 'PRODUIT').toUpperCase().trim();
+            ctx.textAlign = align;
+            for (let fs = maxFont; fs >= minFont; fs--) {
+                const lh = Math.round(fs * 1.18); ctx.font = `900 ${fs}px ${FONT_SLAB}`;
+                const words = cleanText.split(/\s+/), lines = []; let cur = '', ok = true;
+                for (const w of words) {
+                    if (ctx.measureText(w).width > maxWidth) { ok = false; break; }
+                    const test = cur ? `${cur} ${w}` : w;
+                    if (ctx.measureText(test).width > maxWidth && cur) { lines.push(cur); cur = w; } else cur = test;
+                }
+                if (cur) lines.push(cur);
+                if (ok && startY + (lines.length - 1) * lh <= maxBottomY) {
+                    lines.forEach((l, i) => ctx.fillText(l, x, startY + i * lh)); return;
+                }
+            }
+            ctx.font = `900 ${minFont - 1}px ${FONT_SLAB}`; ctx.fillText(cleanText.slice(0, 28), x, startY);
+        }
+
+        function drawVisualBarcode(ctx, gencode, x, y, maxWidth, barHeight = 44) {
+            const clean = (gencode || '').replace(/\s+/g, ''); if (!clean) return;
+            const bc = document.createElement('canvas');
+            try {
+                const fmt = (/^\d{13}$/.test(clean) && isValidEAN13Checksum(clean)) ? "EAN13" : "CODE128";
+                JsBarcode(bc, clean, { format: fmt, width: 2.1, height: barHeight, displayValue: true, fontSize: 18, fontOptions: "bold", font: "Montserrat, Arial, sans-serif", textMargin: 2, margin: 0, background: "#FFFFFF", lineColor: "#000000" });
+                const tW = Math.min(maxWidth, bc.width), tH = bc.height * (tW / bc.width);
+                ctx.fillStyle = '#FFFFFF';
+                ctx.fillRect(x - 4, y - tH + 2, tW + 8, tH + 6);
+                ctx.drawImage(bc, x, y - tH + 6, tW, tH);
+            } catch (e) { ctx.fillStyle = '#000000'; ctx.font = `700 18px ${FONT_SANS}`; ctx.textAlign = 'left'; ctx.fillText(clean, x, y); }
+        }
+
+        function computePromoPricing(item, presetKey, discountInput, isMechanicShown) {
+            const uType = item.unitType || 'pièce', prefix = uType === 'pièce' ? 'La pièce' : (uType === 'l' ? 'Le L' : 'Le kg');
+            const baseUnit = item.baseUnitPrice > 0 ? item.baseUnitPrice : item.oldPrice;
+            const manualCrossed = (item.crossedPrice && Number(item.crossedPrice) > 0) ? Number(item.crossedPrice) : null;
+
+            if (!isMechanicShown || !applyMechanicPriceCalc) {
+                return {
+                    hasCrossedPrice: Boolean(manualCrossed),
+                    crossedPrice: manualCrossed || (item.crossedPrice || item.oldPrice),
+                    mainPrice: item.oldPrice,
+                    unitPriceText: `${prefix} : ${baseUnit.toFixed(2).replace('.', ',')} €`
+                };
+            }
+
+            const refStartPrice = manualCrossed ? manualCrossed : item.oldPrice;
+            const refStartUnit = (manualCrossed && item.oldPrice > 0)
+                ? baseUnit * (manualCrossed / item.oldPrice)
+                : baseUnit;
+
+            const preset = MECHANIC_PRESETS[presetKey] || { mode: 'pct_single' };
+            const pctM = discountInput.match(/(\d+(?:[.,]\d+)?)\s*%/), eurM = discountInput.match(/(\d+(?:[.,]\d+)?)\s*€/);
+
+            if (preset.mode === 'nth_2') {
+                const p = pctM ? parseFloat(pctM[1].replace(',', '.')) : (preset.nthPct || 50);
+                return {
+                    hasCrossedPrice: true,
+                    crossedPrice: refStartPrice,
+                    mainPrice: refStartPrice * (1 - p / 100),
+                    unitPriceText: `${prefix} par 2 : ${(refStartUnit * (1 - p / 200)).toFixed(2).replace('.', ',')} €`
+                };
+            }
+            if (preset.mode === 'bogo_1_1') {
+                return {
+                    hasCrossedPrice: true,
+                    crossedPrice: refStartPrice * 2,
+                    mainPrice: refStartPrice,
+                    unitPriceText: `${prefix} par 2 : ${(refStartUnit / 2).toFixed(2).replace('.', ',')} €`
+                };
+            }
+            if (preset.mode === 'bogo_2_1') {
+                return {
+                    hasCrossedPrice: true,
+                    crossedPrice: refStartPrice * 3,
+                    mainPrice: refStartPrice * 2,
+                    unitPriceText: `${prefix} par 3 : ${((refStartUnit * 2) / 3).toFixed(2).replace('.', ',')} €`
+                };
+            }
+            if (preset.mode === 'bogo_3_1') {
+                return {
+                    hasCrossedPrice: true,
+                    crossedPrice: refStartPrice * 4,
+                    mainPrice: refStartPrice * 3,
+                    unitPriceText: `${prefix} par 4 : ${((refStartUnit * 3) / 4).toFixed(2).replace('.', ',')} €`
+                };
+            }
+            if (preset.mode === 'euro_single' || (!pctM && eurM)) {
+                const off = eurM ? parseFloat(eurM[1].replace(',', '.')) : 0;
+                const np = Math.max(0, refStartPrice - off);
+                return {
+                    hasCrossedPrice: off > 0 || Boolean(manualCrossed),
+                    crossedPrice: refStartPrice,
+                    mainPrice: np,
+                    unitPriceText: `${prefix} : ${(refStartUnit * (refStartPrice > 0 ? np / refStartPrice : 1)).toFixed(2).replace('.', ',')} €`
+                };
+            }
+            const pct = pctM ? parseFloat(pctM[1].replace(',', '.')) : 0;
+            return {
+                hasCrossedPrice: pct > 0 || Boolean(manualCrossed),
+                crossedPrice: refStartPrice,
+                mainPrice: refStartPrice * (1 - pct / 100),
+                unitPriceText: `${prefix} : ${(refStartUnit * (1 - pct / 100)).toFixed(2).replace('.', ',')} €`
+            };
+        }
+
+        // Formatage intelligent des lignes de texte à l'intérieur du cercle Carte U
+        function formatCarteUCircleLines(rawDiscText) {
+            if (!rawDiscText) return [];
+            let cleaned = rawDiscText
+                .replace(/\|\s*CARTE\s*U\s*$/i, '')
+                .replace(/\bCARTE\s*U\s*$/i, '')
+                .trim();
+            if (!cleaned) return [];
+
+            const upper = cleaned.toUpperCase();
+            if (upper === 'DE REMISE|IMMÉDIATE AVEC' || upper === 'DE REMISE|IMMEDIATE AVEC') {
+                return ['DE REMISE', 'IMMÉDIATE', 'AVEC'];
+            }
+            if (upper === 'SUR LE 2ÈME PRODUIT|IDENTIQUE VERSÉS SUR' || upper === 'SUR LE 2EME PRODUIT|IDENTIQUE VERSES SUR') {
+                return ['SUR LE 2ÈME PRODUIT', 'IDENTIQUE', 'VERSÉS SUR'];
+            }
+            const mSoit = cleaned.match(/^SOIT\s+(.+?)\s+VERS[ÉE]S\s+SUR$/i);
+            if (mSoit) {
+                return [`SOIT ${mSoit[1].toUpperCase()}`, 'VERSÉS SUR'];
+            }
+            return cleaned.split('|').map(s => s.trim()).filter(Boolean);
+        }
+
+        // Dessin d'une ligne de texte avec "2ÈME" en exposant ("2ème") comme sur la capture 3
+        function drawCircleLineWithSuperscript(ctx, lineText, centerX, baselineY, fontSize, fontSlab) {
+            const match2eme = lineText.match(/^(.*?\b2)(?:ÈME|EME|ème|eme)(\b.*)$/);
+            if (!match2eme) {
+                ctx.font = `900 ${fontSize}px ${fontSlab}`;
+                ctx.textAlign = 'center';
+                ctx.fillText(lineText, centerX, baselineY);
+                return;
+            }
+            const prefix = match2eme[1];
+            const sup = 'ème';
+            const suffix = match2eme[2];
+            const supSize = Math.max(9, Math.round(fontSize * 0.58));
+
+            ctx.font = `900 ${fontSize}px ${fontSlab}`;
+            const wPrefix = ctx.measureText(prefix).width;
+            const wSuffix = ctx.measureText(suffix).width;
+            ctx.font = `900 ${supSize}px ${fontSlab}`;
+            const wSup = ctx.measureText(sup).width;
+
+            const totalW = wPrefix + wSup + wSuffix;
+            let curX = centerX - totalW / 2;
+
+            ctx.textAlign = 'left';
+            ctx.font = `900 ${fontSize}px ${fontSlab}`;
+            ctx.fillText(prefix, curX, baselineY);
+            curX += wPrefix;
+
+            ctx.font = `900 ${supSize}px ${fontSlab}`;
+            ctx.fillText(sup, curX, baselineY - Math.round(fontSize * 0.36));
+            curX += wSup;
+
+            ctx.font = `900 ${fontSize}px ${fontSlab}`;
+            ctx.fillText(suffix, curX, baselineY);
+        }
+
+        async function drawPromoCircle(ctx, circleX, circleY, radius, discountStr, rawDiscText, isA4, presetKey = '') {
+            const FONT_SLAB = getActiveFontSlab();
+            const presetInfo = MECHANIC_PRESETS[presetKey] || {};
+            const isCarteU = Boolean(presetInfo.isCarteU || /CARTE\s*U/i.test(rawDiscText));
+
+            if (isCarteU) {
+                // Rouge (#EE1C25) pour une remise immédiate avec Carte U (-20%), Bleu turquoise (#008585) pour les offres "VERSÉS SUR CARTE U"
+                const isImmedRed = presetKey === 'carte_u_20_immed' || discountStr.trim().startsWith('-') || /IMM[ÉE]DIATE/i.test(rawDiscText);
+                ctx.fillStyle = isImmedRed ? '#EE1C25' : '#008585';
+                ctx.beginPath();
+                ctx.arc(circleX, circleY, radius, 0, Math.PI * 2);
+                ctx.fill();
+
+                ctx.fillStyle = '#FFFFFF';
+                const lines = formatCarteUCircleLines(rawDiscText);
+                const lineCount = lines.length;
+
+                // 1) Dessin du pourcentage en haut du cercle avec le symbole % en exposant
+                const pctBaselineY = circleY - (
+                    isA4
+                        ? (lineCount >= 3 ? 42 : lineCount === 2 ? 34 : 24)
+                        : (lineCount >= 3 ? 28 : lineCount === 2 ? 22 : 14)
+                );
+
+                if (discountStr.endsWith('%')) {
+                    const num = discountStr.slice(0, -1);
+                    const isNeg = num.startsWith('-');
+                    const mF = isA4
+                        ? (isNeg ? 98 : 114)
+                        : (isNeg ? 68 : (lineCount >= 3 ? 76 : 82));
+                    const pF = isA4
+                        ? (isNeg ? 46 : 52)
+                        : (isNeg ? 31 : 36);
+
+                    ctx.font = `900 ${mF}px ${FONT_SLAB}`;
+                    const nW = ctx.measureText(num).width;
+                    ctx.font = `900 ${pF}px ${FONT_SLAB}`;
+                    const pW = ctx.measureText('%').width;
+
+                    const sX = circleX - (nW + pW) / 2;
+                    ctx.textAlign = 'left';
+                    ctx.font = `900 ${mF}px ${FONT_SLAB}`;
+                    ctx.fillText(num, sX, pctBaselineY);
+                    ctx.font = `900 ${pF}px ${FONT_SLAB}`;
+                    ctx.fillText('%', sX + nW + 2, pctBaselineY - (isA4 ? (isNeg ? 38 : 44) : (isNeg ? 26 : 30)));
+                } else if (discountStr) {
+                    const cF = isA4 ? 86 : 58;
+                    ctx.font = `900 ${cF}px ${FONT_SLAB}`;
+                    ctx.textAlign = 'center';
+                    ctx.fillText(discountStr, circleX, pctBaselineY);
+                }
+
+                // 2) Dessin des lignes de texte au centre du cercle (entre le % et la Carte U)
+                if (lineCount > 0) {
+                    const maxLen = Math.max(...lines.map(l => l.length));
+                    let fSize, lineH, firstLineY;
+
+                    if (isA4) {
+                        fSize = lineCount >= 3 ? (maxLen > 16 ? 20 : 22) : (lineCount === 2 ? 24 : 26);
+                        lineH = Math.round(fSize * 1.15);
+                        firstLineY = circleY + (lineCount >= 3 ? -8 : (lineCount === 2 ? 4 : 20));
+                    } else {
+                        if (lineCount >= 3) {
+                            fSize = maxLen > 15 ? 13.5 : 14.5;
+                            lineH = 15.5;
+                            firstLineY = circleY - 7;
+                        } else if (lineCount === 2) {
+                            fSize = 15.5;
+                            lineH = 17.5;
+                            firstLineY = circleY + 2;
+                        } else {
+                            fSize = 17;
+                            lineH = 19;
+                            firstLineY = circleY + 14;
+                        }
+                    }
+
+                    lines.forEach((l, i) => {
+                        drawCircleLineWithSuperscript(ctx, l, circleX, firstLineY + i * lineH, fSize, FONT_SLAB);
+                    });
+                }
+
+                // 3) Dessin du logo CARTE_U.png en bas du cercle (débordant légèrement sous le cercle comme sur les captures)
+                const uImg = await loadCarteUImage();
+                if (uImg) {
+                    const imgW = isA4 ? 195 : 134;
+                    const imgH = imgW * (uImg.height / uImg.width);
+                    const imgY = circleY + (isA4 ? 46 : 31);
+                    ctx.drawImage(uImg, circleX - imgW / 2, imgY, imgW, imgH);
+                } else {
+                    ctx.font = `800 ${isA4 ? 24 : 16}px ${FONT_SLAB}`;
+                    ctx.textAlign = 'center';
+                    ctx.fillText("CARTE U", circleX, circleY + (isA4 ? 75 : 52));
+                }
+                return;
+            }
+
+            // Rendu standard rouge pour les autres mécaniques hors Carte U
+            const hasPhrase = rawDiscText.length > 0;
+            ctx.fillStyle = '#EE1C25'; ctx.beginPath(); ctx.arc(circleX, circleY, radius, 0, Math.PI * 2); ctx.fill();
+            ctx.fillStyle = '#FFFFFF';
+            const mainY = circleY + (hasPhrase ? (isA4 ? 5 : 2) : (isA4 ? 35 : 26));
+            if (discountStr.endsWith('%')) {
+                const num = discountStr.slice(0, -1), mF = isA4 ? (hasPhrase ? 105 : 120) : (hasPhrase ? 74 : 84), pF = isA4 ? (hasPhrase ? 58 : 66) : (hasPhrase ? 42 : 48);
+                ctx.font = `900 ${mF}px ${FONT_SLAB}`; const nW = ctx.measureText(num).width;
+                ctx.font = `900 ${pF}px ${FONT_SLAB}`; const pW = ctx.measureText('%').width;
+                const sX = circleX - (nW + pW) / 2;
+                ctx.textAlign = 'left'; ctx.font = `900 ${mF}px ${FONT_SLAB}`; ctx.fillText(num, sX, mainY);
+                ctx.font = `900 ${pF}px ${FONT_SLAB}`; ctx.fillText('%', sX + nW + 2, mainY - (isA4 ? 38 : 26));
+            } else if (discountStr) {
+                const cF = discountStr.length > 7 ? (isA4 ? 54 : 38) : (discountStr.length > 5 ? (isA4 ? 70 : 48) : (isA4 ? 102 : 64));
+                ctx.font = `900 ${cF}px ${FONT_SLAB}`; ctx.textAlign = 'center'; ctx.fillText(discountStr, circleX, mainY);
+            }
+            if (hasPhrase) {
+                const lines = rawDiscText.split('|');
+                ctx.font = `800 ${isA4 ? 32 : (lines.some(l => l.trim().length > 14) ? 18 : 21)}px ${FONT_SLAB}`;
+                ctx.textAlign = 'center';
+                lines.forEach((l, i) => ctx.fillText(l.trim(), circleX, circleY + (isA4 ? 55 : 32) + i * (isA4 ? 36 : 23)));
+            }
+        }
+
+        async function drawSinglePoster(canvas, item) {
+            const FONT_SLAB = getActiveFontSlab();
+            const isMech = isPosterPromoActive(item);
+            const hasCustomPromo = Boolean(item.detectedPromo && !item.detectedPromo.isGlobalSync && !forceManualGlobalDiscount);
+            const discIn = getEffectivePosterDiscount(item);
+            const discTxt = hasCustomPromo ? (item.detectedPromo.text || 'DE REMISE|IMMÉDIATE') : $('inputDiscountText').value.trim();
+            const presetK = hasCustomPromo ? item.detectedPromo.presetKey : $('selectMechanicPreset').value;
+            const presetObj = MECHANIC_PRESETS[presetK] || {};
+            const isCarteUPromos = Boolean(presetObj.isCarteU || item.detectedPromo?.isCarteU || /CARTE\s*U/i.test(discTxt));
+
+            // Mention sous prix bleue si Carte U ("LE PRODUIT € CARTE U DÉDUITS")
+            let uLabel = (hasCustomPromo && applyMechanicPriceCalc) ? item.detectedPromo.unitLabel : $('inputUnitLabel').value;
+            if (isCarteUPromos) {
+                uLabel = "LE PRODUIT € CARTE U DÉDUITS";
+            }
+
+            const showCont = $('chkShowContenance').checked, dateRaw = $('inputDates').value.trim();
+            const pricing = computePromoPricing(item, presetK, discIn, isMech);
+            const dispAlc = item.showAlcohol18 !== null ? item.showAlcohol18 : showAlcoholGlobal;
+            const autoTrim = $('chkAutoTrim').checked;
+            const activeImg = (item.useCustomLeftImage && item.customRawImg) ? (autoTrim ? item.customTrimmedImg : item.customRawImg) : (isA4PortraitMode ? (autoTrim ? trimmedTopImageA4 : rawTopImageA4) : (autoTrim ? trimmedLeftImage4 : rawLeftImage4));
+
+            const ctx = canvas.getContext('2d');
+            if (isA4PortraitMode) {
+                canvas.width = 840; canvas.height = 1188;
+                ctx.fillStyle = '#FFFFFF'; ctx.fillRect(0, 0, 840, 1188);
+                ctx.fillStyle = '#EE1C25'; ctx.fillRect(0, 0, 840, 235);
+                if (activeImg?.complete && activeImg.naturalWidth > 0) {
+                    ctx.save(); ctx.beginPath(); ctx.rect(0, 0, 840, 235); ctx.clip();
+                    const s = Math.max(840 / activeImg.width, 235 / activeImg.height);
+                    ctx.drawImage(activeImg, (840 - activeImg.width * s) / 2, (235 - activeImg.height * s) / 2, activeImg.width * s, activeImg.height * s);
+                    ctx.restore();
+                }
+
+                if (isMech) {
+                    if (pricing.hasCrossedPrice) {
+                        drawFormattedPrice(ctx, pricing.crossedPrice, 300, 395, true, 422, 1.35, false);
+                        drawFormattedPrice(ctx, pricing.mainPrice, 285, 555, false, 422, 1.35, isCarteUPromos);
+                    } else {
+                        drawFormattedPrice(ctx, pricing.mainPrice, 285, 500, false, 422, 1.35, isCarteUPromos);
+                    }
+                    ctx.fillStyle = isCarteUPromos ? '#008585' : '#EE1C25';
+                    ctx.font = `800 22px ${FONT_SANS}`; ctx.textAlign = 'center'; ctx.fillText(uLabel.toUpperCase(), 285, 598);
+                    ctx.fillStyle = '#000000'; ctx.font = `600 21px ${FONT_SANS}`; ctx.fillText(pricing.unitPriceText, 285, 628);
+                    if (showCont && item.contenanceText) { ctx.fillStyle = '#374151'; ctx.font = `700 19px ${FONT_SANS}`; ctx.fillText(`Contenance : ${item.contenanceText}`, 285, 655); }
+                    await drawPromoCircle(ctx, 605, 490, 165, discIn, discTxt, true, presetK);
+                } else {
+                    if (pricing.hasCrossedPrice) {
+                        drawFormattedPrice(ctx, pricing.crossedPrice, 435, 395, true, 780, 1.35, false);
+                        drawFormattedPrice(ctx, pricing.mainPrice, 420, 555, false, 780, 1.55, isCarteUPromos);
+                    } else {
+                        drawFormattedPrice(ctx, pricing.mainPrice, 420, 500, false, 780, 1.65, isCarteUPromos);
+                    }
+                    ctx.fillStyle = isCarteUPromos ? '#008585' : '#EE1C25';
+                    ctx.font = `800 25px ${FONT_SANS}`; ctx.textAlign = 'center'; ctx.fillText(uLabel.toUpperCase(), 420, pricing.hasCrossedPrice ? 598 : 555);
+                    ctx.fillStyle = '#000000'; ctx.font = `600 23px ${FONT_SANS}`; ctx.fillText(pricing.unitPriceText, 420, pricing.hasCrossedPrice ? 630 : 588);
+                    if (showCont && item.contenanceText) { ctx.fillStyle = '#374151'; ctx.font = `700 21px ${FONT_SANS}`; ctx.fillText(`Contenance : ${item.contenanceText}`, 420, pricing.hasCrossedPrice ? 660 : 620); }
+                }
+
+                const maxTitleBottomY = showDate ? 985 : 1020;
+                ctx.fillStyle = '#000000';
+                drawFittedProductTitle(ctx, item.productName, 52, 765, 736, maxTitleBottomY, 62, 28, 'left');
+
+                if (showDate && dateRaw) {
+                    const dateLines = dateRaw.split('|').map(s => s.trim()).filter(Boolean);
+                    const dateStartY = dispAlc ? (dateLines.length > 1 ? 1042 : 1065) : (dateLines.length > 1 ? 1095 : 1120);
+                    ctx.fillStyle = dateColor === '#FFFFFF' ? '#000000' : dateColor;
+                    ctx.font = `800 21px ${FONT_SLAB}`;
+                    ctx.textAlign = 'center';
+                    dateLines.forEach((l, i) => ctx.fillText(l, 420, dateStartY + i * 26));
+                }
+
+                if (dispAlc) drawAlcohol18Banner(ctx, 38, 1098, 1.05);
+                if (showDate && dateRaw.includes('*')) { ctx.fillStyle = '#000000'; ctx.font = `500 15px ${FONT_SANS}`; ctx.textAlign = 'left'; ctx.fillText("* Selon jour d'ouverture de votre magasin", 42, 1172); }
+                if (item.gencode) drawVisualBarcode(ctx, item.gencode, dispAlc ? 580 : 530, dispAlc ? 1093 : 1166, dispAlc ? 220 : 270, dispAlc ? 42 : 52);
+                return;
+            }
+
+            // Mode Stock Rayon (1200 x 420)
+            canvas.width = 1200; canvas.height = 420;
+            ctx.fillStyle = '#FFFFFF'; ctx.fillRect(0, 0, 1200, 420);
+
+            if (activeBgStockImg?.complete && activeBgStockImg.naturalWidth > 0) {
+                ctx.save();
+                ctx.beginPath();
+                ctx.rect(412, 0, 788, 420);
+                ctx.clip();
+                const bgScale = Math.max(788 / activeBgStockImg.width, 420 / activeBgStockImg.height);
+                const bgW = activeBgStockImg.width * bgScale;
+                const bgH = activeBgStockImg.height * bgScale;
+                ctx.drawImage(activeBgStockImg, 412 + (788 - bgW) / 2, (420 - bgH) / 2, bgW, bgH);
+                ctx.restore();
+            }
+
+            ctx.fillStyle = '#EE1C25'; ctx.fillRect(0, 0, 412, 420);
+            if (activeImg?.complete && activeImg.naturalWidth > 0) {
+                ctx.save(); ctx.beginPath(); ctx.rect(0, 0, 412, 420); ctx.clip();
+                const s = Math.max(412 / activeImg.width, 420 / activeImg.height);
+                ctx.drawImage(activeImg, (412 - activeImg.width * s) / 2, (420 - activeImg.height * s) / 2, activeImg.width * s, activeImg.height * s);
+                ctx.restore();
+            }
+            if (showDate && dateRaw) {
+                ctx.fillStyle = dateColor; ctx.font = `500 18px ${FONT_SLAB}`; ctx.textAlign = 'center';
+                dateRaw.split('|').forEach((l, i) => ctx.fillText(l.trim(), 206, 35 + i * 22));
+            }
+            if (isMech) {
+                if (pricing.hasCrossedPrice) {
+                    drawFormattedPrice(ctx, pricing.crossedPrice, 565, 162, true, 656, 1.0, false);
+                    drawFormattedPrice(ctx, pricing.mainPrice, 550, 264, false, 656, 1.0, isCarteUPromos);
+                } else {
+                    drawFormattedPrice(ctx, pricing.mainPrice, 550, 232, false, 656, 1.0, isCarteUPromos);
+                }
+                ctx.fillStyle = isCarteUPromos ? '#008585' : '#EE1C25';
+                ctx.font = `800 15px ${FONT_SANS}`; ctx.textAlign = 'center'; ctx.fillText(uLabel.toUpperCase(), 555, 294);
+                ctx.fillStyle = '#000000'; ctx.font = `600 15px ${FONT_SANS}`; ctx.fillText(pricing.unitPriceText, 555, 314);
+                if (showCont && item.contenanceText) { ctx.fillStyle = '#374151'; ctx.font = `700 14px ${FONT_SANS}`; ctx.fillText(`Contenance : ${item.contenanceText}`, 555, 334); }
+                // Dessin du cercle après le texte sous prix afin que le cercle et la Carte U se superposent proprement par-dessus la fin de "DÉDUITS"
+                await drawPromoCircle(ctx, 782, 185, 114, discIn, discTxt, false, presetK);
+            } else {
+                if (pricing.hasCrossedPrice) {
+                    drawFormattedPrice(ctx, pricing.crossedPrice, 580, 162, true, 715, 1.0, false);
+                    drawFormattedPrice(ctx, pricing.mainPrice, 565, 264, false, 715, 1.0, isCarteUPromos);
+                    ctx.fillStyle = isCarteUPromos ? '#008585' : '#EE1C25';
+                    ctx.font = `800 15px ${FONT_SANS}`; ctx.textAlign = 'center'; ctx.fillText(uLabel.toUpperCase(), 565, 294);
+                    ctx.fillStyle = '#000000'; ctx.font = `600 15px ${FONT_SANS}`; ctx.fillText(pricing.unitPriceText, 565, 314);
+                    if (showCont && item.contenanceText) { ctx.fillStyle = '#374151'; ctx.font = `700 14px ${FONT_SANS}`; ctx.fillText(`Contenance : ${item.contenanceText}`, 565, 334); }
+                } else {
+                    drawFormattedPrice(ctx, pricing.mainPrice, 565, 230, false, 715, 1.0, isCarteUPromos);
+                    ctx.fillStyle = isCarteUPromos ? '#008585' : '#EE1C25';
+                    ctx.font = `800 16px ${FONT_SANS}`; ctx.textAlign = 'center'; ctx.fillText(uLabel.toUpperCase(), 565, 265);
+                    ctx.fillStyle = '#000000'; ctx.font = `600 16px ${FONT_SANS}`; ctx.fillText(pricing.unitPriceText, 565, 287);
+                    if (showCont && item.contenanceText) { ctx.fillStyle = '#374151'; ctx.font = `700 15px ${FONT_SANS}`; ctx.fillText(`Contenance : ${item.contenanceText}`, 565, 309); }
+                }
+            }
+            const tX = isMech ? 912 : 740;
+            ctx.fillStyle = '#000000'; drawFittedProductTitle(ctx, item.productName, tX, 68, 1180 - tX, 315, 34, 17, 'left');
+            if (dispAlc) drawAlcohol18Banner(ctx, 422, 348, 0.72);
+            if (showDate && dateRaw.includes('*')) { ctx.fillStyle = '#000000'; ctx.font = `500 11px ${FONT_SANS}`; ctx.textAlign = 'left'; ctx.fillText("* Selon jour d'ouverture de votre magasin", 422, dispAlc ? 404 : 396); }
+            if (item.gencode) drawVisualBarcode(ctx, item.gencode, 922, 398, 250, 42);
+            ctx.strokeStyle = '#000000'; ctx.lineWidth = 4; ctx.beginPath(); ctx.moveTo(0, 418); ctx.lineTo(1200, 418); ctx.stroke();
+        }
+
         function renderAllPosters() {
             if (postersList.length > MAX_LABELS_LIMIT) postersList = postersList.slice(0, MAX_LABELS_LIMIT);
             const container = $('postersContainer'); container.innerHTML = '';
-            $('badgeCount'].textContent = `${postersList.length} / ${MAX_LABELS_LIMIT} étiquette${postersList.length > 1 ? 's' : ''}`;
-            if ($('quotaServiceBadge'])) $('quotaServiceBadge'].textContent = `${postersList.length} / ${MAX_LABELS_LIMIT} max`;
+            $('badgeCount').textContent = `${postersList.length} / ${MAX_LABELS_LIMIT} étiquette${postersList.length > 1 ? 's' : ''}`;
+            if ($('quotaServiceBadge')) $('quotaServiceBadge').textContent = `${postersList.length} / ${MAX_LABELS_LIMIT} max`;
 
             if (postersList.length === 0) {
                 container.innerHTML = `
@@ -1925,7 +2343,7 @@
                         <p class="text-sm font-bold text-gray-600">Aucune étiquette affichée. Dépose un fichier PDF/Photo ou crée une étiquette manuellement.</p>
                         <button type="button" id="btnEmptyStateAdd" class="text-xs font-extrabold px-4 py-2 rounded-lg bg-red-600 text-white hover:bg-red-700 shadow">➕ Créer une étiquette</button>
                     </div>`;
-                $('btnEmptyStateAdd'].onclick = () => $('btnAddBlankPoster'].click();
+                $('btnEmptyStateAdd').onclick = () => $('btnAddBlankPoster').click();
                 return;
             }
 
@@ -1948,8 +2366,8 @@
                             <button type="button" data-idx="${index}" class="btn-open-item-gallery ${isCustom ? '' : 'hidden'} font-bold px-1.5 py-0.5 rounded bg-white border border-green-400 text-green-900">🖼️ ${item.customImageLabel || 'Visuel'}</button>
                         </div>
                         <button type="button" data-idx="${index}" class="btn-toggle-item-alcohol font-extrabold px-1.5 py-1 rounded border shrink-0 ${isAlc ? 'bg-orange-600 text-white' : 'bg-orange-50 text-orange-800'}">-18 ${isAlc ? 'ON' : 'OFF'}</button>
-                        <label class="flex items-center gap-0.5 font-semibold text-gray-600 shrink-0">Prix:<input type="number" step="0.01" data-idx="${index}" data-field="oldPrice" value="${item.oldPrice.toFixed(2)}" class="poster-edit-input w-11 font-bold border rounded px-1 py-1 text-pink-700 bg-pink-50 text-center" title="Prix principal affiché en rouge"></label>
-                        <label class="flex items-center gap-0.5 font-semibold text-gray-600 shrink-0">Barré:<input type="number" step="0.01" data-idx="${index}" data-field="crossedPrice" value="${crossedVal}" placeholder="-" class="poster-edit-input w-11 font-bold border rounded px-1 py-1 text-gray-700 bg-gray-100 text-center" title="Prix barré affiché juste au-dessus du prix rouge"></label>
+                        <label class="flex items-center gap-0.5 font-semibold text-gray-600 shrink-0">Prix:<input type="number" step="0.01" data-idx="${index}" data-field="oldPrice" value="${item.oldPrice.toFixed(2)}" class="poster-edit-input w-11 font-bold border rounded px-1 py-1 text-pink-700 bg-pink-50 text-center" title="Prix principal affiché"></label>
+                        <label class="flex items-center gap-0.5 font-semibold text-gray-600 shrink-0">Barré:<input type="number" step="0.01" data-idx="${index}" data-field="crossedPrice" value="${crossedVal}" placeholder="-" class="poster-edit-input w-11 font-bold border rounded px-1 py-1 text-gray-700 bg-gray-100 text-center" title="Prix barré affiché juste au-dessus"></label>
                         <label class="flex items-center gap-0.5 font-semibold text-gray-600 shrink-0">P.Unité:<input type="number" step="0.01" data-idx="${index}" data-field="baseUnitPrice" value="${(item.baseUnitPrice || item.oldPrice).toFixed(2)}" class="poster-edit-input w-11 font-bold border rounded px-1 py-1 text-amber-800 bg-amber-50 text-center"></label>
                         <label class="flex items-center gap-0.5 font-semibold text-gray-600 shrink-0">Unité:<select data-idx="${index}" data-field="unitType" class="poster-edit-input font-bold border rounded px-1 py-1 bg-yellow-50"><option value="pièce" ${item.unitType === 'pièce' ? 'selected' : ''}>Pièce</option><option value="kg" ${item.unitType === 'kg' ? 'selected' : ''}>Kg</option><option value="l" ${item.unitType === 'l' ? 'selected' : ''}>Litre</option></select></label>
                         <label class="flex items-center gap-0.5 font-semibold text-gray-600 shrink-0">Cont.:<input type="text" data-idx="${index}" data-field="contenanceText" value="${(item.contenanceText || '').replace(/"/g, '&quot;')}" class="poster-edit-input w-11 font-bold border rounded px-1 py-1 text-emerald-800 bg-emerald-50 text-center"></label>
@@ -1973,17 +2391,17 @@
                 } else if (f === 'crossedPrice') {
                     const v = parseFloat(this.value);
                     postersList[i].crossedPrice = (v && v > 0) ? v : null;
-                    if (postersList[i].crossedPrice && postersList[i].crossedPrice > postersList[i].oldPrice && !forceManualGlobalDiscount) {
+                    const selPreset = MECHANIC_PRESETS[$('selectMechanicPreset').value] || {};
+                    if (postersList[i].crossedPrice && postersList[i].crossedPrice > postersList[i].oldPrice && !forceManualGlobalDiscount && !selPreset.isCarteU) {
                         const pct = Math.max(1, Math.round(((postersList[i].crossedPrice - postersList[i].oldPrice) / postersList[i].crossedPrice) * 100));
-                        const selPreset = MECHANIC_PRESETS[$('selectMechanicPreset'].value] || {};
                         postersList[i].detectedPromo = {
                             active: true,
                             isGlobalSync: false,
-                            presetKey: $('selectMechanicPreset'].value || 'remise_34',
+                            presetKey: $('selectMechanicPreset').value || 'remise_34',
                             discount: `-${pct}%`,
-                            text: $('inputDiscountText'].value.trim() || 'DE REMISE|IMMÉDIATE',
-                            unitLabel: $('inputUnitLabel'].value.trim() || 'LE PRODUIT',
-                            isCarteU: Boolean(selPreset.isCarteU)
+                            text: $('inputDiscountText').value.trim() || 'DE REMISE|IMMÉDIATE',
+                            unitLabel: $('inputUnitLabel').value.trim() || 'LE PRODUIT',
+                            isCarteU: false
                         };
                     }
                 } else if (f === 'baseUnitPrice') postersList[i].baseUnitPrice = parseFloat(this.value) || 0;
@@ -1997,7 +2415,6 @@
                 }
                 drawSinglePoster($(`posterCanvas_${i}`), postersList[i]);
             });
-
             document.querySelectorAll('.btn-toggle-item-promo').forEach(b => b.onclick = function() {
                 const i = +this.dataset.idx;
                 const currentlyActive = isPosterPromoActive(postersList[i]);
@@ -2008,14 +2425,14 @@
                         postersList[i].detectedPromo.active = false;
                     }
                 } else {
-                    const activePreset = MECHANIC_PRESETS[$('selectMechanicPreset'].value] || {};
+                    const activePreset = MECHANIC_PRESETS[$('selectMechanicPreset').value] || {};
                     postersList[i].detectedPromo = {
                         active: true,
-                        isGlobalSync: forceManualGlobalDiscount,
-                        presetKey: $('selectMechanicPreset'].value,
+                        isGlobalSync: forceManualGlobalDiscount || Boolean(activePreset.isCarteU),
+                        presetKey: $('selectMechanicPreset').value,
                         discount: getEffectivePosterDiscount(postersList[i]),
-                        text: $('inputDiscountText'].value.trim(),
-                        unitLabel: $('inputUnitLabel'].value.trim(),
+                        text: $('inputDiscountText').value.trim(),
+                        unitLabel: $('inputUnitLabel').value.trim(),
                         isCarteU: Boolean(activePreset.isCarteU)
                     };
                 }
@@ -2024,12 +2441,11 @@
             document.querySelectorAll('.btn-toggle-item-alcohol').forEach(b => b.onclick = function() { const i = +this.dataset.idx; postersList[i].showAlcohol18 = !(postersList[i].showAlcohol18 !== null ? postersList[i].showAlcohol18 : showAlcoholGlobal); renderAllPosters(); });
             document.querySelectorAll('.btn-save-to-library').forEach(b => b.onclick = function() { openSaveDestinationModal(+this.dataset.idx); });
             document.querySelectorAll('.btn-delete-poster').forEach(b => b.onclick = function() { postersList.splice(+this.dataset.idx, 1); renderAllPosters(); });
-            document.querySelectorAll('.btn-toggle-item-img').forEach(b => b.onclick = function() { const i = +this.dataset.idx; postersList[i].useCustomLeftImage = !postersList[i].useCustomLeftImage; renderAllPosters(); if (postersList[i].useCustomLeftImage && !postersList[i].customRawImg) { currentGalleryTarget = i; $('visualGalleryModal'].classList.remove('hidden'); } });
-            document.querySelectorAll('.btn-open-item-gallery').forEach(b => b.onclick = function() { currentGalleryTarget = +this.dataset.idx; $('visualGalleryModal'].classList.remove('hidden'); });
+            document.querySelectorAll('.btn-toggle-item-img').forEach(b => b.onclick = function() { const i = +this.dataset.idx; postersList[i].useCustomLeftImage = !postersList[i].useCustomLeftImage; renderAllPosters(); if (postersList[i].useCustomLeftImage && !postersList[i].customRawImg) { currentGalleryTarget = i; $('visualGalleryModal').classList.remove('hidden'); } });
+            document.querySelectorAll('.btn-open-item-gallery').forEach(b => b.onclick = function() { currentGalleryTarget = +this.dataset.idx; $('visualGalleryModal').classList.remove('hidden'); });
         }
 
-        // EXPORT PDF A4 AVEC HAUTEUR TOTALE RÉDUITE DE 3 MM (294 mm au lieu de 297 mm)
-        $('btnDownloadPdfA4'].onclick = () => {
+        $('btnDownloadPdfA4').onclick = () => {
             if (!postersList.length) return;
             const pdf = new window.jspdf.jsPDF('p', 'mm', 'a4');
             const usablePageHeight = 294;
@@ -2047,12 +2463,12 @@
             pdf.save(isA4PortraitMode ? 'etiquettes_A4_Portrait.pdf' : 'etiquettes_Stock_Rayon.pdf');
         };
 
-        $('inputDiscount'].oninput = () => {
+        $('inputDiscount').oninput = () => {
             forceManualGlobalDiscount = true;
             postersList.forEach(it => {
                 if (it.detectedPromo) {
                     it.detectedPromo.isGlobalSync = true;
-                    it.detectedPromo.discount = $('inputDiscount'].value.trim();
+                    it.detectedPromo.discount = $('inputDiscount').value.trim();
                 }
             });
             renderAllPosters();
@@ -2061,8 +2477,8 @@
         ['inputDates', 'inputDiscountText', 'inputUnitLabel'].forEach(id => $(id).oninput = () => {
             postersList.forEach(it => {
                 if (it.detectedPromo) {
-                    it.detectedPromo.text = $('inputDiscountText'].value.trim();
-                    it.detectedPromo.unitLabel = $('inputUnitLabel'].value.trim();
+                    it.detectedPromo.text = $('inputDiscountText').value.trim();
+                    it.detectedPromo.unitLabel = $('inputUnitLabel').value.trim();
                 }
             });
             renderAllPosters();
