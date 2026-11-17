@@ -119,7 +119,7 @@
                 </div>
             </div>
 
-            <!-- LIGNE 2 : MÉCANIQUE & VALEUR + BOUTON PRIX BARRÉ ON/OFF + MENTION SOUS PRIX TOUJOURS ÉDITABLE -->
+            <!-- LIGNE 2 : MÉCANIQUE & VALEUR + BOUTON PRIX BARRÉ ON/OFF + MENTION SOUS PRIX (AVEC SAUT DE LIGNE "|") -->
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3 items-end pt-2 border-t border-gray-100">
                 <div>
                     <div class="flex flex-wrap justify-between items-center mb-1 gap-1">
@@ -174,10 +174,10 @@
                 </div>
                 <div>
                     <div class="flex justify-between items-center mb-1">
-                        <label class="block text-xs font-bold text-gray-700 uppercase">📌 MENTION SOUS PRIX</label>
+                        <label class="block text-xs font-bold text-gray-700 uppercase" title="Utilise | pour sauter une ligne">📌 MENTION SOUS PRIX</label>
                         <label class="flex items-center gap-1 text-[11px] font-bold text-blue-700 cursor-pointer"><input type="checkbox" id="chkShowContenance" checked class="rounded text-blue-600"><span>Afficher contenance</span></label>
                     </div>
-                    <input type="text" id="inputUnitLabel" value="LE PRODUIT" placeholder="Ex: LE PRODUIT, LE LOT DE 2..." class="w-full p-1.5 border rounded-lg text-xs font-bold text-red-600 uppercase">
+                    <input type="text" id="inputUnitLabel" value="LE PRODUIT" placeholder="Utilise | pour sauter une ligne" class="w-full p-1.5 border rounded-lg text-xs font-bold text-red-600 uppercase">
                 </div>
                 <div class="flex gap-2">
                     <button type="button" id="btnAddBlankPoster" class="w-1/2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2 px-2 rounded-lg shadow transition text-xs uppercase flex items-center justify-center gap-1">➕ Étiquette</button>
@@ -431,7 +431,7 @@
         const FONT_SANS = '"Montserrat", Arial, sans-serif';
         const DB_NAME = 'SuperU_PromoLabels_DB', STORE_NAME = 'saved_left_images', READY_DOCS_STORE = 'ready_created_files';
 
-        // Liste officielle des mécaniques avec leur mention sous prix par défaut (100% modifiable dans #inputUnitLabel)
+        // Liste officielle des mécaniques avec leur mention sous prix par défaut (100% modifiable dans #inputUnitLabel, supporte "|" pour sauter une ligne)
         const MECHANIC_PRESETS = {
             remise_20:                  { discount: '-20%', text: 'DE REMISE|IMMÉDIATE', unitLabel: 'LE PRODUIT', mode: 'pct_single' },
             remise_34:                  { discount: '-34%', text: 'DE REMISE|IMMÉDIATE', unitLabel: 'LE PRODUIT', mode: 'pct_single' },
@@ -1236,7 +1236,6 @@
             buildVisualGallery(); renderAllPosters();
         };
 
-        // Changement de mécanique : actualise automatiquement #inputDiscount, #inputDiscountText et #inputUnitLabel (Mention sous prix)
         $('selectMechanicPreset').onchange = function() {
             const p = MECHANIC_PRESETS[this.value]; if (!p) return;
             forceManualGlobalDiscount = true;
@@ -1953,18 +1952,28 @@
             }
         }
 
+        // Dessine la mention sous le prix en gérant les sauts de ligne "|" et renvoie le décalage vertical (extraOffsetY) pour les lignes suivantes
         function drawFittedUnitLabelUnderPrice(ctx, text, centerX, baselineY, maxWidth, defaultFontSize, minFontSize = 10) {
-            const clean = (text || '').toUpperCase().trim();
-            if (!clean) return;
+            const raw = (text || '').toUpperCase().trim();
+            if (!raw) return 0;
+            const lines = raw.split('|').map(s => s.trim()).filter(Boolean);
+            if (!lines.length) return 0;
+
             let fs = defaultFontSize;
             while (fs > minFontSize) {
                 ctx.font = `800 ${fs}px ${FONT_SANS}`;
-                if (ctx.measureText(clean).width <= maxWidth) break;
+                if (lines.every(line => ctx.measureText(line).width <= maxWidth)) break;
                 fs -= 0.5;
             }
             ctx.font = `800 ${fs}px ${FONT_SANS}`;
             ctx.textAlign = 'center';
-            ctx.fillText(clean, centerX, baselineY);
+
+            const lineSpacing = Math.round(fs * 1.15);
+            lines.forEach((line, idx) => {
+                ctx.fillText(line, centerX, baselineY + idx * lineSpacing);
+            });
+
+            return (lines.length - 1) * lineSpacing;
         }
 
         function drawFittedProductTitle(ctx, text, x, startY, maxWidth, maxBottomY, maxFont = 34, minFont = 17, align = 'left') {
@@ -2378,7 +2387,7 @@
             const presetObj = MECHANIC_PRESETS[presetK] || {};
             const isCarteUPromos = Boolean(presetObj.isCarteU || item.detectedPromo?.isCarteU || /CARTE\s*U/i.test(discTxt));
 
-            // Mention sous prix 100% pilotée par la case MENTION SOUS PRIX (#inputUnitLabel) pour pouvoir être modifiée à tout moment
+            // Mention sous prix 100% pilotée par #inputUnitLabel (avec support du saut de ligne "|")
             const uLabel = $('inputUnitLabel').value;
 
             const showCont = $('chkShowContenance').checked, dateRaw = $('inputDates').value.trim();
@@ -2407,9 +2416,9 @@
                         drawFormattedPrice(ctx, pricing.mainPrice, 285, 500, false, 422, 1.35, isCarteUPromos);
                     }
                     ctx.fillStyle = isCarteUPromos ? '#008585' : '#EE1C25';
-                    drawFittedUnitLabelUnderPrice(ctx, uLabel, 285, 598, 390, 22, 12);
-                    ctx.fillStyle = '#000000'; ctx.font = `600 21px ${FONT_SANS}`; ctx.textAlign = 'center'; ctx.fillText(pricing.unitPriceText, 285, 628);
-                    if (showCont && item.contenanceText) { ctx.fillStyle = '#374151'; ctx.font = `700 19px ${FONT_SANS}`; ctx.fillText(`Contenance : ${item.contenanceText}`, 285, 655); }
+                    const extraY = drawFittedUnitLabelUnderPrice(ctx, uLabel, 285, 598, 390, 22, 12);
+                    ctx.fillStyle = '#000000'; ctx.font = `600 21px ${FONT_SANS}`; ctx.textAlign = 'center'; ctx.fillText(pricing.unitPriceText, 285, 628 + extraY);
+                    if (showCont && item.contenanceText) { ctx.fillStyle = '#374151'; ctx.font = `700 19px ${FONT_SANS}`; ctx.fillText(`Contenance : ${item.contenanceText}`, 285, 655 + extraY); }
                     await drawPromoCircle(ctx, 605, 490, 165, discIn, discTxt, true, presetK);
                 } else {
                     if (pricing.hasCrossedPrice) {
@@ -2419,9 +2428,10 @@
                         drawFormattedPrice(ctx, pricing.mainPrice, 420, 500, false, 780, 1.65, isCarteUPromos);
                     }
                     ctx.fillStyle = isCarteUPromos ? '#008585' : '#EE1C25';
-                    drawFittedUnitLabelUnderPrice(ctx, uLabel, 420, pricing.hasCrossedPrice ? 598 : 555, 740, 25, 13);
-                    ctx.fillStyle = '#000000'; ctx.font = `600 23px ${FONT_SANS}`; ctx.textAlign = 'center'; ctx.fillText(pricing.unitPriceText, 420, pricing.hasCrossedPrice ? 630 : 588);
-                    if (showCont && item.contenanceText) { ctx.fillStyle = '#374151'; ctx.font = `700 21px ${FONT_SANS}`; ctx.fillText(`Contenance : ${item.contenanceText}`, 420, pricing.hasCrossedPrice ? 660 : 620); }
+                    const baseLabelY = pricing.hasCrossedPrice ? 598 : 555;
+                    const extraY = drawFittedUnitLabelUnderPrice(ctx, uLabel, 420, baseLabelY, 740, 25, 13);
+                    ctx.fillStyle = '#000000'; ctx.font = `600 23px ${FONT_SANS}`; ctx.textAlign = 'center'; ctx.fillText(pricing.unitPriceText, 420, (pricing.hasCrossedPrice ? 630 : 588) + extraY);
+                    if (showCont && item.contenanceText) { ctx.fillStyle = '#374151'; ctx.font = `700 21px ${FONT_SANS}`; ctx.fillText(`Contenance : ${item.contenanceText}`, 420, (pricing.hasCrossedPrice ? 660 : 620) + extraY); }
                 }
 
                 const maxTitleBottomY = showDate ? 985 : 1020;
@@ -2478,24 +2488,24 @@
                     drawFormattedPrice(ctx, pricing.mainPrice, 550, 232, false, 656, 1.0, isCarteUPromos);
                 }
                 ctx.fillStyle = isCarteUPromos ? '#008585' : '#EE1C25';
-                drawFittedUnitLabelUnderPrice(ctx, uLabel, 555, 294, 268, 15, 10);
-                ctx.fillStyle = '#000000'; ctx.font = `600 15px ${FONT_SANS}`; ctx.textAlign = 'center'; ctx.fillText(pricing.unitPriceText, 555, 314);
-                if (showCont && item.contenanceText) { ctx.fillStyle = '#374151'; ctx.font = `700 14px ${FONT_SANS}`; ctx.fillText(`Contenance : ${item.contenanceText}`, 555, 334); }
+                const extraY = drawFittedUnitLabelUnderPrice(ctx, uLabel, 555, 294, 268, 15, 10);
+                ctx.fillStyle = '#000000'; ctx.font = `600 15px ${FONT_SANS}`; ctx.textAlign = 'center'; ctx.fillText(pricing.unitPriceText, 555, 314 + extraY);
+                if (showCont && item.contenanceText) { ctx.fillStyle = '#374151'; ctx.font = `700 14px ${FONT_SANS}`; ctx.fillText(`Contenance : ${item.contenanceText}`, 555, 334 + extraY); }
                 await drawPromoCircle(ctx, 782, 185, 114, discIn, discTxt, false, presetK);
             } else {
                 if (pricing.hasCrossedPrice) {
                     drawFormattedPrice(ctx, pricing.crossedPrice, 580, 162, true, 715, 1.0, false);
                     drawFormattedPrice(ctx, pricing.mainPrice, 565, 264, false, 715, 1.0, isCarteUPromos);
                     ctx.fillStyle = isCarteUPromos ? '#008585' : '#EE1C25';
-                    drawFittedUnitLabelUnderPrice(ctx, uLabel, 565, 294, 300, 15, 10);
-                    ctx.fillStyle = '#000000'; ctx.font = `600 15px ${FONT_SANS}`; ctx.textAlign = 'center'; ctx.fillText(pricing.unitPriceText, 565, 314);
-                    if (showCont && item.contenanceText) { ctx.fillStyle = '#374151'; ctx.font = `700 14px ${FONT_SANS}`; ctx.fillText(`Contenance : ${item.contenanceText}`, 565, 334); }
+                    const extraY = drawFittedUnitLabelUnderPrice(ctx, uLabel, 565, 294, 300, 15, 10);
+                    ctx.fillStyle = '#000000'; ctx.font = `600 15px ${FONT_SANS}`; ctx.textAlign = 'center'; ctx.fillText(pricing.unitPriceText, 565, 314 + extraY);
+                    if (showCont && item.contenanceText) { ctx.fillStyle = '#374151'; ctx.font = `700 14px ${FONT_SANS}`; ctx.fillText(`Contenance : ${item.contenanceText}`, 565, 334 + extraY); }
                 } else {
                     drawFormattedPrice(ctx, pricing.mainPrice, 565, 230, false, 715, 1.0, isCarteUPromos);
                     ctx.fillStyle = isCarteUPromos ? '#008585' : '#EE1C25';
-                    drawFittedUnitLabelUnderPrice(ctx, uLabel, 565, 265, 300, 16, 10);
-                    ctx.fillStyle = '#000000'; ctx.font = `600 16px ${FONT_SANS}`; ctx.textAlign = 'center'; ctx.fillText(pricing.unitPriceText, 565, 287);
-                    if (showCont && item.contenanceText) { ctx.fillStyle = '#374151'; ctx.font = `700 15px ${FONT_SANS}`; ctx.fillText(`Contenance : ${item.contenanceText}`, 565, 309); }
+                    const extraY = drawFittedUnitLabelUnderPrice(ctx, uLabel, 565, 265, 300, 16, 10);
+                    ctx.fillStyle = '#000000'; ctx.font = `600 16px ${FONT_SANS}`; ctx.textAlign = 'center'; ctx.fillText(pricing.unitPriceText, 565, 287 + extraY);
+                    if (showCont && item.contenanceText) { ctx.fillStyle = '#374151'; ctx.font = `700 15px ${FONT_SANS}`; ctx.fillText(`Contenance : ${item.contenanceText}`, 565, 309 + extraY); }
                 }
             }
             const tX = isMech ? 912 : 740;
@@ -2659,7 +2669,6 @@
             renderAllPosters();
         };
 
-        // Toute saisie dans MENTION SOUS PRIX (#inputUnitLabel), Visuel mécanique ou Dates met immédiatement à jour toutes les étiquettes
         ['inputDates', 'inputDiscountText', 'inputUnitLabel'].forEach(id => $(id).oninput = () => {
             postersList.forEach(it => {
                 if (it.detectedPromo) {
