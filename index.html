@@ -21,32 +21,37 @@
     </style>
 </head>
 <body class="bg-gray-100 min-h-screen p-3 md:p-5 font-sans text-gray-800">
-
     <div class="max-w-7xl mx-auto space-y-5">
-        <!-- BANDEAU DE CONFIGURATION GLOBALE -->
+        <!-- BANDEAU DE CONFIGURATION GLOBALE (RÉDUIT À 80%) -->
         <div id="topControlPanel" class="bg-white p-4 rounded-xl shadow-md border-t-4 border-red-600 space-y-3 sticky top-2 z-20">
+            <!-- BARRE SUPÉRIEURE ORGANISÉE SELON VisuelCorrection.png -->
             <div class="flex flex-wrap justify-between items-center border-b pb-2.5 gap-2">
                 <div class="flex flex-wrap items-center gap-2">
                     <h1 class="text-base font-extrabold text-gray-800 tracking-wide shrink-0">Generateur</h1>
-                    <span id="badgeCount" class="text-[11px] bg-red-100 text-red-700 font-bold px-2 py-1 rounded-full shrink-0">0 / 50 étiquette</span>
-                    <button type="button" id="btnAddBlankPoster" class="text-[11px] font-extrabold px-2 py-1.5 rounded-lg border-2 border-emerald-600 bg-emerald-600 text-white hover:bg-emerald-700 transition shadow-sm shrink-0">➕ Étiquette</button>
-                    <button type="button" id="btnClearAllPosters" class="text-[11px] font-extrabold px-2 py-1.5 rounded-lg border-2 border-red-200 bg-red-50 text-red-700 hover:bg-red-600 hover:text-white transition shadow-sm shrink-0">🗑️ Tout vider</button>
+                    <span id="badgeCount" class="text-[11px] bg-red-100 text-red-700 font-bold px-2.5 py-1 rounded-full shrink-0">0 / 50 étiquette</span>
+                    <!-- BOUTON MODE STOCK RAYON / A4 PORTRAIT -->
                     <button type="button" id="btnToggleA4Mode" class="text-[11px] font-extrabold px-3 py-1.5 rounded-lg border-2 border-gray-800 bg-white text-gray-800 hover:bg-gray-800 hover:text-white transition flex items-center gap-1.5 shadow-sm shrink-0">
                         <span>Mode : Stock Rayon</span><span class="bg-red-600 text-white text-[10px] px-1.5 py-0.5 rounded">Basculer A4 Portrait</span>
                     </button>
+                    <!-- BOUTON BIBLIOTHÈQUE -->
                     <button type="button" id="btnOpenReadyDocsModal" class="text-[11px] font-extrabold px-3 py-1.5 rounded-lg border-2 border-purple-600 bg-purple-600 text-white hover:bg-purple-700 transition flex items-center gap-1.5 shadow-sm shrink-0">
                         <span>📚 Bibliothèque</span><span id="readyDocsCountBadge" class="bg-white text-purple-700 text-[10px] px-1.5 py-0.5 rounded-full font-black">29</span>
                     </button>
+                    <!-- BOUTON FOND D'ÉTIQUETTE -->
                     <button type="button" id="btnOpenBgModal" class="text-[11px] font-extrabold px-3 py-1.5 rounded-lg border-2 border-purple-300 bg-purple-50 text-purple-900 hover:bg-purple-100 transition flex items-center gap-1.5 shadow-sm shrink-0">
                         <span id="bgBtnLabel" class="truncate max-w-[130px]">🎨 Fond : Aucun</span>
                     </button>
+                    <!-- BOUTON -18 ALCOOL -->
                     <button type="button" id="btnToggleAlcohol18" class="text-[11px] font-extrabold px-3 py-1.5 rounded-lg border-2 border-orange-300 bg-orange-50 text-orange-800 hover:bg-orange-100 transition flex items-center gap-1.5 shadow-sm shrink-0">
                         <span class="bg-orange-600 text-white text-[10px] font-black px-1.5 py-0.5 rounded">-18</span><span id="alcoholBtnLabel">Alcool</span>
                     </button>
                 </div>
 
+                <!-- BLOC DROIT : POLICES, STATUT ET ÉTAT DES SERVICES -->
                 <div class="flex flex-wrap items-center gap-2">
-                    <button type="button" id="btnOpenFontModal" class="text-[11px] bg-gray-100 hover:bg-gray-200 text-gray-800 font-extrabold py-1.5 px-3 rounded-lg cursor-pointer border-2 border-gray-300 transition flex items-center gap-1.5 shadow-sm shrink-0">🔤 Polices .OTF / R2</button>
+                    <button type="button" id="btnOpenFontModal" class="text-[11px] bg-gray-100 hover:bg-gray-200 text-gray-800 font-extrabold py-1.5 px-3 rounded-lg cursor-pointer border-2 border-gray-300 transition flex items-center gap-1.5 shadow-sm shrink-0">
+                        🔤 Polices .OTF / R2
+                    </button>
                     <span id="ocrStatus" class="text-[11px] font-bold text-blue-700 bg-blue-50 px-2.5 py-1 rounded-lg border border-blue-200 hidden"></span>
                     <div class="relative flex items-center gap-2">
                         <button type="button" id="btnToggleServiceStatus" class="text-[11px] font-extrabold px-3 py-1.5 rounded-lg border-2 border-emerald-300 bg-emerald-50 text-emerald-800 hover:bg-emerald-100 transition flex items-center gap-2 shadow-sm shrink-0">
@@ -80,7 +85,7 @@
                 </div>
             </div>
 
-            <!-- LIGNE 1 -->
+            <!-- LIGNE 1 : DÉPÔT PDF, IMAGE, DATES, COULEUR DATE -->
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3 items-center">
                 <div class="bg-blue-50 p-2 rounded-lg border border-blue-200 h-full flex flex-col justify-between">
                     <label class="block text-xs font-bold text-blue-900 uppercase mb-1">📷 Dépôt PDF (50 max )</label>
@@ -114,7 +119,7 @@
                 </div>
             </div>
 
-            <!-- LIGNE 2 -->
+            <!-- LIGNE 2 : MÉCANIQUE MIS À JOUR AVEC LES NOUVELLES OPTIONS DE "nouvelle mecanique.jpg" -->
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3 items-end pt-2 border-t border-gray-100">
                 <div>
                     <div class="flex justify-between items-center mb-1">
@@ -123,7 +128,7 @@
                     </div>
                     <div class="flex gap-1.5">
                         <select id="selectMechanicPreset" disabled class="w-2/3 p-1.5 border rounded-lg text-xs font-bold text-gray-800 bg-gray-100 opacity-50 cursor-pointer">
-                            <optgroup label="Remises immédiates">
+                            <optgroup label="Remises immédiates en %">
                                 <option value="remise_20">-20% DE REMISE IMMÉDIATE</option>
                                 <option value="remise_34" selected>-34% DE REMISE IMMÉDIATE</option>
                                 <option value="remise_50">-50% DE REMISE IMMÉDIATE</option>
@@ -131,10 +136,10 @@
                                 <option value="remise_50_2eme_identique">-50% DE REMISE SUR LE 2ÈME PRODUIT IDENTIQUE</option>
                             </optgroup>
                             <optgroup label="Offres Carte U">
-                                <option value="carte_u_68_identique">68% SUR LE 2ÈME PRODUIT IDENTIQUE VERSÉS SUR CARTE U</option>
-                                <option value="carte_u_20_verse">SOIT 1,60€ VERSÉS SUR CARTE U (20%)</option>
-                                <option value="carte_u_34_verse">34% VERSÉS SUR CARTE U</option>
                                 <option value="carte_u_20_immed">-20% DE REMISE IMMÉDIATE AVEC CARTE U</option>
+                                <option value="carte_u_20_verse">20% VERSÉS SUR CARTE U</option>
+                                <option value="carte_u_34_verse">34% VERSÉS SUR CARTE U</option>
+                                <option value="carte_u_68_identique">68% SUR LE 2ÈME PRODUIT IDENTIQUE VERSÉS SUR CARTE U</option>
                             </optgroup>
                             <optgroup label="Remises en euros & Prix spéciaux">
                                 <option value="remise_2_euros">-2€ DE REMISE IMMÉDIATE</option>
@@ -176,6 +181,7 @@
                     <button type="button" id="btnClearAllPosters" class="w-1/2 bg-red-50 hover:bg-red-600 text-red-700 hover:text-white border border-red-200 font-bold py-2 px-2 rounded-lg shadow transition text-xs uppercase flex items-center justify-center gap-1">🗑️ Tout vider</button>
                 </div>
             </div>
+            <!-- LIGNE BOUTON TÉLÉCHARGER LE PDF -->
             <div>
                 <button id="btnDownloadPdfA4" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-lg shadow transition text-xs uppercase tracking-wider flex items-center justify-center gap-2">
                     <span id="btnDownloadLabel">📄 TÉLÉCHARGER LE PDF (STOCK RAYON)</span>
@@ -186,7 +192,7 @@
         <div id="postersContainer" class="space-y-6"></div>
     </div>
 
-    <!-- MODALE 1 : GALERIE VISUELLE -->
+    <!-- MODALE 1 : GALERIE VISUELLE (IMAGES GAUCHE & IMAGES A4) -->
     <div id="visualGalleryModal" class="fixed inset-0 bg-black/60 z-50 hidden flex items-center justify-center p-4 backdrop-blur-sm">
         <div class="bg-white rounded-2xl shadow-2xl max-w-5xl w-full max-h-[90vh] flex flex-col overflow-hidden border-t-4 border-red-600">
             <div class="flex flex-wrap justify-between items-center px-5 py-3.5 border-b bg-gray-50 gap-3">
@@ -197,7 +203,10 @@
                 <div class="flex flex-wrap items-center gap-2">
                     <input type="text" id="inputSearchGallery" placeholder="🔍 Filtrer..." class="text-xs border rounded-lg px-3 py-1.5 w-48">
                     <button type="button" id="btnRefreshSharedGallery" class="text-xs font-bold bg-gray-200 hover:bg-gray-300 px-2.5 py-1.5 rounded-lg">🔄</button>
-                    <label class="text-xs font-bold bg-red-600 hover:bg-red-700 text-white px-3 py-1.5 rounded-lg cursor-pointer shadow-sm">☁️ Déposer sur R2<input type="file" id="inputAddGalleryImage" accept=".jpeg,.jpg,.png,.pdf,.webp,.gif,.bmp,.svg,image/*,application/pdf" multiple class="hidden"></label>
+                    <label class="text-xs font-bold bg-red-600 hover:bg-red-700 text-white px-3 py-1.5 rounded-lg cursor-pointer shadow-sm">
+                        ☁️ Déposer sur R2 (WebP auto)
+                        <input type="file" id="inputAddGalleryImage" accept=".jpeg,.jpg,.png,.pdf,.webp,.gif,.bmp,.svg,image/*,application/pdf" multiple class="hidden">
+                    </label>
                     <button type="button" id="btnCloseGalleryModal" class="text-gray-500 hover:text-red-600 font-bold text-lg px-2.5 py-1">✕</button>
                 </div>
             </div>
@@ -223,34 +232,37 @@
         <div class="bg-white rounded-2xl shadow-2xl max-w-5xl w-full max-h-[90vh] flex flex-col overflow-hidden border-t-4 border-purple-600">
             <div class="flex flex-wrap justify-between items-center px-5 py-3.5 border-b bg-gray-50 gap-3">
                 <div>
-                    <h2 class="text-sm font-extrabold text-purple-900 uppercase">🎨 Choisir un Fond d'étiquette</h2>
-                    <p class="text-[11px] text-gray-500">Appliqué en arrière-plan • Opacité 33%</p>
+                    <h2 class="text-sm font-extrabold text-purple-900 uppercase">🎨 Choisir un Fond d'étiquette (Stock Rayon)</h2>
+                    <p class="text-[11px] text-gray-500">Appliqué en arrière-plan • Opacité automatique à 33% sur chaque nouveau dépôt R2</p>
                 </div>
                 <div class="flex flex-wrap items-center gap-2">
-                    <input type="text" id="inputSearchBgGallery" placeholder="🔍 Filtrer..." class="text-xs border rounded-lg px-3 py-1.5 w-48">
+                    <input type="text" id="inputSearchBgGallery" placeholder="🔍 Filtrer un fond..." class="text-xs border rounded-lg px-3 py-1.5 w-48">
                     <button type="button" id="btnRefreshBgGallery" class="text-xs font-bold bg-gray-200 hover:bg-gray-300 px-2.5 py-1.5 rounded-lg">🔄</button>
-                    <label class="text-xs font-bold bg-purple-600 hover:bg-purple-700 text-white px-3 py-1.5 rounded-lg cursor-pointer shadow-sm">☁️ Déposer un Fond<input type="file" id="inputAddBgImage" accept=".jpeg,.jpg,.png,.pdf,.webp,.gif,.bmp,.svg,image/*,application/pdf" multiple class="hidden"></label>
+                    <label class="text-xs font-bold bg-purple-600 hover:bg-purple-700 text-white px-3 py-1.5 rounded-lg cursor-pointer shadow-sm">
+                        ☁️ Déposer un Fond sur R2 (Opacité 33% auto)
+                        <input type="file" id="inputAddBgImage" accept=".jpeg,.jpg,.png,.pdf,.webp,.gif,.bmp,.svg,image/*,application/pdf" multiple class="hidden">
+                    </label>
                     <button type="button" id="btnCloseBgModal" class="text-gray-500 hover:text-red-600 font-bold text-lg px-2.5 py-1">✕</button>
                 </div>
             </div>
             <div class="p-5 overflow-y-auto space-y-5 bg-gray-100/70 flex-1">
                 <div id="savedBgSection" class="hidden space-y-2">
-                    <h3 class="text-xs font-extrabold uppercase text-purple-900 bg-purple-100 px-2.5 py-1 rounded-md inline-block">☁️ Fonds R2 (<span id="savedBgCountBadge">0</span>)</h3>
+                    <h3 class="text-xs font-extrabold uppercase text-purple-900 bg-purple-100 px-2.5 py-1 rounded-md inline-block">☁️ Fonds déposés sur R2 (Opacité 33%) (<span id="savedBgCountBadge">0</span>)</h3>
                     <div id="savedBgGrid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3"></div>
                 </div>
                 <div class="space-y-2">
-                    <h3 class="text-xs font-extrabold uppercase text-gray-700 bg-gray-200 px-2.5 py-1 rounded-md inline-block">📁 Dossier "Fonds" (<span id="presetBgCountBadge">0</span>)</h3>
+                    <h3 class="text-xs font-extrabold uppercase text-gray-700 bg-gray-200 px-2.5 py-1 rounded-md inline-block">📁 Fonds préchargés depuis le dossier "Fonds" (<span id="presetBgCountBadge">0</span>)</h3>
                     <div id="bgGalleryGrid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3"></div>
                 </div>
             </div>
             <div class="px-5 py-3 border-t bg-white flex justify-between items-center">
-                <button type="button" id="btnClearBgSelection" class="text-xs font-bold text-red-600 hover:text-red-800 px-3 py-1.5 rounded border border-red-200">🗑️ Aucun fond</button>
+                <button type="button" id="btnClearBgSelection" class="text-xs font-bold text-red-600 hover:text-red-800 px-3 py-1.5 rounded border border-red-200">🗑️ Aucun fond (Fond blanc classique)</button>
                 <button type="button" id="btnCancelBgModal" class="text-xs font-bold bg-gray-200 hover:bg-gray-300 text-gray-800 px-4 py-1.5 rounded-lg">Fermer</button>
             </div>
         </div>
     </div>
 
-    <!-- BIBLIOTHÈQUE & AUTRES MODALES -->
+    <!-- MODALE 2 : BIBLIOTHÈQUE PARTAGÉE R2 -->
     <div id="readyDocsModal" class="fixed inset-0 bg-black/65 z-50 hidden flex items-center justify-center p-4 backdrop-blur-sm">
         <div class="bg-white rounded-2xl shadow-2xl max-w-6xl w-full max-h-[92vh] flex flex-col overflow-hidden border-t-4 border-indigo-600">
             <div class="flex flex-wrap justify-between items-center px-5 py-3.5 border-b bg-gray-50 gap-3">
@@ -265,7 +277,12 @@
                     <input type="text" id="inputSearchReadyDocs" placeholder="🔍 Rechercher..." class="text-xs border rounded-lg px-3 py-1.5 w-40">
                     <button type="button" id="btnCreateNewRootFolder" class="text-xs font-bold bg-amber-500 hover:bg-amber-600 text-white px-2.5 py-1.5 rounded-lg shadow-sm">📁+ Dossier</button>
                     <button type="button" id="btnCreateNewChildSubFolder" class="text-xs font-bold bg-orange-500 hover:bg-orange-600 text-white px-2.5 py-1.5 rounded-lg shadow-sm">📂+ Sous-dossier</button>
-                    <label class="text-xs font-bold bg-indigo-600 hover:bg-indigo-700 text-white px-3 py-1.5 rounded-lg cursor-pointer shadow-sm">☁️ Déposer ici<input type="file" id="inputUploadReadyDocs" accept=".pdf,.svg,.png,.jpg,.jpeg,.webp,.bmp,.gif,image/*,application/pdf,image/svg+xml" multiple class="hidden"></label>
+                    <button type="button" id="btnRenameCurrentFolder" class="hidden text-xs font-bold bg-blue-600 hover:bg-blue-700 text-white px-2.5 py-1.5 rounded-lg shadow-sm">✏️ Renommer dossier</button>
+                    <button type="button" id="btnDeleteCurrentFolder" class="hidden text-xs font-bold bg-red-600 hover:bg-red-700 text-white px-2.5 py-1.5 rounded-lg shadow-sm">🗑️ Suppr. dossier</button>
+                    <label class="text-xs font-bold bg-indigo-600 hover:bg-indigo-700 text-white px-3 py-1.5 rounded-lg cursor-pointer shadow-sm">
+                        ☁️ Déposer ici
+                        <input type="file" id="inputUploadReadyDocs" accept=".pdf,.svg,.png,.jpg,.jpeg,.webp,.bmp,.gif,image/*,application/pdf,image/svg+xml" multiple class="hidden">
+                    </label>
                     <button type="button" id="btnCloseReadyDocsModal" class="text-gray-500 hover:text-red-600 font-bold text-lg px-2.5 py-1">✕</button>
                 </div>
             </div>
@@ -277,6 +294,9 @@
                 <div class="flex flex-wrap items-center gap-1.5 pt-1.5 border-t border-indigo-100">
                     <span class="text-[11px] font-bold text-indigo-700">↳ Chemin actif :</span>
                     <div id="libraryBreadcrumbBar" class="flex flex-wrap items-center gap-1 text-xs font-extrabold text-indigo-900"></div>
+                    <span class="text-gray-300 mx-1">|</span>
+                    <span class="text-[11px] font-bold text-amber-800">📂 Contenu (Dossiers) :</span>
+                    <div id="libraryChildSubFoldersBar" class="flex flex-wrap items-center gap-1.5"></div>
                 </div>
             </div>
             <div class="p-5 overflow-y-auto flex-1 bg-gray-100/80 space-y-4">
@@ -286,18 +306,93 @@
                 </div>
                 <div id="readyDocsGrid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4"></div>
             </div>
+            <div class="px-5 py-3 border-t bg-white flex justify-between items-center">
+                <span id="readyDocsUploadStatus" class="text-xs font-bold text-indigo-700"></span>
+                <button type="button" id="btnCancelReadyDocsModal" class="text-xs font-bold bg-gray-200 hover:bg-gray-300 text-gray-800 px-4 py-1.5 rounded-lg">Fermer</button>
+            </div>
         </div>
     </div>
 
+    <!-- MODALE 3 : DÉPLACER / RENOMMER UN FICHIER SUR R2 -->
+    <div id="moveRenameFileModal" class="fixed inset-0 bg-black/65 z-[58] hidden flex items-center justify-center p-4 backdrop-blur-sm">
+        <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full p-5 space-y-4 border-t-4 border-blue-600">
+            <div class="flex justify-between items-center border-b pb-2.5">
+                <h3 class="text-sm font-extrabold text-gray-800 uppercase">✏️ Renommer / Déplacer dans R2</h3>
+                <button type="button" id="btnCloseMoveRenameModal" class="text-gray-400 hover:text-red-600 font-bold">✕</button>
+            </div>
+            <div class="space-y-3">
+                <div>
+                    <label class="block text-xs font-bold text-gray-700 uppercase mb-1">Nouveau nom :</label>
+                    <input type="text" id="inputMoveRenameLabel" class="w-full p-2 border rounded-lg text-xs font-bold">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-gray-700 uppercase mb-1">Bibliothèque cible :</label>
+                    <select id="selectMoveTargetTab" class="w-full p-2 border rounded-lg text-xs font-bold bg-gray-50">
+                        <option value="ready_deposited">📥 Fichiers déposés</option>
+                        <option value="ready_generated">✨ Affiches générées</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-gray-700 uppercase mb-1">Dossier / Sous-dossier :</label>
+                    <select id="selectMoveTargetSubFolder" class="w-full p-2 border rounded-lg text-xs font-bold text-blue-900 bg-blue-50"></select>
+                </div>
+                <div>
+                    <label class="block text-[11px] font-semibold text-gray-500 mb-1">Ou nouveau chemin (ex: <code class="bg-gray-100 px-1 rounded">Fêtes/Pâques</code>) :</label>
+                    <input type="text" id="inputMoveCustomSubFolder" placeholder="Optionnel : nouveau dossier/sous-dossier" class="w-full p-2 border rounded-lg text-xs">
+                </div>
+                <div>
+                    <label class="block text-xs font-extrabold text-red-700 uppercase mb-1">🔒 Code de sécurité requis :</label>
+                    <input type="password" id="inputMovePasscode" placeholder="Saisir le code administrateur" autocomplete="off" class="w-full p-2 border-2 border-red-200 rounded-lg text-xs font-bold">
+                </div>
+            </div>
+            <div class="flex justify-end gap-2 pt-2 border-t">
+                <button type="button" id="btnCancelMoveRename" class="text-xs font-bold bg-gray-200 px-4 py-2 rounded-lg">Annuler</button>
+                <button type="button" id="btnConfirmMoveRename" class="text-xs font-extrabold bg-blue-600 text-white px-4 py-2 rounded-lg shadow">✅ Valider sur R2</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODALE 4 : ENREGISTRER L'AFFICHE DANS LA BIBLIOTHÈQUE -->
+    <div id="saveDestinationModal" class="fixed inset-0 bg-black/65 z-[55] hidden flex items-center justify-center p-4 backdrop-blur-sm">
+        <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full p-5 space-y-4 border-t-4 border-indigo-600">
+            <div class="flex justify-between items-center border-b pb-2.5">
+                <h3 class="text-sm font-extrabold text-gray-800 uppercase">☁️ Enregistrer l'affiche dans la bibliothèque</h3>
+                <button type="button" id="btnCloseSaveDestModal" class="text-gray-400 hover:text-red-600 font-bold">✕</button>
+            </div>
+            <div class="space-y-3">
+                <div>
+                    <label class="block text-xs font-bold text-gray-700 uppercase mb-1">Nom de l'affiche :</label>
+                    <input type="text" id="inputSavePosterName" class="w-full p-2 border rounded-lg text-xs font-bold">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-gray-700 uppercase mb-1">Dossier / Sous-dossier :</label>
+                    <select id="selectSaveDestinationFolder" class="w-full p-2 border rounded-lg text-xs font-bold text-indigo-900 bg-indigo-50"></select>
+                </div>
+                <div>
+                    <label class="block text-[11px] font-semibold text-gray-500 mb-1">Ou nouveau dossier/sous-dossier (ex: <code class="bg-gray-100 px-1 rounded">Liquides/Vins</code>) :</label>
+                    <input type="text" id="inputNewDestFolder" placeholder="Ex: Foire aux vins/Rouges" class="w-full p-2 border rounded-lg text-xs">
+                </div>
+            </div>
+            <div class="flex justify-end gap-2 pt-2 border-t">
+                <button type="button" id="btnCancelSaveDest" class="text-xs font-bold bg-gray-200 px-4 py-2 rounded-lg">Annuler</button>
+                <button type="button" id="btnConfirmSaveDest" class="text-xs font-extrabold bg-indigo-600 text-white px-4 py-2 rounded-lg shadow">☁️ Enregistrer en WebP sur R2</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODALE 5 : GESTIONNAIRE DE POLICES R2 (2 polices de base : Copie de Museo_Slab_3 et Montserrat) -->
     <div id="fontManagerModal" class="fixed inset-0 bg-black/65 z-[55] hidden flex items-center justify-center p-4 backdrop-blur-sm">
         <div class="bg-white rounded-2xl shadow-2xl max-w-2xl w-full p-5 space-y-4 border-t-4 border-emerald-600">
             <div class="flex flex-wrap justify-between items-center border-b pb-3 gap-2">
                 <div>
-                    <h3 class="text-sm font-extrabold text-gray-800 uppercase">🔤 Gestionnaire de Polices</h3>
-                    <p class="text-[11px] text-gray-500">Police par défaut : Copie de Museo_Slab_3</p>
+                    <h3 class="text-sm font-extrabold text-gray-800 uppercase">🔤 Gestionnaire de Polices d'écriture (R2)</h3>
+                    <p class="text-[11px] text-gray-500">Police par défaut : Copie de Museo_Slab_3 • Dépose une nouvelle police sur R2 ou supprime avec code</p>
                 </div>
                 <div class="flex items-center gap-2">
-                    <label class="text-xs font-bold bg-emerald-600 hover:bg-emerald-700 text-white px-3 py-1.5 rounded-lg cursor-pointer shadow-sm">☁️ Déposer Police<input type="file" id="inputUploadFontR2" accept=".otf,.ttf,.woff,.woff2" multiple class="hidden"></label>
+                    <label class="text-xs font-bold bg-emerald-600 hover:bg-emerald-700 text-white px-3 py-1.5 rounded-lg cursor-pointer shadow-sm">
+                        ☁️ Déposer Police sur R2 (.otf / .ttf)
+                        <input type="file" id="inputUploadFontR2" accept=".otf,.ttf,.woff,.woff2" multiple class="hidden">
+                    </label>
                     <button type="button" id="btnCloseFontModal" class="text-gray-400 hover:text-red-600 font-bold text-lg px-2">✕</button>
                 </div>
             </div>
@@ -309,90 +404,21 @@
         </div>
     </div>
 
-    <!-- MODALE LIGHTBOX / APERÇU FICHIER -->
-    <div id="docLightboxModal" class="fixed inset-0 bg-black/80 z-[60] hidden flex items-center justify-center p-4 backdrop-blur-md">
-        <div class="bg-white rounded-2xl shadow-2xl max-w-4xl w-full max-h-[92vh] flex flex-col overflow-hidden border-t-4 border-indigo-600">
-            <div class="flex justify-between items-center px-5 py-3 border-b bg-gray-50">
-                <div class="flex items-center gap-2">
-                    <span id="lightboxTypeBadge" class="text-[10px] font-black uppercase px-2 py-0.5 rounded bg-indigo-600 text-white">PDF</span>
-                    <h3 id="lightboxTitle" class="text-sm font-extrabold text-gray-800 truncate max-w-md">Aperçu</h3>
-                </div>
-                <div class="flex items-center gap-2">
-                    <button type="button" id="btnPrintLightboxDoc" class="text-xs font-bold bg-emerald-600 hover:bg-emerald-700 text-white px-3 py-1.5 rounded-lg">🖨️ Imprimer</button>
-                    <button type="button" id="btnDownloadLightboxDoc" class="text-xs font-bold bg-indigo-600 hover:bg-indigo-700 text-white px-3 py-1.5 rounded-lg">⬇️ Télécharger</button>
-                    <button type="button" id="btnCloseLightboxModal" class="text-gray-400 hover:text-red-600 font-bold text-lg px-2">✕</button>
-                </div>
+    <!-- MODALE 6 : VISIONNEUSE PLEIN ÉCRAN -->
+    <div id="docLightboxModal" class="fixed inset-0 bg-black/85 z-[60] hidden flex flex-col justify-between p-4 backdrop-blur-md">
+        <div class="flex flex-wrap justify-between items-center bg-white/95 px-5 py-3 rounded-xl shadow-lg max-w-5xl w-full mx-auto gap-3">
+            <div class="flex items-center gap-2.5 min-w-0">
+                <span id="lightboxTypeBadge" class="text-[10px] font-black uppercase px-2 py-0.5 rounded bg-indigo-100 text-indigo-800">FICHIER</span>
+                <h3 id="lightboxTitle" class="text-sm font-extrabold text-gray-800 truncate">Aperçu</h3>
             </div>
-            <div class="p-4 bg-gray-900 flex-1 flex items-center justify-center overflow-auto">
-                <img id="lightboxImagePreview" class="max-w-full max-h-[75vh] object-contain rounded shadow-lg bg-white">
+            <div class="flex items-center gap-2.5">
+                <button type="button" id="btnPrintLightboxDoc" class="text-xs font-extrabold bg-emerald-600 text-white px-4 py-2 rounded-lg shadow">🖨️ Imprimer</button>
+                <button type="button" id="btnDownloadLightboxDoc" class="text-xs font-extrabold bg-indigo-600 text-white px-4 py-2 rounded-lg shadow">⬇️ Télécharger</button>
+                <button type="button" id="btnCloseLightboxModal" class="text-xs font-bold bg-gray-200 hover:bg-red-600 hover:text-white px-3 py-2 rounded-lg">✕ Fermer</button>
             </div>
         </div>
-    </div>
-
-    <!-- MODALE RENOMMER / DÉPLACER -->
-    <div id="moveRenameFileModal" class="fixed inset-0 bg-black/65 z-[70] hidden flex items-center justify-center p-4 backdrop-blur-sm">
-        <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full p-5 space-y-4 border-t-4 border-blue-600">
-            <div class="flex justify-between items-center border-b pb-2">
-                <h3 class="text-sm font-extrabold text-gray-800 uppercase">✏️ Modifier / Déplacer le fichier</h3>
-                <button type="button" id="btnCloseMoveRenameModal" class="text-gray-400 hover:text-red-600 font-bold">✕</button>
-            </div>
-            <div class="space-y-3 text-xs">
-                <div>
-                    <label class="block font-bold text-gray-700 mb-1">Nom du fichier :</label>
-                    <input type="text" id="inputMoveRenameLabel" class="w-full p-2 border rounded font-semibold">
-                </div>
-                <div>
-                    <label class="block font-bold text-gray-700 mb-1">Dossier cible (Onglet) :</label>
-                    <select id="selectMoveTargetTab" class="w-full p-2 border rounded font-bold bg-gray-50">
-                        <option value="ready_deposited">📥 Fichiers déposés</option>
-                        <option value="ready_generated">✨ Affiches générées</option>
-                    </select>
-                </div>
-                <div>
-                    <label class="block font-bold text-gray-700 mb-1">Sous-dossier :</label>
-                    <select id="selectMoveTargetSubFolder" class="w-full p-2 border rounded font-bold bg-gray-50"></select>
-                </div>
-                <div>
-                    <label class="block font-bold text-gray-700 mb-1">Ou nouveau sous-dossier (Optionnel) :</label>
-                    <input type="text" id="inputMoveCustomSubFolder" placeholder="Ex: Nouveautes/Noel" class="w-full p-2 border rounded">
-                </div>
-                <div>
-                    <label class="block font-bold text-red-600 mb-1">🔒 Code de sécurité (Bonesink124!) :</label>
-                    <input type="password" id="inputMovePasscode" placeholder="Code..." class="w-full p-2 border rounded font-bold">
-                </div>
-            </div>
-            <div class="flex justify-end gap-2 pt-2 border-t">
-                <button type="button" id="btnCancelMoveRename" class="text-xs font-bold bg-gray-200 px-4 py-2 rounded-lg">Annuler</button>
-                <button type="button" id="btnConfirmMoveRename" class="text-xs font-bold bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg">Enregistrer</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- MODALE ENREGISTRER AFFICHE VERS BIBLIOTHÈQUE -->
-    <div id="saveDestinationModal" class="fixed inset-0 bg-black/65 z-[70] hidden flex items-center justify-center p-4 backdrop-blur-sm">
-        <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full p-5 space-y-4 border-t-4 border-indigo-600">
-            <div class="flex justify-between items-center border-b pb-2">
-                <h3 class="text-sm font-extrabold text-indigo-900 uppercase">☁️ Enregistrer dans la Bibliothèque</h3>
-                <button type="button" id="btnCloseSaveDestModal" class="text-gray-400 hover:text-red-600 font-bold">✕</button>
-            </div>
-            <div class="space-y-3 text-xs">
-                <div>
-                    <label class="block font-bold text-gray-700 mb-1">Nom de l'affiche :</label>
-                    <input type="text" id="inputSavePosterName" class="w-full p-2 border rounded font-semibold">
-                </div>
-                <div>
-                    <label class="block font-bold text-gray-700 mb-1">Dossier cible (Affiches générées) :</label>
-                    <select id="selectSaveDestinationFolder" class="w-full p-2 border rounded font-bold bg-gray-50"></select>
-                </div>
-                <div>
-                    <label class="block font-bold text-gray-700 mb-1">Ou créer un nouveau dossier :</label>
-                    <input type="text" id="inputNewDestFolder" placeholder="Nom du nouveau dossier..." class="w-full p-2 border rounded">
-                </div>
-            </div>
-            <div class="flex justify-end gap-2 pt-2 border-t">
-                <button type="button" id="btnCancelSaveDest" class="text-xs font-bold bg-gray-200 px-4 py-2 rounded-lg">Annuler</button>
-                <button type="button" id="btnConfirmSaveDest" class="text-xs font-bold bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg">Enregistrer sur R2</button>
-            </div>
+        <div class="flex-1 flex items-center justify-center overflow-auto my-3 p-2">
+            <img id="lightboxImagePreview" src="" alt="Aperçu" class="max-w-full max-h-[80vh] object-contain rounded-lg shadow-2xl bg-white">
         </div>
     </div>
 
@@ -402,28 +428,22 @@
         const R2_PUBLIC_BASE_URL = 'https://pub-06317316428d44fe94ff17808d4763df.r2.dev';
         const R2_API_ENDPOINT = '/api';
         const GITHUB_REPO_API = 'https://api.github.com/repos/LeeLooVF/Super_App/contents';
+        const REQUIRED_DELETE_CODE = 'Bonesink124!';
         const MAX_LABELS_LIMIT = 50;
         const FONT_SANS = '"Montserrat", Arial, sans-serif';
         const DB_NAME = 'SuperU_PromoLabels_DB', STORE_NAME = 'saved_left_images', READY_DOCS_STORE = 'ready_created_files';
-        const ADMIN_PASSCODE = 'Bonesink124!';
 
-        window.addEventListener('DOMContentLoaded', () => {
-            const overlay = $('authOverlay');
-            if (overlay) overlay.remove();
-        });
-
+        // Liste officielle mise à jour avec toutes les mécaniques (Remises, Carte U, Lots, Prix choc...)
         const MECHANIC_PRESETS = {
             remise_20:                  { discount: '-20%', text: 'DE REMISE|IMMÉDIATE', unitLabel: 'LE PRODUIT', mode: 'pct_single' },
             remise_34:                  { discount: '-34%', text: 'DE REMISE|IMMÉDIATE', unitLabel: 'LE PRODUIT', mode: 'pct_single' },
             remise_50:                  { discount: '-50%', text: 'DE REMISE|IMMÉDIATE', unitLabel: 'LE PRODUIT', mode: 'pct_single' },
             remise_60_2eme:             { discount: '-60%', text: 'DE REMISE IMMÉDIATE|SUR LE 2ÈME PRODUIT|AU CHOIX', unitLabel: 'LE 2ÈME PRODUIT AU CHOIX', mode: 'nth_2', nthPct: 60 },
             remise_50_2eme_identique:   { discount: '-50%', text: 'DE REMISE IMMÉDIATE|SUR LE 2ÈME|PRODUIT IDENTIQUE', unitLabel: 'LE 2ÈME PRODUIT IDENTIQUE', mode: 'nth_2', nthPct: 50 },
-            
-            carte_u_68_identique:       { discount: '68%',  text: 'SUR LE 2ÈME PRODUIT|IDENTIQUE VERSÉS SUR|CARTE U', unitLabel: 'LE 2ÈME PRODUIT IDENTIQUE', mode: 'direct_lot', isCarteU: true, uStyle: 'type1' },
-            carte_u_20_verse:           { discount: '20%',  text: 'SOIT 1,60€ VERSÉS SUR|CARTE U', unitLabel: 'LE PRODUIT', mode: 'direct_lot', isCarteU: true, uStyle: 'type2' },
-            carte_u_34_verse:           { discount: '34%',  text: 'VERSÉS SUR|CARTE U', unitLabel: 'LE PRODUIT', mode: 'direct_lot', isCarteU: true, uStyle: 'type3' },
-            carte_u_20_immed:           { discount: '-20%', text: 'DE REMISE|IMMÉDIATE AVEC|CARTE U', unitLabel: 'LE PRODUIT', mode: 'pct_single', isCarteU: true, uStyle: 'type4' },
-
+            carte_u_20_immed:           { discount: '-20%', text: 'DE REMISE|IMMÉDIATE AVEC|CARTE U', unitLabel: 'LE PRODUIT', mode: 'pct_single', isCarteU: true },
+            carte_u_20_verse:           { discount: '20%',  text: 'VERSÉS SUR|CARTE U', unitLabel: 'LE PRODUIT', mode: 'direct_lot', isCarteU: true },
+            carte_u_34_verse:           { discount: '34%',  text: 'VERSÉS SUR|CARTE U', unitLabel: 'LE PRODUIT', mode: 'direct_lot', isCarteU: true },
+            carte_u_68_identique:       { discount: '68%',  text: 'SUR LE 2ÈME PRODUIT|IDENTIQUE VERSÉS SUR|CARTE U', unitLabel: 'LE 2ÈME PRODUIT IDENTIQUE', mode: 'direct_lot', isCarteU: true },
             remise_2_euros:             { discount: '-2€',  text: 'DE REMISE|IMMÉDIATE', unitLabel: 'LE PRODUIT', mode: 'euro_single' },
             prix_coutant:               { discount: 'PRIX', text: 'COÛTANT', unitLabel: 'LE PRODUIT', mode: 'direct_lot' },
             prix_bas:                   { discount: 'PRIX', text: 'BAS', unitLabel: 'LE PRODUIT', mode: 'direct_lot' },
@@ -453,6 +473,7 @@
         let rawGithubLeftItems = [], rawGithubA4Items = [], rawGithubBgItems = [];
         let dynamicPresets4PerPage = [], dynamicPresetsA4Portrait = [], dynamicPresetsBackgrounds = [];
 
+        // Police par défaut : Copie de Museo_Slab_3
         let activeFontFamilyName = 'Copie de Museo_Slab_3';
         let availableFontsList = [
             { id: 'default_museo_3', name: 'Copie de Museo_Slab_3', isSystem: true },
@@ -464,6 +485,7 @@
         const ensureWebpFileName = f => `${(f || 'image').replace(/\.[^.]+$/, '')}.webp`;
         const readFileAsDataURL = file => new Promise(res => { const r = new FileReader(); r.onload = e => res(e.target.result); r.readAsDataURL(file); });
 
+        // Cache préchargé pour l'image CARTE_U.png
         let carteUImageObj = null;
         async function loadCarteUImage() {
             if (carteUImageObj) return carteUImageObj;
@@ -472,7 +494,11 @@
                 try {
                     const img = new Image();
                     if (window.location.protocol !== 'file:') img.crossOrigin = 'anonymous';
-                    await new Promise((res, rej) => { img.onload = res; img.onerror = rej; img.src = url; });
+                    await new Promise((res, rej) => {
+                        img.onload = res;
+                        img.onerror = rej;
+                        img.src = url;
+                    });
                     carteUImageObj = img;
                     return img;
                 } catch (e) {}
@@ -550,7 +576,12 @@
             });
             renderAllPosters();
         };
-        $('btnClearAllPosters').onclick = () => { postersList = []; $('ocrStatus').classList.add('hidden'); renderAllPosters(); };
+        $('btnClearAllPosters').onclick = () => {
+            postersList = [];
+            $('ocrStatus').classList.add('hidden');
+            renderAllPosters();
+        };
+
         $('btnToggleServiceStatus').onclick = e => { e.stopPropagation(); $('serviceStatusPopover').classList.toggle('hidden'); };
         $('btnCloseServicePopover').onclick = () => $('serviceStatusPopover').classList.add('hidden');
         document.addEventListener('click', e => { if (!e.target.closest('#serviceStatusPopover') && !e.target.closest('#btnToggleServiceStatus')) $('serviceStatusPopover').classList.add('hidden'); });
@@ -558,7 +589,7 @@
         function askDeletePasscode(desc = 'effectuer cette action') {
             const code = prompt(`🔒 Sécurité : Entre le code administrateur pour ${desc} :`);
             if (code === null) return null;
-            if (code !== ADMIN_PASSCODE) { alert("❌ Code incorrect ! Opération annulée."); return null; }
+            if (code !== REQUIRED_DELETE_CODE) { alert("❌ Code incorrect ! Opération annulée."); return null; }
             return code;
         }
 
@@ -569,10 +600,13 @@
 
         function canvasTo33PercentOpacityWebP(sourceCanvas, q = 0.88) {
             const c = document.createElement('canvas');
-            c.width = sourceCanvas.width; c.height = sourceCanvas.height;
+            c.width = sourceCanvas.width;
+            c.height = sourceCanvas.height;
             const ctx = c.getContext('2d');
-            ctx.fillStyle = '#FFFFFF'; ctx.fillRect(0, 0, c.width, c.height);
-            ctx.globalAlpha = 0.33; ctx.drawImage(sourceCanvas, 0, 0);
+            ctx.fillStyle = '#FFFFFF';
+            ctx.fillRect(0, 0, c.width, c.height);
+            ctx.globalAlpha = 0.33;
+            ctx.drawImage(sourceCanvas, 0, 0);
             ctx.globalAlpha = 1.0;
             return canvasToWebPDataUrl(c, q);
         }
@@ -609,6 +643,11 @@
             return Array.from(out).sort((a, b) => a === 'Général' ? -1 : (b === 'Général' ? 1 : a.localeCompare(b)));
         }
 
+        function getDirectSubFoldersOf(parentPath, allPaths) {
+            if (parentPath === 'Général') return allPaths.filter(p => p !== 'Général' && !p.includes('/'));
+            return allPaths.filter(p => p.startsWith(parentPath + '/') && !p.slice(parentPath.length + 1).includes('/'));
+        }
+
         function filterAndSortStaticPresets() {
             const sortPB = list => list.filter(it => !deletedStaticFiles.includes(it.file)).sort((a, b) => {
                 const aPB = /prix[\s_]*bas/i.test(a.label) ? -1 : 0, bPB = /prix[\s_]*bas/i.test(b.label) ? -1 : 0;
@@ -632,7 +671,9 @@
                 } catch (e) { return []; }
             };
             [rawGithubLeftItems, rawGithubA4Items, rawGithubBgItems] = await Promise.all([
-                loadGH('Images Gauche'), loadGH('Images A4'), loadGH('Fonds')
+                loadGH('Images Gauche'),
+                loadGH('Images A4'),
+                loadGH('Fonds')
             ]);
             filterAndSortStaticPresets();
         }
@@ -640,6 +681,9 @@
         const getActivePresetList = () => isA4PortraitMode ? dynamicPresetsA4Portrait : dynamicPresets4PerPage;
         const getCandidateUrls = preset => { const u = safeFileUrl(preset.file); return [u, `${R2_PUBLIC_BASE_URL}/${u}`]; };
 
+        // ============================================================================
+        // BASE DE DONNÉES LOCALE & SYNCHRONISATION R2
+        // ============================================================================
         function openImageDB() {
             return new Promise((res, rej) => {
                 const req = indexedDB.open(DB_NAME, 2);
@@ -847,6 +891,9 @@
             renderReadyDocsGrid($('inputSearchReadyDocs')?.value || '');
         }
 
+        // ============================================================================
+        // GESTIONNAIRE DE POLICES & DÉPLACER/RENOMMER R2
+        // ============================================================================
         function populateMoveTargetSubFolders(tabKey, selectedSub) {
             const sel = $('selectMoveTargetSubFolder'); sel.innerHTML = '';
             (customSubFolders[tabKey] || ['Général']).forEach(f => {
@@ -863,7 +910,7 @@
         $('btnConfirmMoveRename').onclick = async function() {
             if (!pendingMoveRenameDoc) return;
             const code = $('inputMovePasscode').value;
-            if (code !== ADMIN_PASSCODE) return alert("❌ Code de sécurité incorrect !");
+            if (code !== REQUIRED_DELETE_CODE) return alert("❌ Code de sécurité incorrect !");
             const newLabel = $('inputMoveRenameLabel').value.trim() || pendingMoveRenameDoc.name;
             const newTab = $('selectMoveTargetTab').value;
             const typedCustom = $('inputMoveCustomSubFolder').value.trim();
@@ -917,7 +964,8 @@
                     const buf = await file.arrayBuffer();
                     for (const w of ['500', '700', '900']) {
                         const ff = new FontFace(cleanName, buf.slice(0), { weight: w, style: 'normal' });
-                        await ff.load(); document.fonts.add(ff);
+                        await ff.load();
+                        document.fonts.add(ff);
                     }
                 } catch (err) {}
                 const dataUrl = await readFileAsDataURL(file);
@@ -930,6 +978,9 @@
             renderFontManagerList(); renderAllPosters(); this.value = '';
         };
 
+        // ============================================================================
+        // BIBLIOTHÈQUE R2 : ONGLETS, ARBORESCENCE GÉNÉRAL & GRILLE
+        // ============================================================================
         function setLibraryActiveTab(tab) {
             activeLibraryTab = tab; activeLibrarySubFolder = 'Général';
             $('btnTabDeposited').className = tab === 'ready_deposited' ? 'text-xs font-extrabold px-3.5 py-1.5 rounded-lg bg-indigo-600 text-white shadow' : 'text-xs font-extrabold px-3.5 py-1.5 rounded-lg text-gray-700';
@@ -982,6 +1033,25 @@
                     addCrumb(p, acc, idx === parts.length - 1);
                 });
             }
+
+            const childBar = $('libraryChildSubFoldersBar'); childBar.innerHTML = '';
+            const directChildren = getDirectSubFoldersOf(activeLibrarySubFolder, allPaths);
+            if (!directChildren.length) {
+                childBar.innerHTML = `<span class="text-[11px] text-gray-400 italic">Aucun sous-dossier</span>`;
+            } else {
+                directChildren.forEach(cPath => {
+                    const cName = cPath.split('/').pop();
+                    const w = document.createElement('div');
+                    w.className = 'inline-flex items-center rounded-lg border border-amber-300 bg-amber-50 text-amber-900 overflow-hidden shadow-sm';
+                    w.innerHTML = `<button type="button" class="btn-open text-xs font-extrabold px-2.5 py-0.5">📂 ${cName}</button><button type="button" class="btn-ed text-[10px] px-1.5 py-0.5 border-l border-amber-200 hover:bg-blue-600 hover:text-white">✏️</button><button type="button" class="btn-dl text-[10px] font-black px-1.5 py-0.5 border-l border-amber-200 hover:bg-red-600 hover:text-white">✕</button>`;
+                    w.querySelector('.btn-open').onclick = () => { activeLibrarySubFolder = cPath; renderLibraryFoldersHierarchy(); renderReadyDocsGrid($('inputSearchReadyDocs').value); };
+                    w.querySelector('.btn-ed').onclick = e => { e.stopPropagation(); renameOrMoveFolderWithPassword(activeLibraryTab, cPath); };
+                    w.querySelector('.btn-dl').onclick = e => { e.stopPropagation(); deleteFolderAndSubfoldersWithPassword(activeLibraryTab, cPath); };
+                    childBar.appendChild(w);
+                });
+            }
+            $('btnDeleteCurrentFolder').classList.toggle('hidden', activeLibrarySubFolder === 'Général');
+            $('btnRenameCurrentFolder').classList.toggle('hidden', activeLibrarySubFolder === 'Général');
         }
 
         $('btnCreateNewRootFolder').onclick = async () => {
@@ -997,8 +1067,10 @@
             activeLibrarySubFolder = activeLibrarySubFolder === 'Général' ? c : `${activeLibrarySubFolder}/${c}`;
             await createSubFolderOnR2(activeLibraryTab, activeLibrarySubFolder);
         };
+        $('btnRenameCurrentFolder').onclick = () => renameOrMoveFolderWithPassword(activeLibraryTab, activeLibrarySubFolder);
+        $('btnDeleteCurrentFolder').onclick = () => deleteFolderAndSubfoldersWithPassword(activeLibraryTab, activeLibrarySubFolder);
         $('btnOpenReadyDocsModal').onclick = () => { $('inputSearchReadyDocs').value = ''; syncAllFromR2(); $('readyDocsModal').classList.remove('hidden'); };
-        $('btnCloseReadyDocsModal').onclick = () => $('readyDocsModal').classList.add('hidden');
+        $('btnCloseReadyDocsModal').onclick = $('btnCancelReadyDocsModal').onclick = () => $('readyDocsModal').classList.add('hidden');
         $('inputSearchReadyDocs').oninput = function() { renderReadyDocsGrid(this.value); };
 
         $('inputUploadReadyDocs').onchange = async function(e) {
@@ -1027,9 +1099,33 @@
         function renderReadyDocsGrid(filterText = '') {
             const q = filterText.trim().toLowerCase();
             const sourceList = activeLibraryTab === 'ready_deposited' ? readyDepositedDocs : readyGeneratedDocs;
+            const allPaths = customSubFolders[activeLibraryTab] || ['Général'];
+            const directSubFolders = getDirectSubFoldersOf(activeLibrarySubFolder, allPaths).filter(p => !q || p.split('/').pop().toLowerCase().includes(q));
             const filteredDocs = sourceList.filter(doc => normalizeFolderPath(doc.subFolder) === activeLibrarySubFolder && (!q || (doc.name || '').toLowerCase().includes(q)));
+
             const grid = $('readyDocsGrid'); grid.innerHTML = '';
-            $('readyDocsEmptyState').classList.toggle('hidden', filteredDocs.length > 0);
+            $('readyDocsEmptyState').classList.toggle('hidden', directSubFolders.length > 0 || filteredDocs.length > 0);
+
+            directSubFolders.forEach(subFullPath => {
+                const subName = subFullPath.split('/').pop();
+                const fCount = sourceList.filter(d => { const s = normalizeFolderPath(d.subFolder); return s === subFullPath || s.startsWith(subFullPath + '/'); }).length;
+                const sCount = getDirectSubFoldersOf(subFullPath, allPaths).length;
+                const card = document.createElement('div');
+                card.className = 'relative bg-amber-50/80 border-2 border-amber-300 hover:border-amber-600 rounded-xl p-3 flex flex-col justify-between gap-2 shadow-sm cursor-pointer group';
+                card.innerHTML = `
+                    <div class="flex justify-between items-center">
+                        <span class="text-[10px] font-black uppercase px-2 py-0.5 rounded bg-amber-500 text-white">DOSSIER</span>
+                        <div class="flex gap-1"><button type="button" class="btn-ed text-xs px-1 hover:text-blue-600">✏️</button><button type="button" class="btn-dl text-xs px-1 hover:text-red-600">✕</button></div>
+                    </div>
+                    <div class="w-full h-36 bg-white/80 rounded-lg flex flex-col items-center justify-center border border-amber-200"><span class="text-5xl mb-1">📂</span><span class="text-[11px] font-bold text-amber-800">${sCount ? `${sCount} sous-dossier(s) • ` : ''}${fCount} fichier(s)</span></div>
+                    <p class="text-xs font-extrabold text-amber-950 truncate text-center">${subName}</p>`;
+                card.onclick = e => {
+                    if (e.target.closest('.btn-ed')) { e.stopPropagation(); return renameOrMoveFolderWithPassword(activeLibraryTab, subFullPath); }
+                    if (e.target.closest('.btn-dl')) { e.stopPropagation(); return deleteFolderAndSubfoldersWithPassword(activeLibraryTab, subFullPath); }
+                    activeLibrarySubFolder = subFullPath; renderLibraryFoldersHierarchy(); renderReadyDocsGrid($('inputSearchReadyDocs').value);
+                };
+                grid.appendChild(card);
+            });
 
             filteredDocs.forEach(doc => {
                 const badgeColor = doc.fileType === 'PDF' ? 'bg-red-600 text-white' : (doc.fileType === 'SVG' ? 'bg-amber-500 text-white' : 'bg-indigo-600 text-white');
@@ -1096,13 +1192,13 @@
         $('btnDownloadLightboxDoc').onclick = () => currentLightboxDoc && downloadReadyDocument(currentLightboxDoc);
 
         // ============================================================================
-        // BOUTONS DE CONFIGURATION, GALERIE VISUELLE & GALERIE DES FONDS
+        // BOUTONS DE CONFIGURATION, GALERIE VISUELLE & GALERIE DES FONDS (STOCK RAYON)
         // ============================================================================
         $('btnToggleAlcohol18').onclick = () => {
             showAlcoholGlobal = !showAlcoholGlobal;
             $('btnToggleAlcohol18').className = showAlcoholGlobal
-                ? 'text-[11px] font-extrabold px-3 py-1.5 rounded-lg border-2 border-orange-600 bg-orange-600 text-white flex items-center gap-1.5 shadow-sm shrink-0'
-                : 'text-[11px] font-extrabold px-3 py-1.5 rounded-lg border-2 border-orange-300 bg-orange-50 text-orange-800 hover:bg-orange-100 flex items-center gap-1.5 shadow-sm shrink-0';
+                ? 'text-[11px] font-extrabold px-3 py-1.5 rounded-lg border-2 border-orange-600 bg-orange-600 text-white flex items-center gap-1 shadow-sm shrink-0'
+                : 'text-[11px] font-extrabold px-3 py-1.5 rounded-lg border-2 border-orange-300 bg-orange-50 text-orange-800 hover:bg-orange-100 flex items-center gap-1 shadow-sm shrink-0';
             $('alcoholBtnLabel').textContent = 'Alcool';
             renderAllPosters();
         };
@@ -1117,13 +1213,13 @@
         $('btnToggleA4Mode').onclick = function() {
             isA4PortraitMode = !isA4PortraitMode;
             this.className = isA4PortraitMode
-                ? 'text-[11px] font-extrabold px-3 py-1.5 rounded-lg border-2 border-red-600 bg-red-600 text-white flex items-center gap-1.5 shadow-sm shrink-0'
-                : 'text-[11px] font-extrabold px-3 py-1.5 rounded-lg border-2 border-gray-800 bg-white text-gray-800 hover:bg-gray-800 hover:text-white transition flex items-center gap-1.5 shadow-sm shrink-0';
+                ? 'text-[11px] font-extrabold px-2.5 py-1 rounded-lg border-2 border-red-600 bg-red-600 text-white flex items-center gap-1 shadow-sm shrink-0'
+                : 'text-[11px] font-extrabold px-2.5 py-1 rounded-lg border-2 border-gray-800 bg-white text-gray-800 flex items-center gap-1 shadow-sm shrink-0';
             this.innerHTML = isA4PortraitMode
-                ? '<span>Mode : A4 Portrait</span><span class="bg-white text-red-600 text-[10px] px-1.5 py-0.5 rounded">Basculer Stock Rayon</span>'
-                : '<span>Mode : Stock Rayon</span><span class="bg-red-600 text-white text-[10px] px-1.5 py-0.5 rounded">Basculer A4 Portrait</span>';
+                ? '<span>📄 Mode : A4 Portrait</span><span class="bg-white text-red-600 text-[10px] px-1.5 py-0.5 rounded">Basculer Stock Rayon</span>'
+                : '<span>📐 Mode : Stock Rayon</span><span class="bg-red-600 text-white text-[10px] px-1.5 py-0.5 rounded">Basculer A4 Portrait</span>';
             $('btnDownloadLabel').textContent = isA4PortraitMode ? '📄 TÉLÉCHARGER LE PDF (A4 PORTRAIT)' : '📄 TÉLÉCHARGER LE PDF (STOCK RAYON)';
-            $('labelZoneImage').textContent = isA4PortraitMode ? '🖼️ IMAGE HAUT (A4)' : '🖼️ IMAGE';
+            $('labelZoneImage').textContent = isA4PortraitMode ? '🖼️ 2. IMAGE HAUT (DOSSIER IMAGES A4)' : '🖼️ 2. IMAGE GAUCHE';
             $('globalGalleryLabel').textContent = `🖼️ ${isA4PortraitMode ? (labelImageA4 || 'Choisir visuel A4') : (labelImage4 || 'Choisir visuel')}`;
             $('btnOpenBgModal').classList.toggle('hidden', isA4PortraitMode);
             buildVisualGallery(); renderAllPosters();
@@ -1165,7 +1261,8 @@
                 if (showMechanic) {
                     if (!it.detectedPromo) {
                         it.detectedPromo = {
-                            active: true, isGlobalSync: true,
+                            active: true,
+                            isGlobalSync: true,
                             presetKey: $('selectMechanicPreset').value,
                             discount: $('inputDiscount').value.trim(),
                             text: $('inputDiscountText').value.trim(),
@@ -1196,13 +1293,18 @@
         };
         $('chkShowContenance').onchange = $('chkAutoTrim').onchange = renderAllPosters;
 
+        // ============================================================================
+        // GESTION DES FONDS D'ARRIÈRE-PLAN
+        // ============================================================================
         function applyBackgroundVisual(dataUrl, labelName, isR2Baked33 = false) {
             const img = new Image();
             if (window.location.protocol !== 'file:') img.crossOrigin = 'anonymous';
             img.onload = () => {
-                activeBgStockImg = img; activeBgStockLabel = labelName; activeBgStockIsR2 = isR2Baked33;
+                activeBgStockImg = img;
+                activeBgStockLabel = labelName;
+                activeBgStockIsR2 = isR2Baked33;
                 $('bgBtnLabel').textContent = `🎨 Fond : ${labelName}`;
-                $('btnOpenBgModal').className = 'text-[11px] font-extrabold px-3 py-1.5 rounded-lg border-2 border-purple-600 bg-purple-600 text-white transition flex items-center gap-1.5 shadow-sm shrink-0';
+                $('btnOpenBgModal').className = 'text-[11px] font-extrabold px-2.5 py-1 rounded-lg border-2 border-purple-600 bg-purple-600 text-white transition flex items-center gap-1 shadow-sm shrink-0';
                 $('bgGalleryModal').classList.add('hidden');
                 renderAllPosters();
             };
@@ -1245,7 +1347,7 @@
             filteredPresets.forEach(preset => {
                 const candidates = getCandidateUrls(preset);
                 const card = document.createElement('div');
-                card.className = 'relative bg-white border-2 border-purple-300 hover:border-purple-600 rounded-xl p-2 flex flex-col items-center gap-1.5 shadow-sm cursor-pointer group';
+                card.className = 'relative bg-white border-2 border-gray-200 hover:border-purple-600 rounded-xl p-2 flex flex-col items-center gap-1.5 shadow-sm cursor-pointer group';
                 card.innerHTML = `<button type="button" class="btn-del absolute top-1 right-1 bg-red-600 text-white text-[10px] font-bold w-5 h-5 rounded-full opacity-0 group-hover:opacity-90">✕</button><div class="w-full h-24 bg-gray-50 rounded-lg flex items-center justify-center overflow-hidden border border-gray-100"><img class="w-full h-full object-cover"></div><span class="text-[11px] font-extrabold text-gray-800 uppercase truncate w-full text-center">${preset.label}</span>`;
                 const img = card.querySelector('img'); let t = 0;
                 img.onerror = () => { t++; if (t < candidates.length) img.src = candidates[t]; else card.remove(); };
@@ -1262,9 +1364,11 @@
         $('btnRefreshBgGallery').onclick = async () => { await discoverFolderImagesAutomatically(); await syncAllFromR2(); buildBgGallery($('inputSearchBgGallery')?.value || ''); };
 
         $('btnClearBgSelection').onclick = () => {
-            activeBgStockImg = null; activeBgStockLabel = 'Aucun'; activeBgStockIsR2 = false;
+            activeBgStockImg = null;
+            activeBgStockLabel = 'Aucun';
+            activeBgStockIsR2 = false;
             $('bgBtnLabel').textContent = '🎨 Fond : Aucun';
-            $('btnOpenBgModal').className = 'text-[11px] font-extrabold px-3 py-1.5 rounded-lg border-2 border-purple-300 bg-purple-50 text-purple-900 hover:bg-purple-100 transition flex items-center gap-1.5 shadow-sm shrink-0';
+            $('btnOpenBgModal').className = 'text-[11px] font-extrabold px-2.5 py-1 rounded-lg border-2 border-purple-300 bg-purple-50 text-purple-900 hover:bg-purple-100 transition flex items-center gap-1 shadow-sm shrink-0';
             $('bgGalleryModal').classList.add('hidden');
             renderAllPosters();
         };
@@ -1316,7 +1420,13 @@
                         const tc = await page.getTextContent();
                         textItems = tc.items.map(it => {
                             const tx = pdfjsLib.Util.transform(vp.transform, it.transform);
-                            return { str: it.str.trim(), x: tx[4], y: tx[5], rx: tx[4] / vp.width, ry: tx[5] / vp.height };
+                            return {
+                                str: it.str.trim(),
+                                x: tx[4],
+                                y: tx[5],
+                                rx: tx[4] / vp.width,
+                                ry: tx[5] / vp.height
+                            };
                         }).filter(it => it.str.length > 0);
                     } catch (e) {}
 
@@ -1433,63 +1543,514 @@
             imgA4.src = getCandidateUrls(dA4)[0];
         }
 
-        async function drawPromoCircle(ctx, circleX, circleY, radius, discountStr, rawDiscText, isA4, presetKey = '') {
+        // ============================================================================
+        // EXTRACTION PDF ETIQ-25 & IA GEMINI
+        // ============================================================================
+        function isValidEAN13Checksum(c) {
+            if (!/^\d{13}$/.test(c)) return false;
+            let s = 0; for (let i = 0; i < 12; i++) s += parseInt(c[i], 10) * (i % 2 === 0 ? 1 : 3);
+            return ((10 - (s % 10)) % 10) === parseInt(c[12], 10);
+        }
+
+        function parsePriceFromZoneItems(zoneItems) {
+            if (!zoneItems || !zoneItems.length) return null;
+            const sorted = [...zoneItems].sort((a, b) => a.x - b.x);
+            const joined = sorted.map(it => it.str).join('').replace(/\s+/g, '');
+            const m = joined.match(/(\d{1,4})[.,](\d{1,2})/);
+            if (m) {
+                const euros = m[1];
+                const cents = m[2].length === 1 ? m[2] + '0' : m[2].slice(0, 2);
+                const val = parseFloat(`${euros}.${cents}`);
+                if (val > 0 && val < 9999) return val;
+            }
+            return null;
+        }
+
+        async function readBigRightBoxPrice(pageCanvas, yTop, yBottom, ocrWorker) {
+            const w = pageCanvas.width, h = pageCanvas.height;
+            const sx = Math.floor(w * 0.48);
+            const sy = Math.max(0, Math.floor(yTop));
+            const sw = Math.floor(w * 0.47);
+            const sh = Math.min(h - sy, Math.floor((yBottom - yTop) * 0.85));
+            if (sw <= 10 || sh <= 10) return null;
+
+            const crop = document.createElement('canvas');
+            crop.width = sw; crop.height = sh;
+            const ctx = crop.getContext('2d');
+            ctx.fillStyle = '#FFFFFF';
+            ctx.fillRect(0, 0, sw, sh);
+            ctx.drawImage(pageCanvas, sx, sy, sw, sh, 0, 0, sw, sh);
+
+            try {
+                const { data } = await ocrWorker.recognize(crop.toDataURL('image/png'));
+                const clean = (data.text || '').replace(/[OQoD]/g, '0').replace(/[Il|!]/g, '1').replace(/[Ss]/g, '5');
+                const m = clean.match(/(\d{1,3})\s*[.,]\s*(\d{2})/) || clean.match(/(\d{1,2})\s+(\d{2})\b/);
+                if (m) {
+                    const val = parseFloat(`${m[1]}.${m[2]}`);
+                    if (val > 0 && val < 999) return val;
+                }
+            } catch (e) {}
+            return null;
+        }
+
+        async function extractEtiq25BandsFromPage(pageObj, getOcrWorker) {
+            const { canvas, textItems } = pageObj;
+            if (!textItems || textItems.length < 4) return null;
+
+            const eanAnchors = textItems
+                .filter(it => /^\d{13}$/.test(it.str.replace(/\s+/g, '')) && it.rx < 0.45)
+                .sort((a, b) => a.y - b.y);
+
+            if (eanAnchors.length === 0 || eanAnchors.length > 5) return null;
+            const hasHorizontalDuplicates = eanAnchors.some((a, i) => i > 0 && Math.abs(a.y - eanAnchors[i - 1].y) < 25);
+            if (hasHorizontalDuplicates) return null;
+
+            const results = [];
+            const worker = await getOcrWorker();
+
+            for (let i = 0; i < eanAnchors.length; i++) {
+                const eanItem = eanAnchors[i];
+                const gencode = eanItem.str.replace(/\s+/g, '');
+
+                const yBottom = eanItem.y + (canvas.height * 0.025);
+                const yTop = i === 0
+                    ? Math.max(0, eanItem.y - (canvas.height * 0.25))
+                    : (eanAnchors[i - 1].y + (canvas.height * 0.02));
+
+                const bandItems = textItems.filter(it =>
+                    it.y >= yTop &&
+                    it.y <= yBottom &&
+                    !/^(Fichier\s*portable|0000000|Etiquettes$|Etiq-\d+|\d+\s*étiquettes|\.{4,})/i.test(it.str)
+                );
+
+                const titleCandidates = bandItems
+                    .filter(it => it.y < eanItem.y - (canvas.height * 0.06) && it.rx < 0.65 && /[A-ZÀ-Ý]{2,}/.test(it.str) && !/^(Prix|kg|l|pi[eè]ce|cont)/i.test(it.str))
+                    .sort((a, b) => (Math.abs(a.y - b.y) > 8 ? a.y - b.y : a.x - b.x));
+
+                let productName = 'PRODUIT';
+                if (titleCandidates.length > 0) {
+                    const firstY = titleCandidates[0].y;
+                    const sameLineTitle = titleCandidates.filter(it => Math.abs(it.y - firstY) < 12).sort((a, b) => a.x - b.x);
+                    productName = sameLineTitle.map(it => it.str).join(' ').replace(/\s+/g, ' ').trim().toUpperCase();
+                }
+
+                let unitType = 'kg';
+                const unitLabelItem = bandItems.find(it => /^(kg|l|pi[eè]ce)$/i.test(it.str) && it.rx < 0.20);
+                if (unitLabelItem) {
+                    const u = unitLabelItem.str.toLowerCase();
+                    unitType = u.startsWith('pi') ? 'pièce' : u;
+                }
+                const unitPriceZone = bandItems.filter(it =>
+                    it.rx >= 0.11 && it.rx <= 0.24 &&
+                    it.y >= eanItem.y - (canvas.height * 0.075) &&
+                    it.y <= eanItem.y - (canvas.height * 0.015)
+                );
+                let baseUnitPrice = parsePriceFromZoneItems(unitPriceZone) || 0;
+
+                let contenanceText = '';
+                let contQtyKgOrL = 0;
+                const contZone = bandItems
+                    .filter(it => it.rx >= 0.20 && it.rx <= 0.37 && it.y >= eanItem.y - (canvas.height * 0.075) && it.y <= eanItem.y - (canvas.height * 0.015))
+                    .sort((a, b) => a.x - b.x)
+                    .map(it => it.str)
+                    .join(' ');
+                const contMatch = contZone.match(/(\d+[.,]\d+)\s*(kg|l|g|ml|cl|pi[eè]ce)/i);
+                if (contMatch) {
+                    const val = parseFloat(contMatch[1].replace(',', '.'));
+                    const u = contMatch[2].toLowerCase();
+                    contQtyKgOrL = val;
+                    if (u === 'kg') contenanceText = val < 1 ? `${Math.round(val * 1000)} g` : `${val.toString().replace('.', ',')} kg`;
+                    else if (u === 'l') contenanceText = val < 1 ? `${Math.round(val * 1000)} ml` : `${val.toString().replace('.', ',')} L`;
+                    else contenanceText = `${val} ${u}`;
+                }
+
+                const crossedZone = bandItems.filter(it =>
+                    it.rx >= 0.36 && it.rx <= 0.53 &&
+                    it.y >= eanItem.y - (canvas.height * 0.095) &&
+                    it.y <= eanItem.y - (canvas.height * 0.01)
+                );
+                let crossedPrice = parsePriceFromZoneItems(crossedZone);
+
+                let mainPrice = await readBigRightBoxPrice(canvas, yTop, yBottom, worker);
+                const computedFromUnit = (baseUnitPrice > 0 && contQtyKgOrL > 0)
+                    ? Math.round(baseUnitPrice * contQtyKgOrL * 100) / 100
+                    : null;
+
+                if (computedFromUnit && computedFromUnit > 0) {
+                    if (!mainPrice || Math.abs(mainPrice - computedFromUnit) > 0.05) {
+                        mainPrice = computedFromUnit;
+                    }
+                }
+                if (!mainPrice) mainPrice = crossedPrice || baseUnitPrice || 1.99;
+
+                if (crossedPrice && crossedPrice <= mainPrice + 0.005) {
+                    crossedPrice = null;
+                }
+
+                let autoDetectedPromo = null;
+                if (crossedPrice && crossedPrice > mainPrice) {
+                    const pct = Math.max(1, Math.round(((crossedPrice - mainPrice) / crossedPrice) * 100));
+                    autoDetectedPromo = {
+                        active: true,
+                        isGlobalSync: false,
+                        presetKey: $('selectMechanicPreset').value || 'remise_34',
+                        discount: `-${pct}%`,
+                        text: $('inputDiscountText').value.trim() || 'DE REMISE|IMMÉDIATE',
+                        unitLabel: $('inputUnitLabel').value.trim() || 'LE PRODUIT'
+                    };
+                } else if (showMechanic) {
+                    autoDetectedPromo = {
+                        active: true,
+                        isGlobalSync: true,
+                        presetKey: $('selectMechanicPreset').value,
+                        discount: $('inputDiscount').value.trim(),
+                        text: $('inputDiscountText').value.trim(),
+                        unitLabel: $('inputUnitLabel').value.trim()
+                    };
+                }
+
+                results.push({
+                    productName,
+                    oldPrice: mainPrice,
+                    crossedPrice: crossedPrice,
+                    baseUnitPrice: baseUnitPrice || mainPrice,
+                    unitQty: contQtyKgOrL || 1,
+                    unitType,
+                    contenanceText,
+                    gencode,
+                    useCustomLeftImage: false,
+                    customRawImg: null,
+                    customTrimmedImg: null,
+                    customImageLabel: '',
+                    showAlcohol18: null,
+                    detectedPromo: autoDetectedPromo
+                });
+            }
+
+            return results.length > 0 ? results : null;
+        }
+
+        async function extractPageWithGemini(pageCanvas) {
+            const maxDim = 1400; let outCanvas = pageCanvas;
+            if (pageCanvas.width > maxDim || pageCanvas.height > maxDim) {
+                const s = Math.min(maxDim / pageCanvas.width, maxDim / pageCanvas.height);
+                outCanvas = document.createElement('canvas'); outCanvas.width = Math.round(pageCanvas.width * s); outCanvas.height = Math.round(pageCanvas.height * s);
+                outCanvas.getContext('2d').drawImage(pageCanvas, 0, 0, outCanvas.width, outCanvas.height);
+            }
+            const imageDataUrl = outCanvas.toDataURL('image/jpeg', 0.82);
+            let storedKey = localStorage.getItem('superu_gemini_api_key') || '';
+
+            const callApi = async k => {
+                const res = await fetch(R2_API_ENDPOINT, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ action: 'extract_labels_gemini', imageDataUrl, apiKey: k })
+                });
+                const rawTxt = await res.text();
+                try { return JSON.parse(rawTxt); }
+                catch (e) { throw new Error(`Délai serveur dépassé (${res.status}). Réessaie.`); }
+            };
+
+            let json = await callApi(storedKey);
+            if (!json.ok && json.error === 'MISSING_API_KEY') {
+                const uKey = prompt("✨ Colle ta clé API Gemini (AIzaSy... ou AQ...) :");
+                if (uKey?.trim()) { storedKey = uKey.trim(); localStorage.setItem('superu_gemini_api_key', storedKey); json = await callApi(storedKey); }
+            }
+            if (json?.ok && Array.isArray(json.labels)) {
+                return json.labels.map(lbl => {
+                    const uType = ['kg', 'l', 'pièce'].includes((lbl.unitType || '').toLowerCase()) ? lbl.unitType.toLowerCase() : 'pièce';
+                    const rawOld = Number(lbl.oldPrice) > 0 ? Number(lbl.oldPrice) : 1.99;
+                    const rawPromo = (lbl.promoMainPrice && Number(lbl.promoMainPrice) > 0) ? Number(lbl.promoMainPrice) : null;
+
+                    let mainRedPrice = rawOld, crossedOldPrice = null;
+                    if (rawPromo && Math.abs(rawOld - rawPromo) > 0.005) {
+                        mainRedPrice = Math.min(rawOld, rawPromo);
+                        crossedOldPrice = Math.max(rawOld, rawPromo);
+                    }
+                    let discStr = (lbl.promoDiscount || '').trim();
+                    if (crossedOldPrice && crossedOldPrice > mainRedPrice) {
+                        const pct = Math.max(1, Math.round(((crossedOldPrice - mainRedPrice) / crossedOldPrice) * 100));
+                        discStr = `-${pct}%`;
+                    }
+                    const hasExplicitCirclePromo = Boolean((lbl.hasPromo && discStr) || crossedOldPrice);
+
+                    let autoPromoObj = null;
+                    if (hasExplicitCirclePromo) {
+                        autoPromoObj = {
+                            active: true,
+                            isGlobalSync: false,
+                            presetKey: lbl.promoPresetKey || 'remise_34',
+                            discount: discStr,
+                            text: lbl.promoText || $('inputDiscountText').value.trim() || 'DE REMISE|IMMÉDIATE',
+                            unitLabel: lbl.promoPresetKey === '2_plus_1' ? 'LES 3 PRODUITS' : 'LE PRODUIT'
+                        };
+                    } else if (showMechanic) {
+                        autoPromoObj = {
+                            active: true,
+                            isGlobalSync: true,
+                            presetKey: $('selectMechanicPreset').value,
+                            discount: $('inputDiscount').value.trim(),
+                            text: $('inputDiscountText').value.trim(),
+                            unitLabel: $('inputUnitLabel').value.trim()
+                        };
+                    }
+
+                    return {
+                        productName: (lbl.productName || 'PRODUIT').toUpperCase().trim(),
+                        oldPrice: mainRedPrice,
+                        crossedPrice: crossedOldPrice,
+                        baseUnitPrice: Number(lbl.baseUnitPrice) > 0 ? Number(lbl.baseUnitPrice) : mainRedPrice,
+                        unitQty: 1, unitType: uType, contenanceText: lbl.contenanceText || '',
+                        gencode: (lbl.gencode || '').replace(/\D/g, ''),
+                        useCustomLeftImage: false, customRawImg: null, customTrimmedImg: null, customImageLabel: '', showAlcohol18: null,
+                        detectedPromo: autoPromoObj
+                    };
+                });
+            }
+            throw new Error(json?.error || "Échec Gemini");
+        }
+
+        $('inputBlueLabel').onchange = async function(e) {
+            const files = Array.from(e.target.files); if (!files.length) return;
+            forceManualGlobalDiscount = false;
+            const status = $('ocrStatus'); status.classList.remove('hidden');
+            status.textContent = "✨ Analyse PDF...";
+            if ($('aiServiceBadge')) $('aiServiceBadge').textContent = "⏳ Analyse...";
+
+            let sharedWorker = null;
+            const getOcrWorker = async () => {
+                if (!sharedWorker) sharedWorker = await Tesseract.createWorker('fra');
+                return sharedWorker;
+            };
+
+            try {
+                let allDetected = [], limitReached = false;
+                outerLoop:
+                for (const file of files) {
+                    const pages = await loadFileToPages(file);
+                    for (let p = 0; p < pages.length; p++) {
+                        status.textContent = `✨ Page ${p + 1}/${pages.length}...`;
+                        const etiq25Labels = await extractEtiq25BandsFromPage(pages[p], getOcrWorker);
+                        if (etiq25Labels && etiq25Labels.length > 0) {
+                            allDetected = allDetected.concat(etiq25Labels);
+                        } else {
+                            const labels = await extractPageWithGemini(pages[p].canvas);
+                            if (labels?.length) allDetected = allDetected.concat(labels);
+                        }
+                        if (allDetected.length >= MAX_LABELS_LIMIT) {
+                            allDetected = allDetected.slice(0, MAX_LABELS_LIMIT);
+                            limitReached = true;
+                            break outerLoop;
+                        }
+                    }
+                }
+
+                if (sharedWorker) await sharedWorker.terminate();
+
+                if (allDetected.length) {
+                    postersList = allDetected;
+                    const cCount = postersList.filter(it => isPosterPromoActive(it)).length;
+                    status.textContent = `✅ ${postersList.length} étiq. (${cCount} promo)`;
+                } else status.textContent = "⚠️ Aucune étiquette détectée.";
+                if ($('aiServiceBadge')) $('aiServiceBadge').textContent = "✨ Prêt";
+                renderAllPosters();
+            } catch (err) {
+                if (sharedWorker) await sharedWorker.terminate();
+                status.textContent = "⚠️ Erreur : " + err.message;
+                if ($('aiServiceBadge')) $('aiServiceBadge').textContent = "⚠️ Erreur";
+            }
+        };
+
+        // ============================================================================
+        // DESSIN SUR CANVAS (STOCK RAYON & A4 PORTRAIT)
+        // ============================================================================
+        function drawAlcohol18Banner(ctx, x, y, scale = 1.0) {
             const FONT_SLAB = getActiveFontSlab();
+            ctx.save(); ctx.translate(x, y); ctx.scale(scale, scale);
+            ctx.fillStyle = '#FFFFFF'; ctx.strokeStyle = '#9CA3AF'; ctx.lineWidth = 1.2;
+            ctx.beginPath(); ctx.roundRect(0, 0, 128, 44, 6); ctx.fill(); ctx.stroke();
+            ctx.save(); ctx.beginPath(); ctx.roundRect(0, 0, 128, 44, 6); ctx.clip();
+            ctx.fillStyle = '#F05A28'; ctx.fillRect(0, 0, 44, 44); ctx.restore();
+            ctx.fillStyle = '#FFFFFF'; ctx.textAlign = 'center';
+            ctx.font = `900 22px ${FONT_SANS}`; ctx.fillText('-18', 22, 24);
+            ctx.font = `800 13px ${FONT_SANS}`; ctx.fillText('ans', 22, 38);
+            ctx.fillStyle = '#000000'; ctx.textAlign = 'left'; ctx.font = `800 7.2px ${FONT_SANS}`;
+            ctx.fillText('LA LOI INTERDIT', 49, 11); ctx.fillText("LA VENTE D'ALCOOL", 49, 19); ctx.fillText('AUX MINEURS', 49, 27);
+            ctx.font = `600 5.5px ${FONT_SANS}`; ctx.fillText('DES CONTRÔLES SONT', 49, 35); ctx.fillText('RÉALISÉS EN CAISSE', 49, 41);
+            ctx.font = `900 10.5px ${FONT_SLAB}`; ctx.fillText("L'ABUS D'ALCOOL EST DANGEREUX POUR LA SANTÉ, À CONSOMMER AVEC MODÉRATION.", 136, 40);
+            ctx.restore();
+        }
+
+        // Dessine le prix principal et gère l'application automatique du bleu turquoise si l'option Carte U est active
+        function drawFormattedPrice(ctx, priceNumber, preferredCenterX, baselineY, isOldPrice, maxRightX = 656, scaleFactor = 1.0, isCarteUPromos = false) {
+            const FONT_SLAB = getActiveFontSlab();
+            const [euros, rawCents] = priceNumber.toFixed(2).split('.');
+            const cents = ',' + rawCents;
+            const isFour = euros.length >= 2;
+            const euroF = Math.round((isOldPrice ? (isFour ? 56 : 62) : (isFour ? 108 : 124)) * scaleFactor);
+            const centF = Math.round((isOldPrice ? (isFour ? 30 : 32) : (isFour ? 48 : 55)) * scaleFactor);
+            const symF = Math.round((isOldPrice ? (isFour ? 25 : 28) : (isFour ? 44 : 50)) * scaleFactor);
+
+            // Couleur : Noir si prix barré (isOldPrice) ; Bleu turquoise Super U (#008585) si Carte U ; Rouge standard (#EE1C25) sinon
+            if (isOldPrice) {
+                ctx.fillStyle = '#000000';
+            } else if (isCarteUPromos) {
+                ctx.fillStyle = '#008585';
+            } else {
+                ctx.fillStyle = '#EE1C25';
+            }
+
+            ctx.font = `900 ${euroF}px ${FONT_SLAB}`; const eW = ctx.measureText(euros).width;
+            ctx.font = `900 ${centF}px ${FONT_SLAB}`; const cW = ctx.measureText(cents).width;
+            const totalW = eW + cW + 4;
+            let startX = Math.max(40, Math.min(preferredCenterX - totalW / 2, maxRightX - totalW));
+
+            ctx.textAlign = 'left';
+            ctx.font = `900 ${euroF}px ${FONT_SLAB}`; ctx.fillText(euros, startX, baselineY);
+            ctx.font = `900 ${symF}px ${FONT_SLAB}`; ctx.fillText('€', startX + eW + 2, baselineY - Math.round((isOldPrice ? (isFour ? 26 : 29) : (isFour ? 50 : 58)) * scaleFactor));
+            ctx.font = `900 ${centF}px ${FONT_SLAB}`; ctx.fillText(cents, startX + eW + 2, baselineY);
+
+            if (isOldPrice) {
+                ctx.strokeStyle = '#000000'; ctx.lineWidth = 4.5 * scaleFactor;
+                ctx.beginPath(); ctx.moveTo(startX - 5, baselineY - 5); ctx.lineTo(startX + totalW + 6, baselineY - Math.round(40 * scaleFactor)); ctx.stroke();
+            }
+        }
+
+        function drawFittedProductTitle(ctx, text, x, startY, maxWidth, maxBottomY, maxFont = 34, minFont = 17, align = 'left') {
+            const FONT_SLAB = getActiveFontSlab(), cleanText = (text || 'PRODUIT').toUpperCase().trim();
+            ctx.textAlign = align;
+            for (let fs = maxFont; fs >= minFont; fs--) {
+                const lh = Math.round(fs * 1.18); ctx.font = `900 ${fs}px ${FONT_SLAB}`;
+                const words = cleanText.split(/\s+/), lines = []; let cur = '', ok = true;
+                for (const w of words) {
+                    if (ctx.measureText(w).width > maxWidth) { ok = false; break; }
+                    const test = cur ? `${cur} ${w}` : w;
+                    if (ctx.measureText(test).width > maxWidth && cur) { lines.push(cur); cur = w; } else cur = test;
+                }
+                if (cur) lines.push(cur);
+                if (ok && startY + (lines.length - 1) * lh <= maxBottomY) {
+                    lines.forEach((l, i) => ctx.fillText(l, x, startY + i * lh)); return;
+                }
+            }
+            ctx.font = `900 ${minFont - 1}px ${FONT_SLAB}`; ctx.fillText(cleanText.slice(0, 28), x, startY);
+        }
+
+        function drawVisualBarcode(ctx, gencode, x, y, maxWidth, barHeight = 44) {
+            const clean = (gencode || '').replace(/\s+/g, ''); if (!clean) return;
+            const bc = document.createElement('canvas');
+            try {
+                const fmt = (/^\d{13}$/.test(clean) && isValidEAN13Checksum(clean)) ? "EAN13" : "CODE128";
+                JsBarcode(bc, clean, { format: fmt, width: 2.1, height: barHeight, displayValue: true, fontSize: 18, fontOptions: "bold", font: "Montserrat, Arial, sans-serif", textMargin: 2, margin: 0, background: "#FFFFFF", lineColor: "#000000" });
+                const tW = Math.min(maxWidth, bc.width), tH = bc.height * (tW / bc.width);
+                ctx.fillStyle = '#FFFFFF';
+                ctx.fillRect(x - 4, y - tH + 2, tW + 8, tH + 6);
+                ctx.drawImage(bc, x, y - tH + 6, tW, tH);
+            } catch (e) { ctx.fillStyle = '#000000'; ctx.font = `700 18px ${FONT_SANS}`; ctx.textAlign = 'left'; ctx.fillText(clean, x, y); }
+        }
+
+        function computePromoPricing(item, presetKey, discountInput, isMechanicShown) {
+            const uType = item.unitType || 'pièce', prefix = uType === 'pièce' ? 'La pièce' : (uType === 'l' ? 'Le L' : 'Le kg');
+            const baseUnit = item.baseUnitPrice > 0 ? item.baseUnitPrice : item.oldPrice;
+            const manualCrossed = (item.crossedPrice && Number(item.crossedPrice) > 0) ? Number(item.crossedPrice) : null;
+
+            // Option "Calcul prix" sur DÉSACTIVÉ : aucun calcul automatique n'est appliqué au prix rouge, on garde le prix d'origine et le prix barré.
+            if (!isMechanicShown || !applyMechanicPriceCalc) {
+                return {
+                    hasCrossedPrice: Boolean(manualCrossed),
+                    crossedPrice: manualCrossed || (item.crossedPrice || item.oldPrice),
+                    mainPrice: item.oldPrice,
+                    unitPriceText: `${prefix} : ${baseUnit.toFixed(2).replace('.', ',')} €`
+                };
+            }
+
+            // Option "Calcul prix" sur ACTIVÉ : on applique le pourcentage ou la mécanique sur le prix de départ
+            const refStartPrice = manualCrossed ? manualCrossed : item.oldPrice;
+            const refStartUnit = (manualCrossed && item.oldPrice > 0)
+                ? baseUnit * (manualCrossed / item.oldPrice)
+                : baseUnit;
+
+            const preset = MECHANIC_PRESETS[presetKey] || { mode: 'pct_single' };
+            const pctM = discountInput.match(/(\d+(?:[.,]\d+)?)\s*%/), eurM = discountInput.match(/(\d+(?:[.,]\d+)?)\s*€/);
+
+            if (preset.mode === 'nth_2') {
+                const p = pctM ? parseFloat(pctM[1].replace(',', '.')) : (preset.nthPct || 50);
+                return {
+                    hasCrossedPrice: true,
+                    crossedPrice: refStartPrice,
+                    mainPrice: refStartPrice * (1 - p / 100),
+                    unitPriceText: `${prefix} par 2 : ${(refStartUnit * (1 - p / 200)).toFixed(2).replace('.', ',')} €`
+                };
+            }
+            if (preset.mode === 'bogo_1_1') {
+                return {
+                    hasCrossedPrice: true,
+                    crossedPrice: refStartPrice * 2,
+                    mainPrice: refStartPrice,
+                    unitPriceText: `${prefix} par 2 : ${(refStartUnit / 2).toFixed(2).replace('.', ',')} €`
+                };
+            }
+            if (preset.mode === 'bogo_2_1') {
+                return {
+                    hasCrossedPrice: true,
+                    crossedPrice: refStartPrice * 3,
+                    mainPrice: refStartPrice * 2,
+                    unitPriceText: `${prefix} par 3 : ${((refStartUnit * 2) / 3).toFixed(2).replace('.', ',')} €`
+                };
+            }
+            if (preset.mode === 'bogo_3_1') {
+                return {
+                    hasCrossedPrice: true,
+                    crossedPrice: refStartPrice * 4,
+                    mainPrice: refStartPrice * 3,
+                    unitPriceText: `${prefix} par 4 : ${((refStartUnit * 3) / 4).toFixed(2).replace('.', ',')} €`
+                };
+            }
+            if (preset.mode === 'euro_single' || (!pctM && eurM)) {
+                const off = eurM ? parseFloat(eurM[1].replace(',', '.')) : 0;
+                const np = Math.max(0, refStartPrice - off);
+                return {
+                    hasCrossedPrice: off > 0 || Boolean(manualCrossed),
+                    crossedPrice: refStartPrice,
+                    mainPrice: np,
+                    unitPriceText: `${prefix} : ${(refStartUnit * (refStartPrice > 0 ? np / refStartPrice : 1)).toFixed(2).replace('.', ',')} €`
+                };
+            }
+            const pct = pctM ? parseFloat(pctM[1].replace(',', '.')) : 0;
+            return {
+                hasCrossedPrice: pct > 0 || Boolean(manualCrossed),
+                crossedPrice: refStartPrice,
+                mainPrice: refStartPrice * (1 - pct / 100),
+                unitPriceText: `${prefix} : ${(refStartUnit * (1 - pct / 100)).toFixed(2).replace('.', ',')} €`
+            };
+        }
+
+        async function drawPromoCircle(ctx, circleX, circleY, radius, discountStr, rawDiscText, isA4, presetKey = '') {
+            const FONT_SLAB = getActiveFontSlab(), hasPhrase = rawDiscText.length > 0;
             const presetInfo = MECHANIC_PRESETS[presetKey] || {};
 
             if (presetInfo.isCarteU) {
-                const styleType = presetInfo.uStyle || 'type1';
-                
-                ctx.fillStyle = (styleType === 'type4') ? '#EE1C25' : '#008585';
+                // Rendu spécial pour les cercles Carte U (Fond bleu turquoise + Logo CARTE_U.png en bas du cercle)
+                ctx.fillStyle = '#008585';
                 ctx.beginPath(); ctx.arc(circleX, circleY, radius, 0, Math.PI * 2); ctx.fill();
 
                 ctx.fillStyle = '#FFFFFF';
                 ctx.textAlign = 'center';
-
-                if (styleType === 'type1') {
-                    ctx.font = `900 ${isA4 ? 78 : 58}px ${FONT_SLAB}`;
-                    ctx.fillText(discountStr, circleX, circleY - (isA4 ? 45 : 32));
-                    ctx.font = `800 ${isA4 ? 22 : 15}px ${FONT_SLAB}`;
-                    const lines = rawDiscText.split('|');
-                    lines.forEach((l, idx) => {
-                        ctx.fillText(l.trim(), circleX, circleY - (isA4 ? 10 : 2) + idx * (isA4 ? 26 : 18));
-                    });
-                } else if (styleType === 'type2') {
-                    ctx.font = `900 ${isA4 ? 76 : 56}px ${FONT_SLAB}`;
-                    ctx.fillText(discountStr, circleX, circleY - (isA4 ? 30 : 20));
-                    ctx.font = `800 ${isA4 ? 22 : 15}px ${FONT_SLAB}`;
-                    ctx.fillText("SOIT 1,60€ VERSÉS SUR", circleX, circleY + (isA4 ? 12 : 10));
-                } else if (styleType === 'type3') {
-                    ctx.font = `900 ${isA4 ? 85 : 62}px ${FONT_SLAB}`;
-                    ctx.fillText(discountStr, circleX, circleY - (isA4 ? 20 : 12));
-                    ctx.font = `800 ${isA4 ? 26 : 18}px ${FONT_SLAB}`;
-                    ctx.fillText("VERSÉS SUR", circleX, circleY + (isA4 ? 22 : 16));
-                } else if (styleType === 'type4') {
-                    const num = discountStr.endsWith('%') ? discountStr.slice(0, -1) : discountStr;
-                    ctx.font = `900 ${isA4 ? 90 : 65}px ${FONT_SLAB}`;
-                    const nW = ctx.measureText(num).width;
-                    ctx.font = `900 ${isA4 ? 50 : 36}px ${FONT_SLAB}`;
-                    const pW = ctx.measureText('%').width;
-                    const sX = circleX - (nW + pW) / 2;
-                    ctx.textAlign = 'left';
-                    ctx.font = `900 ${isA4 ? 90 : 65}px ${FONT_SLAB}`; ctx.fillText(num, sX, circleY - (isA4 ? 15 : 10));
-                    ctx.font = `900 ${isA4 ? 50 : 36}px ${FONT_SLAB}`; ctx.fillText('%', sX + nW + 2, circleY - (isA4 ? 40 : 28));
-
-                    ctx.textAlign = 'center';
-                    ctx.font = `800 ${isA4 ? 22 : 15}px ${FONT_SLAB}`;
-                    ctx.fillText("DE REMISE IMMÉDIATE AVEC", circleX, circleY + (isA4 ? 30 : 20));
-                }
+                ctx.font = `900 ${isA4 ? 76 : 56}px ${FONT_SLAB}`;
+                ctx.fillText(discountStr, circleX, circleY - (isA4 ? 20 : 15));
 
                 const uImg = await loadCarteUImage();
                 if (uImg) {
                     const imgW = isA4 ? 180 : 120;
                     const imgH = imgW * (uImg.height / uImg.width);
-                    ctx.drawImage(uImg, circleX - imgW / 2, circleY + (isA4 ? 42 : 28), imgW, imgH);
+                    ctx.drawImage(uImg, circleX - imgW / 2, circleY + (isA4 ? 15 : 5), imgW, imgH);
+                } else {
+                    ctx.font = `700 ${isA4 ? 24 : 16}px ${FONT_SLAB}`;
+                    ctx.fillText("AVEC CARTE U", circleX, circleY + (isA4 ? 45 : 30));
                 }
                 return;
             }
 
-            const hasPhrase = rawDiscText.length > 0;
+            // Rendu standard rouge pour les autres mécaniques
             ctx.fillStyle = '#EE1C25'; ctx.beginPath(); ctx.arc(circleX, circleY, radius, 0, Math.PI * 2); ctx.fill();
             ctx.fillStyle = '#FFFFFF';
             const mainY = circleY + (hasPhrase ? (isA4 ? 5 : 2) : (isA4 ? 35 : 26));
@@ -1522,8 +2083,11 @@
             const presetObj = MECHANIC_PRESETS[presetK] || {};
             const isCarteUPromos = Boolean(presetObj.isCarteU || item.detectedPromo?.isCarteU);
 
+            // Mention sous prix bleue si Carte U ("LE PRODUIT € CARTE U DÉDUITS")
             let uLabel = (hasCustomPromo && applyMechanicPriceCalc) ? item.detectedPromo.unitLabel : $('inputUnitLabel').value;
-            if (isCarteUPromos) { uLabel = "LE PRODUIT € CARTE U DÉDUITS"; }
+            if (isCarteUPromos) {
+                uLabel = "LE PRODUIT € CARTE U DÉDUITS";
+            }
 
             const showCont = $('chkShowContenance').checked, dateRaw = $('inputDates').value.trim();
             const pricing = computePromoPricing(item, presetK, discIn, isMech);
@@ -1545,15 +2109,23 @@
 
                 if (isMech) {
                     await drawPromoCircle(ctx, 605, 490, 165, discIn, discTxt, true, presetK);
-                    if (pricing.hasCrossedPrice) { drawFormattedPrice(ctx, pricing.crossedPrice, 300, 395, true, 422, 1.35, false); drawFormattedPrice(ctx, pricing.mainPrice, 285, 555, false, 422, 1.35, isCarteUPromos); }
-                    else drawFormattedPrice(ctx, pricing.mainPrice, 285, 500, false, 422, 1.35, isCarteUPromos);
+                    if (pricing.hasCrossedPrice) {
+                        drawFormattedPrice(ctx, pricing.crossedPrice, 300, 395, true, 422, 1.35, false);
+                        drawFormattedPrice(ctx, pricing.mainPrice, 285, 555, false, 422, 1.35, isCarteUPromos);
+                    } else {
+                        drawFormattedPrice(ctx, pricing.mainPrice, 285, 500, false, 422, 1.35, isCarteUPromos);
+                    }
                     ctx.fillStyle = isCarteUPromos ? '#008585' : '#EE1C25';
                     ctx.font = `800 22px ${FONT_SANS}`; ctx.textAlign = 'center'; ctx.fillText(uLabel.toUpperCase(), 285, 598);
                     ctx.fillStyle = '#000000'; ctx.font = `600 21px ${FONT_SANS}`; ctx.fillText(pricing.unitPriceText, 285, 628);
                     if (showCont && item.contenanceText) { ctx.fillStyle = '#374151'; ctx.font = `700 19px ${FONT_SANS}`; ctx.fillText(`Contenance : ${item.contenanceText}`, 285, 655); }
                 } else {
-                    if (pricing.hasCrossedPrice) { drawFormattedPrice(ctx, pricing.crossedPrice, 435, 395, true, 780, 1.35, false); drawFormattedPrice(ctx, pricing.mainPrice, 420, 555, false, 780, 1.55, isCarteUPromos); }
-                    else drawFormattedPrice(ctx, pricing.mainPrice, 420, 500, false, 780, 1.65, isCarteUPromos);
+                    if (pricing.hasCrossedPrice) {
+                        drawFormattedPrice(ctx, pricing.crossedPrice, 435, 395, true, 780, 1.35, false);
+                        drawFormattedPrice(ctx, pricing.mainPrice, 420, 555, false, 780, 1.55, isCarteUPromos);
+                    } else {
+                        drawFormattedPrice(ctx, pricing.mainPrice, 420, 500, false, 780, 1.65, isCarteUPromos);
+                    }
                     ctx.fillStyle = isCarteUPromos ? '#008585' : '#EE1C25';
                     ctx.font = `800 25px ${FONT_SANS}`; ctx.textAlign = 'center'; ctx.fillText(uLabel.toUpperCase(), 420, pricing.hasCrossedPrice ? 598 : 555);
                     ctx.fillStyle = '#000000'; ctx.font = `600 23px ${FONT_SANS}`; ctx.fillText(pricing.unitPriceText, 420, pricing.hasCrossedPrice ? 630 : 588);
@@ -1568,7 +2140,8 @@
                     const dateLines = dateRaw.split('|').map(s => s.trim()).filter(Boolean);
                     const dateStartY = dispAlc ? (dateLines.length > 1 ? 1042 : 1065) : (dateLines.length > 1 ? 1095 : 1120);
                     ctx.fillStyle = dateColor === '#FFFFFF' ? '#000000' : dateColor;
-                    ctx.font = `800 21px ${FONT_SLAB}`; ctx.textAlign = 'center';
+                    ctx.font = `800 21px ${FONT_SLAB}`;
+                    ctx.textAlign = 'center';
                     dateLines.forEach((l, i) => ctx.fillText(l, 420, dateStartY + i * 26));
                 }
 
@@ -1578,13 +2151,18 @@
                 return;
             }
 
+            // Mode Stock Rayon (1200 x 420)
             canvas.width = 1200; canvas.height = 420;
             ctx.fillStyle = '#FFFFFF'; ctx.fillRect(0, 0, 1200, 420);
 
             if (activeBgStockImg?.complete && activeBgStockImg.naturalWidth > 0) {
-                ctx.save(); ctx.beginPath(); ctx.rect(412, 0, 788, 420); ctx.clip();
+                ctx.save();
+                ctx.beginPath();
+                ctx.rect(412, 0, 788, 420);
+                ctx.clip();
                 const bgScale = Math.max(788 / activeBgStockImg.width, 420 / activeBgStockImg.height);
-                const bgW = activeBgStockImg.width * bgScale, bgH = activeBgStockImg.height * bgScale;
+                const bgW = activeBgStockImg.width * bgScale;
+                const bgH = activeBgStockImg.height * bgScale;
                 ctx.drawImage(activeBgStockImg, 412 + (788 - bgW) / 2, (420 - bgH) / 2, bgW, bgH);
                 ctx.restore();
             }
@@ -1664,15 +2242,15 @@
                     <div class="flex flex-wrap xl:flex-nowrap items-center border-b pb-2 gap-1 text-[11px]">
                         <span class="bg-gray-800 text-white font-bold px-1.5 py-1 rounded shrink-0">#${index + 1}</span>
                         <input type="text" data-idx="${index}" data-field="productName" value="${item.productName.replace(/"/g, '&quot;')}" class="poster-edit-input flex-1 min-w-[110px] font-bold uppercase border rounded px-2 py-1">
-                        <button type="button" data-idx="${index}" class="btn-toggle-item-promo font-extrabold px-2 py-1 rounded border shrink-0 transition ${hasP ? 'bg-red-600 text-white border-red-700 hover:bg-red-700' : 'bg-gray-100 text-gray-600 border-gray-300 hover:bg-gray-200'}">🎯 ${hasP ? `Promo ${promoBadgeDiscount}` : 'Sans promo'}</button>
+                        <button type="button" data-idx="${index}" class="btn-toggle-item-promo font-extrabold px-2 py-1 rounded border shrink-0 transition ${hasP ? 'bg-red-600 text-white border-red-700 hover:bg-red-700' : 'bg-gray-100 text-gray-600 border-gray-300 hover:bg-gray-200'}" title="Cliquer pour activer ou désactiver la promo sur cette étiquette">🎯 ${hasP ? `Promo ${promoBadgeDiscount}` : 'Sans promo'}</button>
                         <div class="flex items-center gap-1 px-1.5 py-0.5 rounded-lg border shrink-0 ${isCustom ? 'border-green-500 bg-green-50/60' : 'border-gray-200 bg-gray-50'}">
                             <span class="font-bold text-gray-600">Img:</span>
                             <button type="button" data-idx="${index}" class="btn-toggle-item-img font-bold px-1.5 py-0.5 rounded ${isCustom ? 'bg-green-600 text-white' : 'bg-gray-200 text-gray-700'}">${isCustom ? 'Activé' : 'Désactivé'}</button>
                             <button type="button" data-idx="${index}" class="btn-open-item-gallery ${isCustom ? '' : 'hidden'} font-bold px-1.5 py-0.5 rounded bg-white border border-green-400 text-green-900">🖼️ ${item.customImageLabel || 'Visuel'}</button>
                         </div>
                         <button type="button" data-idx="${index}" class="btn-toggle-item-alcohol font-extrabold px-1.5 py-1 rounded border shrink-0 ${isAlc ? 'bg-orange-600 text-white' : 'bg-orange-50 text-orange-800'}">-18 ${isAlc ? 'ON' : 'OFF'}</button>
-                        <label class="flex items-center gap-0.5 font-semibold text-gray-600 shrink-0">Prix:<input type="number" step="0.01" data-idx="${index}" data-field="oldPrice" value="${item.oldPrice.toFixed(2)}" class="poster-edit-input w-11 font-bold border rounded px-1 py-1 text-pink-700 bg-pink-50 text-center"></label>
-                        <label class="flex items-center gap-0.5 font-semibold text-gray-600 shrink-0">Barré:<input type="number" step="0.01" data-idx="${index}" data-field="crossedPrice" value="${crossedVal}" placeholder="-" class="poster-edit-input w-11 font-bold border rounded px-1 py-1 text-gray-700 bg-gray-100 text-center"></label>
+                        <label class="flex items-center gap-0.5 font-semibold text-gray-600 shrink-0">Prix:<input type="number" step="0.01" data-idx="${index}" data-field="oldPrice" value="${item.oldPrice.toFixed(2)}" class="poster-edit-input w-11 font-bold border rounded px-1 py-1 text-pink-700 bg-pink-50 text-center" title="Prix principal affiché en rouge"></label>
+                        <label class="flex items-center gap-0.5 font-semibold text-gray-600 shrink-0">Barré:<input type="number" step="0.01" data-idx="${index}" data-field="crossedPrice" value="${crossedVal}" placeholder="-" class="poster-edit-input w-11 font-bold border rounded px-1 py-1 text-gray-700 bg-gray-100 text-center" title="Prix barré affiché juste au-dessus du prix rouge"></label>
                         <label class="flex items-center gap-0.5 font-semibold text-gray-600 shrink-0">P.Unité:<input type="number" step="0.01" data-idx="${index}" data-field="baseUnitPrice" value="${(item.baseUnitPrice || item.oldPrice).toFixed(2)}" class="poster-edit-input w-11 font-bold border rounded px-1 py-1 text-amber-800 bg-amber-50 text-center"></label>
                         <label class="flex items-center gap-0.5 font-semibold text-gray-600 shrink-0">Unité:<select data-idx="${index}" data-field="unitType" class="poster-edit-input font-bold border rounded px-1 py-1 bg-yellow-50"><option value="pièce" ${item.unitType === 'pièce' ? 'selected' : ''}>Pièce</option><option value="kg" ${item.unitType === 'kg' ? 'selected' : ''}>Kg</option><option value="l" ${item.unitType === 'l' ? 'selected' : ''}>Litre</option></select></label>
                         <label class="flex items-center gap-0.5 font-semibold text-gray-600 shrink-0">Cont.:<input type="text" data-idx="${index}" data-field="contenanceText" value="${(item.contenanceText || '').replace(/"/g, '&quot;')}" class="poster-edit-input w-11 font-bold border rounded px-1 py-1 text-emerald-800 bg-emerald-50 text-center"></label>
@@ -1698,14 +2276,13 @@
                     postersList[i].crossedPrice = (v && v > 0) ? v : null;
                     if (postersList[i].crossedPrice && postersList[i].crossedPrice > postersList[i].oldPrice && !forceManualGlobalDiscount) {
                         const pct = Math.max(1, Math.round(((postersList[i].crossedPrice - postersList[i].oldPrice) / postersList[i].crossedPrice) * 100));
-                        const selPreset = MECHANIC_PRESETS[$('selectMechanicPreset').value] || {};
                         postersList[i].detectedPromo = {
-                            active: true, isGlobalSync: false,
+                            active: true,
+                            isGlobalSync: false,
                             presetKey: $('selectMechanicPreset').value || 'remise_34',
                             discount: `-${pct}%`,
                             text: $('inputDiscountText').value.trim() || 'DE REMISE|IMMÉDIATE',
-                            unitLabel: $('inputUnitLabel').value.trim() || 'LE PRODUIT',
-                            isCarteU: Boolean(selPreset.isCarteU)
+                            unitLabel: $('inputUnitLabel').value.trim() || 'LE PRODUIT'
                         };
                     }
                 } else if (f === 'baseUnitPrice') postersList[i].baseUnitPrice = parseFloat(this.value) || 0;
@@ -1719,17 +2296,20 @@
                 }
                 drawSinglePoster($(`posterCanvas_${i}`), postersList[i]);
             });
-
             document.querySelectorAll('.btn-toggle-item-promo').forEach(b => b.onclick = function() {
                 const i = +this.dataset.idx;
                 const currentlyActive = isPosterPromoActive(postersList[i]);
                 if (currentlyActive) {
-                    if (!postersList[i].detectedPromo) postersList[i].detectedPromo = { active: false, isGlobalSync: true };
-                    else postersList[i].detectedPromo.active = false;
+                    if (!postersList[i].detectedPromo) {
+                        postersList[i].detectedPromo = { active: false, isGlobalSync: true };
+                    } else {
+                        postersList[i].detectedPromo.active = false;
+                    }
                 } else {
                     const activePreset = MECHANIC_PRESETS[$('selectMechanicPreset').value] || {};
                     postersList[i].detectedPromo = {
-                        active: true, isGlobalSync: forceManualGlobalDiscount,
+                        active: true,
+                        isGlobalSync: forceManualGlobalDiscount,
                         presetKey: $('selectMechanicPreset').value,
                         discount: getEffectivePosterDiscount(postersList[i]),
                         text: $('inputDiscountText').value.trim(),
@@ -1746,6 +2326,7 @@
             document.querySelectorAll('.btn-open-item-gallery').forEach(b => b.onclick = function() { currentGalleryTarget = +this.dataset.idx; $('visualGalleryModal').classList.remove('hidden'); });
         }
 
+        // EXPORT PDF A4 AVEC HAUTEUR TOTALE RÉDUITE DE 3 MM (294 mm au lieu de 297 mm)
         $('btnDownloadPdfA4').onclick = () => {
             if (!postersList.length) return;
             const pdf = new window.jspdf.jsPDF('p', 'mm', 'a4');
@@ -1764,6 +2345,7 @@
             pdf.save(isA4PortraitMode ? 'etiquettes_A4_Portrait.pdf' : 'etiquettes_Stock_Rayon.pdf');
         };
 
+        // Dès qu'on modifie le champ inputDiscount (-34%), on force le % manuel sur toutes les étiquettes
         $('inputDiscount').oninput = () => {
             forceManualGlobalDiscount = true;
             postersList.forEach(it => {
