@@ -119,7 +119,7 @@
                 </div>
             </div>
 
-            <!-- LIGNE 2 : MÉCANIQUE & VALEUR + BOUTON PRIX BARRÉ ON/OFF -->
+            <!-- LIGNE 2 : MÉCANIQUE & VALEUR + BOUTON PRIX BARRÉ ON/OFF + MENTION SOUS PRIX TOUJOURS ÉDITABLE -->
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3 items-end pt-2 border-t border-gray-100">
                 <div>
                     <div class="flex flex-wrap justify-between items-center mb-1 gap-1">
@@ -177,7 +177,7 @@
                         <label class="block text-xs font-bold text-gray-700 uppercase">📌 MENTION SOUS PRIX</label>
                         <label class="flex items-center gap-1 text-[11px] font-bold text-blue-700 cursor-pointer"><input type="checkbox" id="chkShowContenance" checked class="rounded text-blue-600"><span>Afficher contenance</span></label>
                     </div>
-                    <input type="text" id="inputUnitLabel" value="LE PRODUIT" class="w-full p-1.5 border rounded-lg text-xs font-bold text-red-600 uppercase">
+                    <input type="text" id="inputUnitLabel" value="LE PRODUIT" placeholder="Ex: LE PRODUIT, LE LOT DE 2..." class="w-full p-1.5 border rounded-lg text-xs font-bold text-red-600 uppercase">
                 </div>
                 <div class="flex gap-2">
                     <button type="button" id="btnAddBlankPoster" class="w-1/2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2 px-2 rounded-lg shadow transition text-xs uppercase flex items-center justify-center gap-1">➕ Étiquette</button>
@@ -431,17 +431,17 @@
         const FONT_SANS = '"Montserrat", Arial, sans-serif';
         const DB_NAME = 'SuperU_PromoLabels_DB', STORE_NAME = 'saved_left_images', READY_DOCS_STORE = 'ready_created_files';
 
-        // Liste officielle des mécaniques
+        // Liste officielle des mécaniques avec leur mention sous prix par défaut (100% modifiable dans #inputUnitLabel)
         const MECHANIC_PRESETS = {
             remise_20:                  { discount: '-20%', text: 'DE REMISE|IMMÉDIATE', unitLabel: 'LE PRODUIT', mode: 'pct_single' },
             remise_34:                  { discount: '-34%', text: 'DE REMISE|IMMÉDIATE', unitLabel: 'LE PRODUIT', mode: 'pct_single' },
             remise_50:                  { discount: '-50%', text: 'DE REMISE|IMMÉDIATE', unitLabel: 'LE PRODUIT', mode: 'pct_single' },
             remise_60_2eme:             { discount: '-60%', text: 'DE REMISE IMMÉDIATE|SUR LE 2ÈME PRODUIT|AU CHOIX', unitLabel: 'LE 2ÈME PRODUIT AU CHOIX', mode: 'nth_2', nthPct: 60 },
             remise_50_2eme_identique:   { discount: '-50%', text: 'DE REMISE IMMÉDIATE|SUR LE 2ÈME|PRODUIT IDENTIQUE', unitLabel: 'LE 2ÈME PRODUIT IDENTIQUE', mode: 'nth_2', nthPct: 50 },
-            carte_u_20_immed:           { discount: '-20%', text: 'DE REMISE|IMMÉDIATE AVEC|CARTE U', unitLabel: 'LE PRODUIT', mode: 'pct_single', isCarteU: true, circleBg: '#EE1C25' },
-            carte_u_soit_verse:         { discount: '20%',  text: 'SOIT 1,60€ VERSÉS SUR|CARTE U', unitLabel: 'LE PRODUIT', mode: 'direct_lot', isCarteU: true, circleBg: '#008585' },
-            carte_u_20_verse:           { discount: '20%',  text: 'SOIT 1,60€ VERSÉS SUR|CARTE U', unitLabel: 'LE PRODUIT', mode: 'direct_lot', isCarteU: true, circleBg: '#008585' },
-            carte_u_34_verse:           { discount: '34%',  text: 'VERSÉS SUR|CARTE U', unitLabel: 'LE PRODUIT', mode: 'direct_lot', isCarteU: true, circleBg: '#008585' },
+            carte_u_20_immed:           { discount: '-20%', text: 'DE REMISE|IMMÉDIATE AVEC|CARTE U', unitLabel: 'LE PRODUIT € CARTE U DÉDUITS', mode: 'pct_single', isCarteU: true, circleBg: '#EE1C25' },
+            carte_u_soit_verse:         { discount: '20%',  text: 'SOIT 1,60€ VERSÉS SUR|CARTE U', unitLabel: 'LE PRODUIT € CARTE U DÉDUITS', mode: 'direct_lot', isCarteU: true, circleBg: '#008585' },
+            carte_u_20_verse:           { discount: '20%',  text: 'SOIT 1,60€ VERSÉS SUR|CARTE U', unitLabel: 'LE PRODUIT € CARTE U DÉDUITS', mode: 'direct_lot', isCarteU: true, circleBg: '#008585' },
+            carte_u_34_verse:           { discount: '34%',  text: 'VERSÉS SUR|CARTE U', unitLabel: 'LE PRODUIT € CARTE U DÉDUITS', mode: 'direct_lot', isCarteU: true, circleBg: '#008585' },
             carte_u_68_identique:       { discount: '68%',  text: 'SUR LE 2ÈME PRODUIT|IDENTIQUE VERSÉS SUR|CARTE U', unitLabel: 'LE 2ÈME PRODUIT IDENTIQUE', mode: 'direct_lot', isCarteU: true, circleBg: '#008585' },
             remise_2_euros:             { discount: '-2€',  text: 'DE REMISE|IMMÉDIATE', unitLabel: 'LE PRODUIT', mode: 'euro_single' },
             prix_coutant:               { discount: 'PRIX', text: 'COÛTANT', unitLabel: 'LE PRODUIT', mode: 'direct_lot' },
@@ -452,10 +452,10 @@
             '3_plus_1':                 { discount: '3+1',  text: 'OFFERTE', unitLabel: 'LES 4 PRODUITS', mode: 'bogo_3_1' },
             le_lot_choix:               { discount: 'LE LOT', text: 'AU CHOIX', unitLabel: 'LE LOT AU CHOIX', mode: 'direct_lot' },
             le_lot_identique:           { discount: 'LE LOT', text: 'IDENTIQUE', unitLabel: 'LE LOT IDENTIQUE', mode: 'direct_lot' },
-            le_lot_2_choix:             { discount: 'LE LOT', text: 'DE 2 PRODUITS|AU CHOIX', unitLabel: 'LE LOT DE 2', mode: 'direct_lot' },
-            le_lot_2_identique:         { discount: 'LE LOT', text: 'DE 2 PRODUITS|IDENTIQUE', unitLabel: 'LE LOT DE 2', mode: 'direct_lot' },
-            le_lot_3_choix:             { discount: 'LE LOT', text: 'DE 3 PRODUITS|AU CHOIX', unitLabel: 'LE LOT DE 3', mode: 'direct_lot' },
-            le_lot_3_identique:         { discount: 'LE LOT', text: 'DE 3 PRODUITS|IDENTIQUE', unitLabel: 'LE LOT DE 3', mode: 'direct_lot' }
+            le_lot_2_choix:             { discount: 'LE LOT', text: 'DE 2 PRODUITS|AU CHOIX', unitLabel: 'LE LOT DE 2 AU CHOIX', mode: 'direct_lot' },
+            le_lot_2_identique:         { discount: 'LE LOT', text: 'DE 2 PRODUITS|IDENTIQUE', unitLabel: 'LE LOT DE 2 IDENTIQUES', mode: 'direct_lot' },
+            le_lot_3_choix:             { discount: 'LE LOT', text: 'DE 3 PRODUITS|AU CHOIX', unitLabel: 'LE LOT DE 3 AU CHOIX', mode: 'direct_lot' },
+            le_lot_3_identique:         { discount: 'LE LOT', text: 'DE 3 PRODUITS|IDENTIQUE', unitLabel: 'LE LOT DE 3 IDENTIQUES', mode: 'direct_lot' }
         };
 
         let postersList = [];
@@ -556,6 +556,14 @@
             return $('inputDiscount').value.trim();
         }
 
+        function syncUnitLabelInputStyle(isCarteU) {
+            const inp = $('inputUnitLabel');
+            if (!inp) return;
+            inp.className = isCarteU
+                ? 'w-full p-1.5 border rounded-lg text-xs font-bold text-teal-700 bg-teal-50/40 border-teal-300 uppercase'
+                : 'w-full p-1.5 border rounded-lg text-xs font-bold text-red-600 uppercase';
+        }
+
         $('btnAddBlankPoster').onclick = () => {
             if (postersList.length >= MAX_LABELS_LIMIT) return;
             const selPreset = MECHANIC_PRESETS[$('selectMechanicPreset').value] || {};
@@ -580,7 +588,7 @@
                     presetKey: $('selectMechanicPreset').value,
                     discount: $('inputDiscount').value.trim(),
                     text: $('inputDiscountText').value.trim(),
-                    unitLabel: $('inputUnitLabel').value.trim(),
+                    unitLabel: $('inputUnitLabel').value,
                     isCarteU: Boolean(selPreset.isCarteU)
                 } : null
             });
@@ -1185,7 +1193,7 @@
         $('btnDownloadLightboxDoc').onclick = () => currentLightboxDoc && downloadReadyDocument(currentLightboxDoc);
 
         // ============================================================================
-        // BOUTONS DE CONFIGURATION, PRIX BARRÉ ON/OFF, GALERIES
+        // BOUTONS DE CONFIGURATION, PRIX BARRÉ ON/OFF, MENTION SOUS PRIX & GALERIES
         // ============================================================================
         $('btnToggleAlcohol18').onclick = () => {
             showAlcoholGlobal = !showAlcoholGlobal;
@@ -1228,14 +1236,27 @@
             buildVisualGallery(); renderAllPosters();
         };
 
+        // Changement de mécanique : actualise automatiquement #inputDiscount, #inputDiscountText et #inputUnitLabel (Mention sous prix)
         $('selectMechanicPreset').onchange = function() {
             const p = MECHANIC_PRESETS[this.value]; if (!p) return;
             forceManualGlobalDiscount = true;
             $('inputDiscount').value = p.discount;
             $('inputDiscountText').value = p.text;
             $('inputUnitLabel').value = p.unitLabel;
+            syncUnitLabelInputStyle(Boolean(p.isCarteU));
+
             postersList.forEach(it => {
-                if (it.detectedPromo) {
+                if (!it.detectedPromo) {
+                    it.detectedPromo = {
+                        active: showMechanic,
+                        isGlobalSync: true,
+                        presetKey: this.value,
+                        discount: p.discount,
+                        text: p.text,
+                        unitLabel: p.unitLabel,
+                        isCarteU: Boolean(p.isCarteU)
+                    };
+                } else {
                     it.detectedPromo.isGlobalSync = true;
                     it.detectedPromo.presetKey = this.value;
                     it.detectedPromo.discount = p.discount;
@@ -1262,6 +1283,11 @@
             ['selectMechanicPreset', 'inputDiscount', 'inputDiscountText'].forEach(id => { $(id).disabled = !showMechanic; $(id).classList.toggle('opacity-50', !showMechanic); $(id).classList.toggle('bg-gray-100', !showMechanic); });
 
             const selPreset = MECHANIC_PRESETS[$('selectMechanicPreset').value] || {};
+            if (showMechanic && selPreset.unitLabel) {
+                $('inputUnitLabel').value = selPreset.unitLabel;
+            }
+            syncUnitLabelInputStyle(Boolean(showMechanic && selPreset.isCarteU));
+
             postersList.forEach(it => {
                 if (showMechanic) {
                     if (!it.detectedPromo) {
@@ -1271,11 +1297,12 @@
                             presetKey: $('selectMechanicPreset').value,
                             discount: $('inputDiscount').value.trim(),
                             text: $('inputDiscountText').value.trim(),
-                            unitLabel: $('inputUnitLabel').value.trim(),
+                            unitLabel: $('inputUnitLabel').value,
                             isCarteU: Boolean(selPreset.isCarteU)
                         };
                     } else {
                         it.detectedPromo.active = true;
+                        it.detectedPromo.unitLabel = $('inputUnitLabel').value;
                     }
                 } else {
                     if (it.detectedPromo) it.detectedPromo.active = false;
@@ -1702,7 +1729,7 @@
                         presetKey: $('selectMechanicPreset').value || 'remise_34',
                         discount: selPreset.isCarteU ? $('inputDiscount').value.trim() : `-${pct}%`,
                         text: $('inputDiscountText').value.trim() || 'DE REMISE|IMMÉDIATE',
-                        unitLabel: $('inputUnitLabel').value.trim() || 'LE PRODUIT',
+                        unitLabel: $('inputUnitLabel').value,
                         isCarteU: Boolean(selPreset.isCarteU)
                     };
                 } else if (showMechanic) {
@@ -1712,7 +1739,7 @@
                         presetKey: $('selectMechanicPreset').value,
                         discount: $('inputDiscount').value.trim(),
                         text: $('inputDiscountText').value.trim(),
-                        unitLabel: $('inputUnitLabel').value.trim(),
+                        unitLabel: $('inputUnitLabel').value,
                         isCarteU: Boolean(selPreset.isCarteU)
                     };
                 }
@@ -1792,7 +1819,7 @@
                             presetKey: $('selectMechanicPreset').value || lbl.promoPresetKey || 'remise_34',
                             discount: selPreset.isCarteU ? $('inputDiscount').value.trim() : discStr,
                             text: lbl.promoText || $('inputDiscountText').value.trim() || 'DE REMISE|IMMÉDIATE',
-                            unitLabel: lbl.promoPresetKey === '2_plus_1' ? 'LES 3 PRODUITS' : 'LE PRODUIT',
+                            unitLabel: $('inputUnitLabel').value,
                             isCarteU: Boolean(selPreset.isCarteU)
                         };
                     } else if (showMechanic) {
@@ -1802,7 +1829,7 @@
                             presetKey: $('selectMechanicPreset').value,
                             discount: $('inputDiscount').value.trim(),
                             text: $('inputDiscountText').value.trim(),
-                            unitLabel: $('inputUnitLabel').value.trim(),
+                            unitLabel: $('inputUnitLabel').value,
                             isCarteU: Boolean(selPreset.isCarteU)
                         };
                     }
@@ -1926,6 +1953,20 @@
             }
         }
 
+        function drawFittedUnitLabelUnderPrice(ctx, text, centerX, baselineY, maxWidth, defaultFontSize, minFontSize = 10) {
+            const clean = (text || '').toUpperCase().trim();
+            if (!clean) return;
+            let fs = defaultFontSize;
+            while (fs > minFontSize) {
+                ctx.font = `800 ${fs}px ${FONT_SANS}`;
+                if (ctx.measureText(clean).width <= maxWidth) break;
+                fs -= 0.5;
+            }
+            ctx.font = `800 ${fs}px ${FONT_SANS}`;
+            ctx.textAlign = 'center';
+            ctx.fillText(clean, centerX, baselineY);
+        }
+
         function drawFittedProductTitle(ctx, text, x, startY, maxWidth, maxBottomY, maxFont = 34, minFont = 17, align = 'left') {
             const FONT_SLAB = getActiveFontSlab(), cleanText = (text || 'PRODUIT').toUpperCase().trim();
             ctx.textAlign = align;
@@ -2033,7 +2074,6 @@
             };
         }
 
-        // Formatage des lignes de texte à l'intérieur du cercle Carte U
         function formatCarteUCircleLines(rawDiscText) {
             if (!rawDiscText) return [];
             let cleaned = rawDiscText
@@ -2056,7 +2096,6 @@
             return cleaned.split('|').map(s => s.trim()).filter(Boolean);
         }
 
-        // Calcule la largeur maximale disponible à l'intérieur du cercle à une hauteur Y donnée (corde géométrique)
         function getMaxChordWidthInCircle(circleY, radius, lineBaselineY, fontSize, safetyPad = 14) {
             const topY = lineBaselineY - fontSize * 0.85;
             const bottomY = lineBaselineY + fontSize * 0.20;
@@ -2066,7 +2105,6 @@
             return 2 * Math.sqrt(effectiveR * effectiveR - dy * dy);
         }
 
-        // Dessine une ligne de texte dans le cercle (avec support de "2ème" en exposant) en réduisant automatiquement la police si elle dépasse la corde du cercle
         function drawFittedCircleLine(ctx, lineText, circleX, circleY, radius, baselineY, initialFontSize, fontSlab, withSuperscript2eme = false, minFontSize = 9) {
             const cleanLine = (lineText || '').trim();
             if (!cleanLine) return;
@@ -2221,9 +2259,7 @@
                 return;
             }
 
-            // ============================================================================
-            // RENDU DU CERCLE ROUGE (AVEC TAILLE AUGMENTÉE POUR "BAS" / "CHOC !" ET ZÉRO DÉPASSEMENT)
-            // ============================================================================
+            // RENDU DU CERCLE ROUGE (TAILLE AUGMENTÉE POUR "BAS" / "CHOC !" ET ZÉRO DÉPASSEMENT)
             const lines = rawDiscText ? rawDiscText.split('|').map(s => s.trim()).filter(Boolean) : [];
             const lineCount = lines.length;
             const hasPhrase = lineCount > 0;
@@ -2240,7 +2276,6 @@
             const isBigBasOrChoc = isPrixSpecial && (upperSub === 'BAS' || upperSub.startsWith('CHOC'));
             const isBogoSingleWord = /^(\d+\s*\+\s*\d+)$/.test(upperMain) && lineCount === 1;
 
-            // Position verticale du texte principal (en haut du cercle)
             let mainY;
             if (!hasPhrase) {
                 mainY = circleY + (isA4 ? 35 : 26);
@@ -2249,7 +2284,6 @@
             } else if (isBogoSingleWord) {
                 mainY = circleY - (isA4 ? 4 : 3);
             } else if (lineCount >= 3) {
-                // Remonte le % quand il y a 3 lignes (ex: -50% / -60% sur le 2ème produit) pour que la 3ème ligne reste dans la partie large du cercle
                 mainY = circleY - (isA4 ? 24 : 16);
             } else {
                 mainY = circleY + (isA4 ? 2 : 0);
@@ -2295,22 +2329,18 @@
                 drawFittedCircleLine(ctx, discountStr, circleX, circleY, radius, mainY, cF, FONT_SLAB, false, 16);
             }
 
-            // Dessin du texte secondaire sous la valeur principale (garanti sans dépassement du cercle)
             if (hasPhrase) {
                 if (isBigBasOrChoc) {
-                    // Mot "BAS" (dans PRIX BAS) et "CHOC !" (dans PRIX CHOC !) nettement agrandis
                     const subFont = upperSub === 'BAS'
                         ? (isA4 ? 68 : 46)
                         : (isA4 ? 58 : 40);
                     const subY = circleY + (isA4 ? 62 : 42);
                     drawFittedCircleLine(ctx, lines[0], circleX, circleY, radius, subY, subFont, FONT_SLAB, false, 14);
                 } else if (isPrixSpecial) {
-                    // Ex: PRIX COÛTANT
                     const subFont = isA4 ? 44 : 30;
                     const subY = circleY + (isA4 ? 52 : 35);
                     drawFittedCircleLine(ctx, lines[0], circleX, circleY, radius, subY, subFont, FONT_SLAB, false, 12);
                 } else if (isBogoSingleWord) {
-                    // Ex: 1+1 GRATUIT, 2+1 OFFERT, 3+1 OFFERTE bien visibles et centrés
                     const subFont = isA4 ? 42 : 28;
                     const subY = circleY + (isA4 ? 50 : 34);
                     drawFittedCircleLine(ctx, lines[0], circleX, circleY, radius, subY, subFont, FONT_SLAB, false, 12);
@@ -2348,10 +2378,8 @@
             const presetObj = MECHANIC_PRESETS[presetK] || {};
             const isCarteUPromos = Boolean(presetObj.isCarteU || item.detectedPromo?.isCarteU || /CARTE\s*U/i.test(discTxt));
 
-            let uLabel = (hasCustomPromo && applyMechanicPriceCalc) ? item.detectedPromo.unitLabel : $('inputUnitLabel').value;
-            if (isCarteUPromos) {
-                uLabel = "LE PRODUIT € CARTE U DÉDUITS";
-            }
+            // Mention sous prix 100% pilotée par la case MENTION SOUS PRIX (#inputUnitLabel) pour pouvoir être modifiée à tout moment
+            const uLabel = $('inputUnitLabel').value;
 
             const showCont = $('chkShowContenance').checked, dateRaw = $('inputDates').value.trim();
             const pricing = computePromoPricing(item, presetK, discIn, isMech);
@@ -2379,8 +2407,8 @@
                         drawFormattedPrice(ctx, pricing.mainPrice, 285, 500, false, 422, 1.35, isCarteUPromos);
                     }
                     ctx.fillStyle = isCarteUPromos ? '#008585' : '#EE1C25';
-                    ctx.font = `800 22px ${FONT_SANS}`; ctx.textAlign = 'center'; ctx.fillText(uLabel.toUpperCase(), 285, 598);
-                    ctx.fillStyle = '#000000'; ctx.font = `600 21px ${FONT_SANS}`; ctx.fillText(pricing.unitPriceText, 285, 628);
+                    drawFittedUnitLabelUnderPrice(ctx, uLabel, 285, 598, 390, 22, 12);
+                    ctx.fillStyle = '#000000'; ctx.font = `600 21px ${FONT_SANS}`; ctx.textAlign = 'center'; ctx.fillText(pricing.unitPriceText, 285, 628);
                     if (showCont && item.contenanceText) { ctx.fillStyle = '#374151'; ctx.font = `700 19px ${FONT_SANS}`; ctx.fillText(`Contenance : ${item.contenanceText}`, 285, 655); }
                     await drawPromoCircle(ctx, 605, 490, 165, discIn, discTxt, true, presetK);
                 } else {
@@ -2391,8 +2419,8 @@
                         drawFormattedPrice(ctx, pricing.mainPrice, 420, 500, false, 780, 1.65, isCarteUPromos);
                     }
                     ctx.fillStyle = isCarteUPromos ? '#008585' : '#EE1C25';
-                    ctx.font = `800 25px ${FONT_SANS}`; ctx.textAlign = 'center'; ctx.fillText(uLabel.toUpperCase(), 420, pricing.hasCrossedPrice ? 598 : 555);
-                    ctx.fillStyle = '#000000'; ctx.font = `600 23px ${FONT_SANS}`; ctx.fillText(pricing.unitPriceText, 420, pricing.hasCrossedPrice ? 630 : 588);
+                    drawFittedUnitLabelUnderPrice(ctx, uLabel, 420, pricing.hasCrossedPrice ? 598 : 555, 740, 25, 13);
+                    ctx.fillStyle = '#000000'; ctx.font = `600 23px ${FONT_SANS}`; ctx.textAlign = 'center'; ctx.fillText(pricing.unitPriceText, 420, pricing.hasCrossedPrice ? 630 : 588);
                     if (showCont && item.contenanceText) { ctx.fillStyle = '#374151'; ctx.font = `700 21px ${FONT_SANS}`; ctx.fillText(`Contenance : ${item.contenanceText}`, 420, pricing.hasCrossedPrice ? 660 : 620); }
                 }
 
@@ -2450,8 +2478,8 @@
                     drawFormattedPrice(ctx, pricing.mainPrice, 550, 232, false, 656, 1.0, isCarteUPromos);
                 }
                 ctx.fillStyle = isCarteUPromos ? '#008585' : '#EE1C25';
-                ctx.font = `800 15px ${FONT_SANS}`; ctx.textAlign = 'center'; ctx.fillText(uLabel.toUpperCase(), 555, 294);
-                ctx.fillStyle = '#000000'; ctx.font = `600 15px ${FONT_SANS}`; ctx.fillText(pricing.unitPriceText, 555, 314);
+                drawFittedUnitLabelUnderPrice(ctx, uLabel, 555, 294, 268, 15, 10);
+                ctx.fillStyle = '#000000'; ctx.font = `600 15px ${FONT_SANS}`; ctx.textAlign = 'center'; ctx.fillText(pricing.unitPriceText, 555, 314);
                 if (showCont && item.contenanceText) { ctx.fillStyle = '#374151'; ctx.font = `700 14px ${FONT_SANS}`; ctx.fillText(`Contenance : ${item.contenanceText}`, 555, 334); }
                 await drawPromoCircle(ctx, 782, 185, 114, discIn, discTxt, false, presetK);
             } else {
@@ -2459,14 +2487,14 @@
                     drawFormattedPrice(ctx, pricing.crossedPrice, 580, 162, true, 715, 1.0, false);
                     drawFormattedPrice(ctx, pricing.mainPrice, 565, 264, false, 715, 1.0, isCarteUPromos);
                     ctx.fillStyle = isCarteUPromos ? '#008585' : '#EE1C25';
-                    ctx.font = `800 15px ${FONT_SANS}`; ctx.textAlign = 'center'; ctx.fillText(uLabel.toUpperCase(), 565, 294);
-                    ctx.fillStyle = '#000000'; ctx.font = `600 15px ${FONT_SANS}`; ctx.fillText(pricing.unitPriceText, 565, 314);
+                    drawFittedUnitLabelUnderPrice(ctx, uLabel, 565, 294, 300, 15, 10);
+                    ctx.fillStyle = '#000000'; ctx.font = `600 15px ${FONT_SANS}`; ctx.textAlign = 'center'; ctx.fillText(pricing.unitPriceText, 565, 314);
                     if (showCont && item.contenanceText) { ctx.fillStyle = '#374151'; ctx.font = `700 14px ${FONT_SANS}`; ctx.fillText(`Contenance : ${item.contenanceText}`, 565, 334); }
                 } else {
                     drawFormattedPrice(ctx, pricing.mainPrice, 565, 230, false, 715, 1.0, isCarteUPromos);
                     ctx.fillStyle = isCarteUPromos ? '#008585' : '#EE1C25';
-                    ctx.font = `800 16px ${FONT_SANS}`; ctx.textAlign = 'center'; ctx.fillText(uLabel.toUpperCase(), 565, 265);
-                    ctx.fillStyle = '#000000'; ctx.font = `600 16px ${FONT_SANS}`; ctx.fillText(pricing.unitPriceText, 565, 287);
+                    drawFittedUnitLabelUnderPrice(ctx, uLabel, 565, 265, 300, 16, 10);
+                    ctx.fillStyle = '#000000'; ctx.font = `600 16px ${FONT_SANS}`; ctx.textAlign = 'center'; ctx.fillText(pricing.unitPriceText, 565, 287);
                     if (showCont && item.contenanceText) { ctx.fillStyle = '#374151'; ctx.font = `700 15px ${FONT_SANS}`; ctx.fillText(`Contenance : ${item.contenanceText}`, 565, 309); }
                 }
             }
@@ -2552,7 +2580,7 @@
                             presetKey: $('selectMechanicPreset').value || 'remise_34',
                             discount: `-${pct}%`,
                             text: $('inputDiscountText').value.trim() || 'DE REMISE|IMMÉDIATE',
-                            unitLabel: $('inputUnitLabel').value.trim() || 'LE PRODUIT',
+                            unitLabel: $('inputUnitLabel').value,
                             isCarteU: false
                         };
                     }
@@ -2589,7 +2617,7 @@
                         presetKey: $('selectMechanicPreset').value,
                         discount: getEffectivePosterDiscount(postersList[i]),
                         text: $('inputDiscountText').value.trim(),
-                        unitLabel: $('inputUnitLabel').value.trim(),
+                        unitLabel: $('inputUnitLabel').value,
                         isCarteU: Boolean(activePreset.isCarteU)
                     };
                 }
@@ -2631,11 +2659,12 @@
             renderAllPosters();
         };
 
+        // Toute saisie dans MENTION SOUS PRIX (#inputUnitLabel), Visuel mécanique ou Dates met immédiatement à jour toutes les étiquettes
         ['inputDates', 'inputDiscountText', 'inputUnitLabel'].forEach(id => $(id).oninput = () => {
             postersList.forEach(it => {
                 if (it.detectedPromo) {
                     it.detectedPromo.text = $('inputDiscountText').value.trim();
-                    it.detectedPromo.unitLabel = $('inputUnitLabel').value.trim();
+                    it.detectedPromo.unitLabel = $('inputUnitLabel').value;
                 }
             });
             renderAllPosters();
