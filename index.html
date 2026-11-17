@@ -253,7 +253,7 @@
                 </div>
                 <div class="flex flex-wrap items-center gap-2">
                     <input type="text" id="inputSearchBgGallery" placeholder="🔍 Filtrer un fond..." class="text-xs border rounded-lg px-3 py-1.5 w-48">
-                    <button type="button" id="btnRefreshBgGallery" class="text-xs font-bold bg-gray-200 hover:bg-gray-300 px-2.5 py-1.5 rounded-lg" title="Rafraîchir le dossier Fonds et R2">🔄</button>
+                    <button type="button" id="btnRefreshBgGallery" class="text-xs font-bold bg-gray-200 hover:bg-gray-300 px-2.5 py-1.5 rounded-lg">🔄</button>
                     <label class="text-xs font-bold bg-purple-600 hover:bg-purple-700 text-white px-3 py-1.5 rounded-lg cursor-pointer shadow-sm">
                         ☁️ Déposer un Fond sur R2 (Opacité 33% auto)
                         <input type="file" id="inputAddBgImage" accept=".jpeg,.jpg,.png,.pdf,.webp,.gif,.bmp,.svg,image/*,application/pdf" multiple class="hidden">
@@ -449,6 +449,9 @@
         const FONT_SANS = '"Montserrat", Arial, sans-serif';
         const DB_NAME = 'SuperU_PromoLabels_DB', STORE_NAME = 'saved_left_images', READY_DOCS_STORE = 'ready_created_files';
 
+        // ============================================================================
+        // AUTHENTIFICATION PAR MOT DE PASSE (CORRIGÉE & FORCÉE)
+        // ============================================================================
         function checkAuth() {
             const isAuth = sessionStorage.getItem('superu_auth_passed') === 'true';
             const overlay = document.getElementById('authOverlay');
@@ -469,7 +472,9 @@
                     if (pwd === ADMIN_PASSCODE || pwd === 'Matthieu') {
                         sessionStorage.setItem('superu_auth_passed', 'true');
                         const overlay = document.getElementById('authOverlay');
-                        if (overlay) overlay.style.display = 'none';
+                        if (overlay) {
+                            overlay.style.display = 'none';
+                        }
                         if (errBox) errBox.classList.add('hidden');
                     } else {
                         if (errBox) errBox.classList.remove('hidden');
@@ -480,7 +485,7 @@
             }
         });
 
-        // Mécaniques mises à jour avec les textes exacts et la mention Carte U
+        // Mécaniques mises à jour avec les libellés exacts des 4 images de référence (correction.jpg)
         const MECHANIC_PRESETS = {
             remise_20:                  { discount: '-20%', text: 'DE REMISE|IMMÉDIATE', unitLabel: 'LE PRODUIT', mode: 'pct_single' },
             remise_34:                  { discount: '-34%', text: 'DE REMISE|IMMÉDIATE', unitLabel: 'LE PRODUIT', mode: 'pct_single' },
@@ -2100,3 +2105,4 @@
     </script>
 </body>
 </html>
+```[cite: 27, 28]
