@@ -309,6 +309,93 @@
         </div>
     </div>
 
+    <!-- MODALE LIGHTBOX / APERÇU FICHIER -->
+    <div id="docLightboxModal" class="fixed inset-0 bg-black/80 z-[60] hidden flex items-center justify-center p-4 backdrop-blur-md">
+        <div class="bg-white rounded-2xl shadow-2xl max-w-4xl w-full max-h-[92vh] flex flex-col overflow-hidden border-t-4 border-indigo-600">
+            <div class="flex justify-between items-center px-5 py-3 border-b bg-gray-50">
+                <div class="flex items-center gap-2">
+                    <span id="lightboxTypeBadge" class="text-[10px] font-black uppercase px-2 py-0.5 rounded bg-indigo-600 text-white">PDF</span>
+                    <h3 id="lightboxTitle" class="text-sm font-extrabold text-gray-800 truncate max-w-md">Aperçu</h3>
+                </div>
+                <div class="flex items-center gap-2">
+                    <button type="button" id="btnPrintLightboxDoc" class="text-xs font-bold bg-emerald-600 hover:bg-emerald-700 text-white px-3 py-1.5 rounded-lg">🖨️ Imprimer</button>
+                    <button type="button" id="btnDownloadLightboxDoc" class="text-xs font-bold bg-indigo-600 hover:bg-indigo-700 text-white px-3 py-1.5 rounded-lg">⬇️ Télécharger</button>
+                    <button type="button" id="btnCloseLightboxModal" class="text-gray-400 hover:text-red-600 font-bold text-lg px-2">✕</button>
+                </div>
+            </div>
+            <div class="p-4 bg-gray-900 flex-1 flex items-center justify-center overflow-auto">
+                <img id="lightboxImagePreview" class="max-w-full max-h-[75vh] object-contain rounded shadow-lg bg-white">
+            </div>
+        </div>
+    </div>
+
+    <!-- MODALE RENOMMER / DÉPLACER -->
+    <div id="moveRenameFileModal" class="fixed inset-0 bg-black/65 z-[70] hidden flex items-center justify-center p-4 backdrop-blur-sm">
+        <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full p-5 space-y-4 border-t-4 border-blue-600">
+            <div class="flex justify-between items-center border-b pb-2">
+                <h3 class="text-sm font-extrabold text-gray-800 uppercase">✏️ Modifier / Déplacer le fichier</h3>
+                <button type="button" id="btnCloseMoveRenameModal" class="text-gray-400 hover:text-red-600 font-bold">✕</button>
+            </div>
+            <div class="space-y-3 text-xs">
+                <div>
+                    <label class="block font-bold text-gray-700 mb-1">Nom du fichier :</label>
+                    <input type="text" id="inputMoveRenameLabel" class="w-full p-2 border rounded font-semibold">
+                </div>
+                <div>
+                    <label class="block font-bold text-gray-700 mb-1">Dossier cible (Onglet) :</label>
+                    <select id="selectMoveTargetTab" class="w-full p-2 border rounded font-bold bg-gray-50">
+                        <option value="ready_deposited">📥 Fichiers déposés</option>
+                        <option value="ready_generated">✨ Affiches générées</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block font-bold text-gray-700 mb-1">Sous-dossier :</label>
+                    <select id="selectMoveTargetSubFolder" class="w-full p-2 border rounded font-bold bg-gray-50"></select>
+                </div>
+                <div>
+                    <label class="block font-bold text-gray-700 mb-1">Ou nouveau sous-dossier (Optionnel) :</label>
+                    <input type="text" id="inputMoveCustomSubFolder" placeholder="Ex: Nouveautes/Noel" class="w-full p-2 border rounded">
+                </div>
+                <div>
+                    <label class="block font-bold text-red-600 mb-1">🔒 Code de sécurité (Bonesink124!) :</label>
+                    <input type="password" id="inputMovePasscode" placeholder="Code..." class="w-full p-2 border rounded font-bold">
+                </div>
+            </div>
+            <div class="flex justify-end gap-2 pt-2 border-t">
+                <button type="button" id="btnCancelMoveRename" class="text-xs font-bold bg-gray-200 px-4 py-2 rounded-lg">Annuler</button>
+                <button type="button" id="btnConfirmMoveRename" class="text-xs font-bold bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg">Enregistrer</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODALE ENREGISTRER AFFICHE VERS BIBLIOTHÈQUE -->
+    <div id="saveDestinationModal" class="fixed inset-0 bg-black/65 z-[70] hidden flex items-center justify-center p-4 backdrop-blur-sm">
+        <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full p-5 space-y-4 border-t-4 border-indigo-600">
+            <div class="flex justify-between items-center border-b pb-2">
+                <h3 class="text-sm font-extrabold text-indigo-900 uppercase">☁️ Enregistrer dans la Bibliothèque</h3>
+                <button type="button" id="btnCloseSaveDestModal" class="text-gray-400 hover:text-red-600 font-bold">✕</button>
+            </div>
+            <div class="space-y-3 text-xs">
+                <div>
+                    <label class="block font-bold text-gray-700 mb-1">Nom de l'affiche :</label>
+                    <input type="text" id="inputSavePosterName" class="w-full p-2 border rounded font-semibold">
+                </div>
+                <div>
+                    <label class="block font-bold text-gray-700 mb-1">Dossier cible (Affiches générées) :</label>
+                    <select id="selectSaveDestinationFolder" class="w-full p-2 border rounded font-bold bg-gray-50"></select>
+                </div>
+                <div>
+                    <label class="block font-bold text-gray-700 mb-1">Ou créer un nouveau dossier :</label>
+                    <input type="text" id="inputNewDestFolder" placeholder="Nom du nouveau dossier..." class="w-full p-2 border rounded">
+                </div>
+            </div>
+            <div class="flex justify-end gap-2 pt-2 border-t">
+                <button type="button" id="btnCancelSaveDest" class="text-xs font-bold bg-gray-200 px-4 py-2 rounded-lg">Annuler</button>
+                <button type="button" id="btnConfirmSaveDest" class="text-xs font-bold bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg">Enregistrer sur R2</button>
+            </div>
+        </div>
+    </div>
+
     <script>
         pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
         const $ = id => document.getElementById(id);
@@ -318,8 +405,8 @@
         const MAX_LABELS_LIMIT = 50;
         const FONT_SANS = '"Montserrat", Arial, sans-serif';
         const DB_NAME = 'SuperU_PromoLabels_DB', STORE_NAME = 'saved_left_images', READY_DOCS_STORE = 'ready_created_files';
+        const ADMIN_PASSCODE = 'Bonesink124!';
 
-        // Code d'authentification désactivé (accès direct)
         window.addEventListener('DOMContentLoaded', () => {
             const overlay = $('authOverlay');
             if (overlay) overlay.remove();
@@ -471,7 +558,7 @@
         function askDeletePasscode(desc = 'effectuer cette action') {
             const code = prompt(`🔒 Sécurité : Entre le code administrateur pour ${desc} :`);
             if (code === null) return null;
-            if (code !== "Matthieu") { alert("❌ Code incorrect ! Opération annulée."); return null; }
+            if (code !== ADMIN_PASSCODE) { alert("❌ Code incorrect ! Opération annulée."); return null; }
             return code;
         }
 
@@ -496,7 +583,7 @@
                 img.onload = () => {
                     const c = document.createElement('canvas');
                     c.width = img.naturalWidth || img.width; c.height = img.naturalHeight || img.height;
-                    c.getContext('2d'].drawImage(img, 0, 0);
+                    c.getContext('2d').drawImage(img, 0, 0);
                     res(canvasToWebPDataUrl(c, q));
                 };
                 img.onerror = () => res(dataUrl);
@@ -520,11 +607,6 @@
                 for (const p of norm.split('/')) { cur = cur ? `${cur}/${p}` : p; out.add(cur); }
             });
             return Array.from(out).sort((a, b) => a === 'Général' ? -1 : (b === 'Général' ? 1 : a.localeCompare(b)));
-        }
-
-        function getDirectSubFoldersOf(parentPath, allPaths) {
-            if (parentPath === 'Général') return allPaths.filter(p => p !== 'Général' && !p.includes('/'));
-            return allPaths.filter(p => p.startsWith(parentPath + '/') && !p.slice(parentPath.length + 1).includes('/'));
         }
 
         function filterAndSortStaticPresets() {
@@ -758,11 +840,11 @@
         }
 
         function updateLibraryBadgesAndUI() {
-            $('readyDocsCountBadge'].textContent = readyDepositedDocs.length + readyGeneratedDocs.length;
-            $('countDepositedBadge'].textContent = readyDepositedDocs.length;
-            $('countGeneratedBadge'].textContent = readyGeneratedDocs.length;
+            $('readyDocsCountBadge').textContent = readyDepositedDocs.length + readyGeneratedDocs.length;
+            $('countDepositedBadge').textContent = readyDepositedDocs.length;
+            $('countGeneratedBadge').textContent = readyGeneratedDocs.length;
             renderLibraryFoldersHierarchy();
-            renderReadyDocsGrid($('inputSearchReadyDocs']?.value || '');
+            renderReadyDocsGrid($('inputSearchReadyDocs')?.value || '');
         }
 
         function populateMoveTargetSubFolders(tabKey, selectedSub) {
@@ -775,28 +857,28 @@
             });
         }
 
-        $('selectMoveTargetTab'].onchange = function() { populateMoveTargetSubFolders(this.value, 'Général'); };
-        $('btnCloseMoveRenameModal'].onclick = $('btnCancelMoveRename'].onclick = () => { $('moveRenameFileModal'].classList.add('hidden'); pendingMoveRenameDoc = null; };
+        $('selectMoveTargetTab').onchange = function() { populateMoveTargetSubFolders(this.value, 'Général'); };
+        $('btnCloseMoveRenameModal').onclick = $('btnCancelMoveRename').onclick = () => { $('moveRenameFileModal').classList.add('hidden'); pendingMoveRenameDoc = null; };
 
-        $('btnConfirmMoveRename'].onclick = async function() {
+        $('btnConfirmMoveRename').onclick = async function() {
             if (!pendingMoveRenameDoc) return;
-            const code = $('inputMovePasscode'].value;
+            const code = $('inputMovePasscode').value;
             if (code !== ADMIN_PASSCODE) return alert("❌ Code de sécurité incorrect !");
-            const newLabel = $('inputMoveRenameLabel'].value.trim() || pendingMoveRenameDoc.name;
-            const newTab = $('selectMoveTargetTab'].value;
-            const typedCustom = $('inputMoveCustomSubFolder'].value.trim();
-            const newSub = typedCustom ? normalizeFolderPath(typedCustom) : ($('selectMoveTargetSubFolder'].value || 'Général');
+            const newLabel = $('inputMoveRenameLabel').value.trim() || pendingMoveRenameDoc.name;
+            const newTab = $('selectMoveTargetTab').value;
+            const typedCustom = $('inputMoveCustomSubFolder').value.trim();
+            const newSub = typedCustom ? normalizeFolderPath(typedCustom) : ($('selectMoveTargetSubFolder').value || 'Général');
 
             if (typedCustom && !(customSubFolders[newTab] || []).includes(newSub)) await createSubFolderOnR2(newTab, newSub);
             if (pendingMoveRenameDoc.r2Key) {
                 try { await fetch(R2_API_ENDPOINT, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'update_file_meta', key: pendingMoveRenameDoc.r2Key, newLabel, newFolder: newTab, newSubFolder: newSub, code }) }); } catch (e) {}
             }
-            $('moveRenameFileModal'].classList.add('hidden'); pendingMoveRenameDoc = null;
+            $('moveRenameFileModal').classList.add('hidden'); pendingMoveRenameDoc = null;
             await syncAllFromR2();
         };
 
-        $('btnOpenFontModal'].onclick = () => { renderFontManagerList(); $('fontManagerModal'].classList.remove('hidden'); };
-        $('btnCloseFontModal'].onclick = $('btnCancelFontModal'].onclick = () => $('fontManagerModal'].classList.add('hidden');
+        $('btnOpenFontModal').onclick = () => { renderFontManagerList(); $('fontManagerModal').classList.remove('hidden'); };
+        $('btnCloseFontModal').onclick = $('btnCancelFontModal').onclick = () => $('fontManagerModal').classList.add('hidden');
 
         function renderFontManagerList() {
             const c = $('fontListContainer'); c.innerHTML = '';
@@ -813,12 +895,12 @@
                         <button type="button" class="btn-use-font text-xs font-extrabold px-3 py-1.5 rounded-lg ${isSel ? 'bg-emerald-700 text-white' : 'bg-gray-200 text-gray-800'}">${isSel ? '✓ Utilisée' : 'Utiliser'}</button>
                         ${!fItem.isSystem ? `<button type="button" class="btn-del-font text-xs font-bold px-2.5 py-1.5 rounded-lg bg-red-50 text-red-600 border border-red-200">🗑️</button>` : ''}
                     </div>`;
-                row.querySelector('.btn-use-font'].onclick = () => { activeFontFamilyName = fItem.name; $('activeFontBadgeName'].textContent = fItem.name; renderFontManagerList(); renderAllPosters(); };
+                row.querySelector('.btn-use-font').onclick = () => { activeFontFamilyName = fItem.name; $('activeFontBadgeName').textContent = fItem.name; renderFontManagerList(); renderAllPosters(); };
                 const delBtn = row.querySelector('.btn-del-font');
                 if (delBtn) delBtn.onclick = async () => {
                     if (await deleteSharedOrLocalItemWithPassword(fItem, null, fItem.name)) {
                         availableFontsList = availableFontsList.filter(f => f.id !== fItem.id);
-                        if (activeFontFamilyName === fItem.name) { activeFontFamilyName = 'Copie de Museo_Slab_3'; $('activeFontBadgeName'].textContent = 'Copie de Museo_Slab_3'; }
+                        if (activeFontFamilyName === fItem.name) { activeFontFamilyName = 'Copie de Museo_Slab_3'; $('activeFontBadgeName').textContent = 'Copie de Museo_Slab_3'; }
                         renderFontManagerList(); renderAllPosters();
                     }
                 };
@@ -826,9 +908,9 @@
             });
         }
 
-        $('inputUploadFontR2'].onchange = async function(e) {
+        $('inputUploadFontR2').onchange = async function(e) {
             const files = Array.from(e.target.files); if (!files.length) return;
-            $('fontUploadStatus'].textContent = `⏳ Envoi sur R2...`;
+            $('fontUploadStatus').textContent = `⏳ Envoi sur R2...`;
             for (const file of files) {
                 const cleanName = file.name.replace(/\.[^.]+$/, '');
                 try {
@@ -841,21 +923,21 @@
                 const dataUrl = await readFileAsDataURL(file);
                 const uploaded = await uploadToR2OrLocal('fonts', cleanName, file.name, 'FONT', dataUrl, dataUrl);
                 if (uploaded && !availableFontsList.some(f => f.name === cleanName)) availableFontsList.push({ id: uploaded.key || cleanName, r2Key: uploaded.key, name: cleanName, fileName: file.name, isSystem: false });
-                activeFontFamilyName = cleanName; $('activeFontBadgeName'].textContent = cleanName;
+                activeFontFamilyName = cleanName; $('activeFontBadgeName').textContent = cleanName;
             }
-            $('fontUploadStatus'].textContent = '✅ Police activée !';
-            setTimeout(() => $('fontUploadStatus'].textContent = '', 3000);
+            $('fontUploadStatus').textContent = '✅ Police activée !';
+            setTimeout(() => $('fontUploadStatus').textContent = '', 3000);
             renderFontManagerList(); renderAllPosters(); this.value = '';
         };
 
         function setLibraryActiveTab(tab) {
             activeLibraryTab = tab; activeLibrarySubFolder = 'Général';
-            $('btnTabDeposited'].className = tab === 'ready_deposited' ? 'text-xs font-extrabold px-3.5 py-1.5 rounded-lg bg-indigo-600 text-white shadow' : 'text-xs font-extrabold px-3.5 py-1.5 rounded-lg text-gray-700';
-            $('btnTabGenerated'].className = tab === 'ready_generated' ? 'text-xs font-extrabold px-3.5 py-1.5 rounded-lg bg-indigo-600 text-white shadow' : 'text-xs font-extrabold px-3.5 py-1.5 rounded-lg text-gray-700';
-            renderLibraryFoldersHierarchy(); renderReadyDocsGrid($('inputSearchReadyDocs'].value);
+            $('btnTabDeposited').className = tab === 'ready_deposited' ? 'text-xs font-extrabold px-3.5 py-1.5 rounded-lg bg-indigo-600 text-white shadow' : 'text-xs font-extrabold px-3.5 py-1.5 rounded-lg text-gray-700';
+            $('btnTabGenerated').className = tab === 'ready_generated' ? 'text-xs font-extrabold px-3.5 py-1.5 rounded-lg bg-indigo-600 text-white shadow' : 'text-xs font-extrabold px-3.5 py-1.5 rounded-lg text-gray-700';
+            renderLibraryFoldersHierarchy(); renderReadyDocsGrid($('inputSearchReadyDocs').value);
         }
-        $('btnTabDeposited'].onclick = () => setLibraryActiveTab('ready_deposited');
-        $('btnTabGenerated'].onclick = () => setLibraryActiveTab('ready_generated');
+        $('btnTabDeposited').onclick = () => setLibraryActiveTab('ready_deposited');
+        $('btnTabGenerated').onclick = () => setLibraryActiveTab('ready_generated');
 
         function renderLibraryFoldersHierarchy() {
             const allPaths = customSubFolders[activeLibraryTab] || ['Général'];
@@ -869,7 +951,7 @@
                 const btn = document.createElement('button');
                 btn.type = 'button'; btn.className = 'text-xs font-bold px-2.5 py-1';
                 btn.textContent = rootName === 'Général' ? '🏠 Général (Racine)' : `📁 ${rootName}`;
-                btn.onclick = () => { activeLibrarySubFolder = rootName; renderLibraryFoldersHierarchy(); renderReadyDocsGrid($('inputSearchReadyDocs'].value); };
+                btn.onclick = () => { activeLibrarySubFolder = rootName; renderLibraryFoldersHierarchy(); renderReadyDocsGrid($('inputSearchReadyDocs').value); };
                 wrap.appendChild(btn);
 
                 if (rootName !== 'Général') {
@@ -887,7 +969,7 @@
                 const b = document.createElement('button');
                 b.className = `px-1.5 py-0.5 rounded hover:bg-indigo-200 ${isLast ? 'bg-indigo-100 underline' : ''}`;
                 b.textContent = label;
-                b.onclick = () => { activeLibrarySubFolder = path; renderLibraryFoldersHierarchy(); renderReadyDocsGrid($('inputSearchReadyDocs'].value); };
+                b.onclick = () => { activeLibrarySubFolder = path; renderLibraryFoldersHierarchy(); renderReadyDocsGrid($('inputSearchReadyDocs').value); };
                 bcBar.appendChild(b);
             };
             addCrumb('Général', 'Général', activeLibrarySubFolder === 'Général');
@@ -902,26 +984,26 @@
             }
         }
 
-        $('btnCreateNewRootFolder'].onclick = async () => {
+        $('btnCreateNewRootFolder').onclick = async () => {
             const name = prompt(`📁 Nom du nouveau dossier dans "Général" :`);
             if (!name?.trim()) return;
             activeLibrarySubFolder = normalizeFolderPath(name.replace(/\//g, '-'));
             await createSubFolderOnR2(activeLibraryTab, activeLibrarySubFolder);
         };
-        $('btnCreateNewChildSubFolder'].onclick = async () => {
+        $('btnCreateNewChildSubFolder').onclick = async () => {
             const name = prompt(`📂 Créer un sous-dossier dans "${activeLibrarySubFolder}" :`);
             if (!name?.trim()) return;
             const c = name.trim().replace(/\//g, '-');
             activeLibrarySubFolder = activeLibrarySubFolder === 'Général' ? c : `${activeLibrarySubFolder}/${c}`;
             await createSubFolderOnR2(activeLibraryTab, activeLibrarySubFolder);
         };
-        $('btnOpenReadyDocsModal'].onclick = () => { $('inputSearchReadyDocs'].value = ''; syncAllFromR2(); $('readyDocsModal'].classList.remove('hidden'); };
-        $('btnCloseReadyDocsModal'].onclick = () => $('readyDocsModal'].classList.add('hidden');
-        $('inputSearchReadyDocs'].oninput = function() { renderReadyDocsGrid(this.value); };
+        $('btnOpenReadyDocsModal').onclick = () => { $('inputSearchReadyDocs').value = ''; syncAllFromR2(); $('readyDocsModal').classList.remove('hidden'); };
+        $('btnCloseReadyDocsModal').onclick = () => $('readyDocsModal').classList.add('hidden');
+        $('inputSearchReadyDocs').oninput = function() { renderReadyDocsGrid(this.value); };
 
-        $('inputUploadReadyDocs'].onchange = async function(e) {
+        $('inputUploadReadyDocs').onchange = async function(e) {
             const files = Array.from(e.target.files); if (!files.length) return;
-            $('readyDocsUploadStatus'].textContent = `⏳ Compression WebP & Envoi sur R2...`;
+            $('readyDocsUploadStatus').textContent = `⏳ Compression WebP & Envoi sur R2...`;
             for (const file of files) {
                 const ext = (file.name.split('.').pop() || '').toUpperCase();
                 const rawDataUrl = await readFileAsDataURL(file);
@@ -937,8 +1019,8 @@
                     await uploadToR2OrLocal(activeLibraryTab, file.name.replace(/\.[^.]+$/, ''), ensureWebpFileName(file.name), 'IMAGE', rawDataUrl, rawDataUrl, activeLibrarySubFolder);
                 }
             }
-            $('readyDocsUploadStatus'].textContent = '✅ Enregistré sur R2 !';
-            setTimeout(() => $('readyDocsUploadStatus'].textContent = '', 3500);
+            $('readyDocsUploadStatus').textContent = '✅ Enregistré sur R2 !';
+            setTimeout(() => $('readyDocsUploadStatus').textContent = '', 3500);
             this.value = '';
         };
 
@@ -947,7 +1029,7 @@
             const sourceList = activeLibraryTab === 'ready_deposited' ? readyDepositedDocs : readyGeneratedDocs;
             const filteredDocs = sourceList.filter(doc => normalizeFolderPath(doc.subFolder) === activeLibrarySubFolder && (!q || (doc.name || '').toLowerCase().includes(q)));
             const grid = $('readyDocsGrid'); grid.innerHTML = '';
-            $('readyDocsEmptyState'].classList.toggle('hidden', filteredDocs.length > 0);
+            $('readyDocsEmptyState').classList.toggle('hidden', filteredDocs.length > 0);
 
             filteredDocs.forEach(doc => {
                 const badgeColor = doc.fileType === 'PDF' ? 'bg-red-600 text-white' : (doc.fileType === 'SVG' ? 'bg-amber-500 text-white' : 'bg-indigo-600 text-white');
@@ -967,11 +1049,11 @@
                         </div>
                     </div>`;
                 card.onclick = e => {
-                    if (e.target.closest('.btn-mv')) { e.stopPropagation(); pendingMoveRenameDoc = doc; $('inputMoveRenameLabel'].value = doc.name || ''; const t = doc.folder === 'ready_generated' ? 'ready_generated' : 'ready_deposited'; $('selectMoveTargetTab'].value = t; populateMoveTargetSubFolders(t, normalizeFolderPath(doc.subFolder)); $('inputMoveCustomSubFolder'].value = ''; $('inputMovePasscode'].value = ''; return $('moveRenameFileModal'].classList.remove('hidden'); }
+                    if (e.target.closest('.btn-mv')) { e.stopPropagation(); pendingMoveRenameDoc = doc; $('inputMoveRenameLabel').value = doc.name || ''; const t = doc.folder === 'ready_generated' ? 'ready_generated' : 'ready_deposited'; $('selectMoveTargetTab').value = t; populateMoveTargetSubFolders(t, normalizeFolderPath(doc.subFolder)); $('inputMoveCustomSubFolder').value = ''; $('inputMovePasscode').value = ''; return $('moveRenameFileModal').classList.remove('hidden'); }
                     if (e.target.closest('.btn-dl')) { e.stopPropagation(); return deleteSharedOrLocalItemWithPassword(doc, READY_DOCS_STORE, doc.name); }
                     if (e.target.closest('.btn-pr')) { e.stopPropagation(); return printReadyDocument(doc); }
                     if (e.target.closest('.btn-dw')) { e.stopPropagation(); return downloadReadyDocument(doc); }
-                    currentLightboxDoc = doc; $('lightboxTitle'].textContent = doc.name; $('lightboxTypeBadge'].textContent = doc.fileType; $('lightboxImagePreview'].src = doc.previewDataUrl; $('docLightboxModal'].classList.remove('hidden');
+                    currentLightboxDoc = doc; $('lightboxTitle').textContent = doc.name; $('lightboxTypeBadge').textContent = doc.fileType; $('lightboxImagePreview').src = doc.previewDataUrl; $('docLightboxModal').classList.remove('hidden');
                 };
                 grid.appendChild(card);
             });
@@ -979,60 +1061,57 @@
 
         function openSaveDestinationModal(idx) {
             pendingSavePosterIndex = idx;
-            $('inputSavePosterName'].value = postersList[idx].productName || `Affiche_${idx + 1}`;
-            $('inputNewDestFolder'].value = '';
+            $('inputSavePosterName').value = postersList[idx].productName || `Affiche_${idx + 1}`;
+            $('inputNewDestFolder').value = '';
             const sel = $('selectSaveDestinationFolder'); sel.innerHTML = '';
             (customSubFolders.ready_generated || ['Général']).forEach(f => {
                 const o = document.createElement('option'); o.value = f;
                 o.textContent = f === 'Général' ? '📁 Général (Racine)' : `${'—'.repeat(f.split('/').length)} 📂 ${f}`;
                 sel.appendChild(o);
             });
-            $('saveDestinationModal'].classList.remove('hidden');
+            $('saveDestinationModal').classList.remove('hidden');
         }
-        $('btnCloseSaveDestModal'].onclick = $('btnCancelSaveDest'].onclick = () => { $('saveDestinationModal'].classList.add('hidden'); pendingSavePosterIndex = null; };
-        $('btnConfirmSaveDest'].onclick = async function() {
+        $('btnCloseSaveDestModal').onclick = $('btnCancelSaveDest').onclick = () => { $('saveDestinationModal').classList.add('hidden'); pendingSavePosterIndex = null; };
+        $('btnConfirmSaveDest').onclick = async function() {
             if (pendingSavePosterIndex === null) return;
             const c = $(`posterCanvas_${pendingSavePosterIndex}`); if (!c) return;
-            const chosenName = $('inputSavePosterName'].value.trim() || `Affiche_${pendingSavePosterIndex + 1}`;
-            const typed = $('inputNewDestFolder'].value.trim();
-            const targetSub = typed ? normalizeFolderPath(typed) : ($('selectSaveDestinationFolder'].value || 'Général');
+            const chosenName = $('inputSavePosterName').value.trim() || `Affiche_${pendingSavePosterIndex + 1}`;
+            const typed = $('inputNewDestFolder').value.trim();
+            const targetSub = typed ? normalizeFolderPath(typed) : ($('selectSaveDestinationFolder').value || 'Général');
             this.disabled = true;
             if (typed && !customSubFolders.ready_generated.includes(targetSub)) await createSubFolderOnR2('ready_generated', targetSub);
             const webp = canvasToWebPDataUrl(c, 0.90);
             await uploadToR2OrLocal('ready_generated', chosenName, `${chosenName}.webp`, 'IMAGE', webp, webp, targetSub);
-            this.disabled = false; $('saveDestinationModal'].classList.add('hidden'); pendingSavePosterIndex = null;
+            this.disabled = false; $('saveDestinationModal').classList.add('hidden'); pendingSavePosterIndex = null;
         };
 
-        $('btnCloseLightboxModal'].onclick = () => { $('docLightboxModal'].classList.add('hidden'); currentLightboxDoc = null; };
+        $('btnCloseLightboxModal').onclick = () => { $('docLightboxModal').classList.add('hidden'); currentLightboxDoc = null; };
         function downloadReadyDocument(doc) { const a = document.createElement('a'); a.href = doc.rawDataUrl || doc.previewDataUrl; a.target = '_blank'; a.download = doc.fileName || doc.name || 'document'; document.body.appendChild(a); a.click(); document.body.removeChild(a); }
         function printReadyDocument(doc) {
             const w = window.open('', '_blank'); if (!w) return alert("Autorise les pop-ups pour imprimer.");
             w.document.write(`<!DOCTYPE html><html><head><title>${doc.name}</title><style>@page{margin:0}body{margin:0;display:flex;align-items:center;justify-content:center}img{max-width:100vw;max-height:100vh;object-fit:contain}</style></head><body><img src="${doc.previewDataUrl}" onload="setTimeout(()=>{window.print();window.close()},150)"></body></html>`);
             w.document.close();
         }
-        $('btnPrintLightboxDoc'].onclick = () => currentLightboxDoc && printReadyDocument(currentLightboxDoc);
-        $('btnDownloadLightboxDoc'].onclick = () => currentLightboxDoc && downloadReadyDocument(currentLightboxDoc);
+        $('btnPrintLightboxDoc').onclick = () => currentLightboxDoc && printReadyDocument(currentLightboxDoc);
+        $('btnDownloadLightboxDoc').onclick = () => currentLightboxDoc && downloadReadyDocument(currentLightboxDoc);
 
-        // ============================================================================
-        // BOUTONS DE CONFIGURATION, GALERIE VISUELLE & GALERIE DES FONDS
-        // ============================================================================
-        $('btnToggleAlcohol18'].onclick = () => {
+        $('btnToggleAlcohol18').onclick = () => {
             showAlcoholGlobal = !showAlcoholGlobal;
-            $('btnToggleAlcohol18'].className = showAlcoholGlobal
+            $('btnToggleAlcohol18').className = showAlcoholGlobal
                 ? 'text-[11px] font-extrabold px-3 py-1.5 rounded-lg border-2 border-orange-600 bg-orange-600 text-white flex items-center gap-1.5 shadow-sm shrink-0'
                 : 'text-[11px] font-extrabold px-3 py-1.5 rounded-lg border-2 border-orange-300 bg-orange-50 text-orange-800 hover:bg-orange-100 flex items-center gap-1.5 shadow-sm shrink-0';
-            $('alcoholBtnLabel'].textContent = 'Alcool';
+            $('alcoholBtnLabel').textContent = 'Alcool';
             renderAllPosters();
         };
 
-        $('btnTogglePriceCalc'].onclick = function() {
+        $('btnTogglePriceCalc').onclick = function() {
             applyMechanicPriceCalc = !applyMechanicPriceCalc;
             this.textContent = applyMechanicPriceCalc ? 'Calcul prix : Activé' : 'Calcul prix : Désactivé';
             this.className = applyMechanicPriceCalc ? 'text-[11px] font-bold px-2 py-0.5 rounded bg-green-100 text-green-800 border border-green-300' : 'text-[11px] font-bold px-2 py-0.5 rounded bg-amber-100 text-amber-900 border border-amber-400';
             renderAllPosters();
         };
 
-        $('btnToggleA4Mode'].onclick = function() {
+        $('btnToggleA4Mode').onclick = function() {
             isA4PortraitMode = !isA4PortraitMode;
             this.className = isA4PortraitMode
                 ? 'text-[11px] font-extrabold px-3 py-1.5 rounded-lg border-2 border-red-600 bg-red-600 text-white flex items-center gap-1.5 shadow-sm shrink-0'
@@ -1040,17 +1119,17 @@
             this.innerHTML = isA4PortraitMode
                 ? '<span>Mode : A4 Portrait</span><span class="bg-white text-red-600 text-[10px] px-1.5 py-0.5 rounded">Basculer Stock Rayon</span>'
                 : '<span>Mode : Stock Rayon</span><span class="bg-red-600 text-white text-[10px] px-1.5 py-0.5 rounded">Basculer A4 Portrait</span>';
-            $('btnDownloadLabel'].textContent = isA4PortraitMode ? '📄 TÉLÉCHARGER LE PDF (A4 PORTRAIT)' : '📄 TÉLÉCHARGER LE PDF (STOCK RAYON)';
-            $('labelZoneImage'].textContent = isA4PortraitMode ? '🖼️ IMAGE HAUT (A4)' : '🖼️ IMAGE';
-            $('globalGalleryLabel'].textContent = `🖼️ ${isA4PortraitMode ? (labelImageA4 || 'Choisir visuel A4') : (labelImage4 || 'Choisir visuel')}`;
-            $('btnOpenBgModal'].classList.toggle('hidden', isA4PortraitMode);
+            $('btnDownloadLabel').textContent = isA4PortraitMode ? '📄 TÉLÉCHARGER LE PDF (A4 PORTRAIT)' : '📄 TÉLÉCHARGER LE PDF (STOCK RAYON)';
+            $('labelZoneImage').textContent = isA4PortraitMode ? '🖼️ IMAGE HAUT (A4)' : '🖼️ IMAGE';
+            $('globalGalleryLabel').textContent = `🖼️ ${isA4PortraitMode ? (labelImageA4 || 'Choisir visuel A4') : (labelImage4 || 'Choisir visuel')}`;
+            $('btnOpenBgModal').classList.toggle('hidden', isA4PortraitMode);
             buildVisualGallery(); renderAllPosters();
         };
 
-        $('selectMechanicPreset'].onchange = function() {
+        $('selectMechanicPreset').onchange = function() {
             const p = MECHANIC_PRESETS[this.value]; if (!p) return;
             forceManualGlobalDiscount = true;
-            $('inputDiscount'].value = p.discount; $('inputDiscountText'].value = p.text; $('inputUnitLabel'].value = p.unitLabel;
+            $('inputDiscount').value = p.discount; $('inputDiscountText').value = p.text; $('inputUnitLabel').value = p.unitLabel;
             postersList.forEach(it => {
                 if (it.detectedPromo) {
                     it.detectedPromo.isGlobalSync = true;
@@ -1064,30 +1143,30 @@
             renderAllPosters();
         };
 
-        $('btnToggleDate'].onclick = function() {
+        $('btnToggleDate').onclick = function() {
             showDate = !showDate;
             this.textContent = showDate ? '👁️ Date affichée' : '🚫 Date masquée';
             this.className = showDate ? 'text-[11px] font-bold px-2 py-0.5 rounded bg-green-100 text-green-800 border border-green-300' : 'text-[11px] font-bold px-2 py-0.5 rounded bg-red-100 text-red-800 border border-red-300';
-            $('inputDates'].disabled = !showDate; $('inputDates'].classList.toggle('opacity-50', !showDate); $('inputDates'].classList.toggle('bg-gray-100', !showDate);
+            $('inputDates').disabled = !showDate; $('inputDates').classList.toggle('opacity-50', !showDate); $('inputDates').classList.toggle('bg-gray-100', !showDate);
             renderAllPosters();
         };
 
-        $('btnToggleDiscountText'].onclick = function() {
+        $('btnToggleDiscountText').onclick = function() {
             showMechanic = !showMechanic;
             this.textContent = showMechanic ? 'affichée' : 'masquée';
             this.className = showMechanic ? 'min-w-[88px] text-center text-[11px] font-bold px-2.5 py-0.5 rounded bg-green-100 text-green-800 border border-green-300' : 'min-w-[88px] text-center text-[11px] font-bold px-2.5 py-0.5 rounded bg-red-100 text-red-800 border border-red-300';
             ['selectMechanicPreset', 'inputDiscount', 'inputDiscountText'].forEach(id => { $(id).disabled = !showMechanic; $(id).classList.toggle('opacity-50', !showMechanic); $(id).classList.toggle('bg-gray-100', !showMechanic); });
 
-            const selPreset = MECHANIC_PRESETS[$('selectMechanicPreset'].value] || {};
+            const selPreset = MECHANIC_PRESETS[$('selectMechanicPreset').value] || {};
             postersList.forEach(it => {
                 if (showMechanic) {
                     if (!it.detectedPromo) {
                         it.detectedPromo = {
                             active: true, isGlobalSync: true,
-                            presetKey: $('selectMechanicPreset'].value,
-                            discount: $('inputDiscount'].value.trim(),
-                            text: $('inputDiscountText'].value.trim(),
-                            unitLabel: $('inputUnitLabel'].value.trim(),
+                            presetKey: $('selectMechanicPreset').value,
+                            discount: $('inputDiscount').value.trim(),
+                            text: $('inputDiscountText').value.trim(),
+                            unitLabel: $('inputUnitLabel').value.trim(),
                             isCarteU: Boolean(selPreset.isCarteU)
                         };
                     } else {
@@ -1100,28 +1179,28 @@
             renderAllPosters();
         };
 
-        $('btnDateWhite'].onclick = () => {
+        $('btnDateWhite').onclick = () => {
             dateColor = '#FFFFFF';
-            $('btnDateWhite'].className = 'flex-1 py-1.5 px-3 rounded-lg border-2 border-red-600 bg-gray-800 text-white text-xs font-bold flex items-center justify-center gap-1.5';
-            $('btnDateBlack'].className = 'flex-1 py-1.5 px-3 rounded-lg border border-gray-300 bg-white text-gray-900 text-xs font-bold flex items-center justify-center gap-1.5';
+            $('btnDateWhite').className = 'flex-1 py-1.5 px-3 rounded-lg border-2 border-red-600 bg-gray-800 text-white text-xs font-bold flex items-center justify-center gap-1.5';
+            $('btnDateBlack').className = 'flex-1 py-1.5 px-3 rounded-lg border border-gray-300 bg-white text-gray-900 text-xs font-bold flex items-center justify-center gap-1.5';
             renderAllPosters();
         };
-        $('btnDateBlack'].onclick = () => {
+        $('btnDateBlack').onclick = () => {
             dateColor = '#000000';
-            $('btnDateBlack'].className = 'flex-1 py-1.5 px-3 rounded-lg border-2 border-red-600 bg-gray-100 text-gray-900 text-xs font-bold flex items-center justify-center gap-1.5';
-            $('btnDateWhite'].className = 'flex-1 py-1.5 px-3 rounded-lg border border-gray-300 bg-gray-700 text-white text-xs font-bold flex items-center justify-center gap-1.5 opacity-70';
+            $('btnDateBlack').className = 'flex-1 py-1.5 px-3 rounded-lg border-2 border-red-600 bg-gray-100 text-gray-900 text-xs font-bold flex items-center justify-center gap-1.5';
+            $('btnDateWhite').className = 'flex-1 py-1.5 px-3 rounded-lg border border-gray-300 bg-gray-700 text-white text-xs font-bold flex items-center justify-center gap-1.5 opacity-70';
             renderAllPosters();
         };
-        $('chkShowContenance'].onchange = $('chkAutoTrim'].onchange = renderAllPosters;
+        $('chkShowContenance').onchange = $('chkAutoTrim').onchange = renderAllPosters;
 
         function applyBackgroundVisual(dataUrl, labelName, isR2Baked33 = false) {
             const img = new Image();
             if (window.location.protocol !== 'file:') img.crossOrigin = 'anonymous';
             img.onload = () => {
                 activeBgStockImg = img; activeBgStockLabel = labelName; activeBgStockIsR2 = isR2Baked33;
-                $('bgBtnLabel'].textContent = `🎨 Fond : ${labelName}`;
-                $('btnOpenBgModal'].className = 'text-[11px] font-extrabold px-3 py-1.5 rounded-lg border-2 border-purple-600 bg-purple-600 text-white transition flex items-center gap-1.5 shadow-sm shrink-0';
-                $('bgGalleryModal'].classList.add('hidden');
+                $('bgBtnLabel').textContent = `🎨 Fond : ${labelName}`;
+                $('btnOpenBgModal').className = 'text-[11px] font-extrabold px-3 py-1.5 rounded-lg border-2 border-purple-600 bg-purple-600 text-white transition flex items-center gap-1.5 shadow-sm shrink-0';
+                $('bgGalleryModal').classList.add('hidden');
                 renderAllPosters();
             };
             img.src = dataUrl;
@@ -1143,8 +1222,8 @@
         function buildBgGallery(filterText = '') {
             const q = filterText.trim().toLowerCase();
             const savedBgs = savedUserImages.filter(it => it.folder === 'bg_stock' && (!q || (it.label || '').toLowerCase().includes(q)));
-            $('savedBgCountBadge'].textContent = savedBgs.length;
-            $('savedBgSection'].classList.toggle('hidden', !savedBgs.length);
+            $('savedBgCountBadge').textContent = savedBgs.length;
+            $('savedBgSection').classList.toggle('hidden', !savedBgs.length);
             const sGrid = $('savedBgGrid'); sGrid.innerHTML = '';
             savedBgs.forEach(saved => {
                 const w = document.createElement('div');
@@ -1159,7 +1238,7 @@
 
             const pGrid = $('bgGalleryGrid'); pGrid.innerHTML = '';
             const filteredPresets = dynamicPresetsBackgrounds.filter(p => !q || p.label.toLowerCase().includes(q));
-            $('presetBgCountBadge'].textContent = filteredPresets.length;
+            $('presetBgCountBadge').textContent = filteredPresets.length;
             filteredPresets.forEach(preset => {
                 const candidates = getCandidateUrls(preset);
                 const card = document.createElement('div');
@@ -1168,26 +1247,26 @@
                 const img = card.querySelector('img'); let t = 0;
                 img.onerror = () => { t++; if (t < candidates.length) img.src = candidates[t]; else card.remove(); };
                 img.src = candidates[0];
-                card.querySelector('.btn-del'].onclick = e => { e.stopPropagation(); hideStaticGithubFileOnR2(preset.file, preset.label); };
+                card.querySelector('.btn-del').onclick = e => { e.stopPropagation(); hideStaticGithubFileOnR2(preset.file, preset.label); };
                 card.onclick = () => applyPresetBgWithFallback(candidates, preset.label);
                 pGrid.appendChild(card);
             });
         }
 
-        $('btnOpenBgModal'].onclick = () => { $('inputSearchBgGallery'].value = ''; syncAllFromR2(); buildBgGallery(''); $('bgGalleryModal'].classList.remove('hidden'); };
-        $('btnCloseBgModal'].onclick = $('btnCancelBgModal'].onclick = () => $('bgGalleryModal'].classList.add('hidden');
-        $('inputSearchBgGallery'].oninput = function() { buildBgGallery(this.value); };
-        $('btnRefreshBgGallery'].onclick = async () => { await discoverFolderImagesAutomatically(); await syncAllFromR2(); buildBgGallery($('inputSearchBgGallery']?.value || ''); };
+        $('btnOpenBgModal').onclick = () => { $('inputSearchBgGallery').value = ''; syncAllFromR2(); buildBgGallery(''); $('bgGalleryModal').classList.remove('hidden'); };
+        $('btnCloseBgModal').onclick = $('btnCancelBgModal').onclick = () => $('bgGalleryModal').classList.add('hidden');
+        $('inputSearchBgGallery').oninput = function() { buildBgGallery(this.value); };
+        $('btnRefreshBgGallery').onclick = async () => { await discoverFolderImagesAutomatically(); await syncAllFromR2(); buildBgGallery($('inputSearchBgGallery')?.value || ''); };
 
-        $('btnClearBgSelection'].onclick = () => {
+        $('btnClearBgSelection').onclick = () => {
             activeBgStockImg = null; activeBgStockLabel = 'Aucun'; activeBgStockIsR2 = false;
-            $('bgBtnLabel'].textContent = '🎨 Fond : Aucun';
-            $('btnOpenBgModal'].className = 'text-[11px] font-extrabold px-3 py-1.5 rounded-lg border-2 border-purple-300 bg-purple-50 text-purple-900 hover:bg-purple-100 transition flex items-center gap-1.5 shadow-sm shrink-0';
-            $('bgGalleryModal'].classList.add('hidden');
+            $('bgBtnLabel').textContent = '🎨 Fond : Aucun';
+            $('btnOpenBgModal').className = 'text-[11px] font-extrabold px-3 py-1.5 rounded-lg border-2 border-purple-300 bg-purple-50 text-purple-900 hover:bg-purple-100 transition flex items-center gap-1.5 shadow-sm shrink-0';
+            $('bgGalleryModal').classList.add('hidden');
             renderAllPosters();
         };
 
-        $('inputAddBgImage'].onchange = async function(e) {
+        $('inputAddBgImage').onchange = async function(e) {
             const files = Array.from(e.target.files); if (!files.length) return;
             for (const file of files) {
                 const pages = await loadFileToPages(file);
@@ -1213,7 +1292,7 @@
                 const cw = right - left + 1, ch = bottom - top + 1;
                 if (cw <= 20 || ch <= 20) return img;
                 const out = document.createElement('canvas'); out.width = cw; out.height = ch;
-                out.getContext('2d'].drawImage(c, left, top, cw, ch, 0, 0, cw, ch);
+                out.getContext('2d').drawImage(c, left, top, cw, ch, 0, 0, cw, ch);
                 const oImg = new Image(); oImg.src = out.toDataURL('image/png'); return oImg;
             } catch (e) { return img; }
         }
@@ -1244,7 +1323,7 @@
             }
             return new Promise(res => {
                 const img = new Image();
-                img.onload = () => { const c = document.createElement('canvas'); c.width = img.width; c.height = img.height; c.getContext('2d'].drawImage(img, 0, 0); res([{ canvas: c, textItems: [] }]); };
+                img.onload = () => { const c = document.createElement('canvas'); c.width = img.width; c.height = img.height; c.getContext('2d').drawImage(img, 0, 0); res([{ canvas: c, textItems: [] }]); };
                 readFileAsDataURL(file).then(url => img.src = url);
             });
         }
@@ -1252,8 +1331,8 @@
         function renderSavedGallerySection(filterText = '') {
             const q = filterText.trim().toLowerCase(), targetFolder = isA4PortraitMode ? 'top_a4' : 'left_4';
             const filtered = savedUserImages.filter(it => (!it.folder || it.folder === targetFolder) && (!q || (it.label || '').toLowerCase().includes(q)));
-            $('savedCountBadge'].textContent = filtered.length;
-            $('savedGallerySection'].classList.toggle('hidden', !filtered.length);
+            $('savedCountBadge').textContent = filtered.length;
+            $('savedGallerySection').classList.toggle('hidden', !filtered.length);
             const grid = $('savedGalleryGrid'); grid.innerHTML = '';
             filtered.forEach(saved => {
                 const w = document.createElement('div');
@@ -1270,7 +1349,7 @@
         function buildVisualGallery(filterText = '') {
             const q = filterText.trim().toLowerCase(), grid = $('galleryGrid'); grid.innerHTML = '';
             const filtered = getActivePresetList().filter(p => !q || p.label.toLowerCase().includes(q));
-            $('galleryFolderHeading'].innerHTML = `📁 Visuels détectés dans "${isA4PortraitMode ? 'Images A4' : 'Images Gauche'}" (<span id="presetCountBadge">${filtered.length}</span>)`;
+            $('galleryFolderHeading').innerHTML = `📁 Visuels détectés dans "${isA4PortraitMode ? 'Images A4' : 'Images Gauche'}" (<span id="presetCountBadge">${filtered.length}</span>)`;
             filtered.forEach(preset => {
                 const candidates = getCandidateUrls(preset);
                 const card = document.createElement('div');
@@ -1279,7 +1358,7 @@
                 const img = card.querySelector('img'); let t = 0;
                 img.onerror = () => { t++; if (t < candidates.length) img.src = candidates[t]; else card.remove(); };
                 img.src = candidates[0];
-                card.querySelector('.btn-del'].onclick = e => { e.stopPropagation(); hideStaticGithubFileOnR2(preset.file, preset.label); };
+                card.querySelector('.btn-del').onclick = e => { e.stopPropagation(); hideStaticGithubFileOnR2(preset.file, preset.label); };
                 card.onclick = () => applyPresetVisualWithFallback(candidates, preset.label);
                 grid.appendChild(card);
             });
@@ -1293,11 +1372,11 @@
                 if (currentGalleryTarget === 'global') {
                     if (isA4PortraitMode) { rawTopImageA4 = img; trimmedTopImageA4 = trimmed; labelImageA4 = labelName; }
                     else { rawLeftImage4 = img; trimmedLeftImage4 = trimmed; labelImage4 = labelName; }
-                    $('globalGalleryLabel'].textContent = `🖼️ ${labelName}`;
+                    $('globalGalleryLabel').textContent = `🖼️ ${labelName}`;
                 } else if (postersList[currentGalleryTarget]) {
                     Object.assign(postersList[currentGalleryTarget], { useCustomLeftImage: true, customRawImg: img, customTrimmedImg: trimmed, customImageLabel: labelName });
                 }
-                $('visualGalleryModal'].classList.add('hidden');
+                $('visualGalleryModal').classList.add('hidden');
                 trimmed.onload = renderAllPosters; setTimeout(renderAllPosters, 60);
             };
             img.src = dataUrl;
@@ -1315,23 +1394,23 @@
             next();
         }
 
-        $('btnOpenGlobalGallery'].onclick = () => { currentGalleryTarget = 'global'; $('inputSearchGallery'].value = ''; syncAllFromR2(); buildVisualGallery(''); $('visualGalleryModal'].classList.remove('hidden'); };
-        $('btnCloseGalleryModal'].onclick = $('btnCancelGalleryModal'].onclick = () => $('visualGalleryModal'].classList.add('hidden');
-        $('inputSearchGallery'].oninput = function() { buildVisualGallery(this.value); };
-        $('btnRefreshSharedGallery'].onclick = async () => { await discoverFolderImagesAutomatically(); await syncAllFromR2(); buildVisualGallery($('inputSearchGallery']?.value || ''); };
+        $('btnOpenGlobalGallery').onclick = () => { currentGalleryTarget = 'global'; $('inputSearchGallery').value = ''; syncAllFromR2(); buildVisualGallery(''); $('visualGalleryModal').classList.remove('hidden'); };
+        $('btnCloseGalleryModal').onclick = $('btnCancelGalleryModal').onclick = () => $('visualGalleryModal').classList.add('hidden');
+        $('inputSearchGallery').oninput = function() { buildVisualGallery(this.value); };
+        $('btnRefreshSharedGallery').onclick = async () => { await discoverFolderImagesAutomatically(); await syncAllFromR2(); buildVisualGallery($('inputSearchGallery')?.value || ''); };
 
-        $('btnClearVisualSelection'].onclick = () => {
+        $('btnClearVisualSelection').onclick = () => {
             if (currentGalleryTarget === 'global') {
                 if (isA4PortraitMode) { rawTopImageA4 = trimmedTopImageA4 = null; labelImageA4 = ''; }
                 else { rawLeftImage4 = trimmedLeftImage4 = null; labelImage4 = ''; }
-                $('globalGalleryLabel'].textContent = '🖼️ Choisir visuel';
+                $('globalGalleryLabel').textContent = '🖼️ Choisir visuel';
             } else if (postersList[currentGalleryTarget]) {
                 Object.assign(postersList[currentGalleryTarget], { customRawImg: null, customTrimmedImg: null, customImageLabel: '' });
             }
-            $('visualGalleryModal'].classList.add('hidden'); renderAllPosters();
+            $('visualGalleryModal').classList.add('hidden'); renderAllPosters();
         };
 
-        $('inputAddGalleryImage'].onchange = $('inputLeftImage'].onchange = async function(e) {
+        $('inputAddGalleryImage').onchange = $('inputLeftImage').onchange = async function(e) {
             const files = Array.from(e.target.files); if (!files.length) return;
             const folder = isA4PortraitMode ? 'top_a4' : 'left_4';
             for (const file of files) {
@@ -1351,7 +1430,6 @@
             imgA4.src = getCandidateUrls(dA4)[0];
         }
 
-        // Rendu précis des mécaniques Carte U selon la correction graphique demandée
         async function drawPromoCircle(ctx, circleX, circleY, radius, discountStr, rawDiscText, isA4, presetKey = '') {
             const FONT_SLAB = getActiveFontSlab();
             const presetInfo = MECHANIC_PRESETS[presetKey] || {};
@@ -1359,7 +1437,6 @@
             if (presetInfo.isCarteU) {
                 const styleType = presetInfo.uStyle || 'type1';
                 
-                // Fond turquoise #008585 pour les trois premiers, rouge #EE1C25 pour le quatrième ("DE REMISE IMMÉDIATE AVEC CARTE U")
                 ctx.fillStyle = (styleType === 'type4') ? '#EE1C25' : '#008585';
                 ctx.beginPath(); ctx.arc(circleX, circleY, radius, 0, Math.PI * 2); ctx.fill();
 
@@ -1367,7 +1444,6 @@
                 ctx.textAlign = 'center';
 
                 if (styleType === 'type1') {
-                    // 68% SUR LE 2ÈME PRODUIT IDENTIQUE VERSÉS SUR CARTE U
                     ctx.font = `900 ${isA4 ? 78 : 58}px ${FONT_SLAB}`;
                     ctx.fillText(discountStr, circleX, circleY - (isA4 ? 45 : 32));
                     ctx.font = `800 ${isA4 ? 22 : 15}px ${FONT_SLAB}`;
@@ -1376,19 +1452,16 @@
                         ctx.fillText(l.trim(), circleX, circleY - (isA4 ? 10 : 2) + idx * (isA4 ? 26 : 18));
                     });
                 } else if (styleType === 'type2') {
-                    // SOIT 1,60€ VERSÉS SUR CARTE U (avec 20% au-dessus)
                     ctx.font = `900 ${isA4 ? 76 : 56}px ${FONT_SLAB}`;
                     ctx.fillText(discountStr, circleX, circleY - (isA4 ? 30 : 20));
                     ctx.font = `800 ${isA4 ? 22 : 15}px ${FONT_SLAB}`;
                     ctx.fillText("SOIT 1,60€ VERSÉS SUR", circleX, circleY + (isA4 ? 12 : 10));
                 } else if (styleType === 'type3') {
-                    // 34% VERSÉS SUR CARTE U
                     ctx.font = `900 ${isA4 ? 85 : 62}px ${FONT_SLAB}`;
                     ctx.fillText(discountStr, circleX, circleY - (isA4 ? 20 : 12));
                     ctx.font = `800 ${isA4 ? 26 : 18}px ${FONT_SLAB}`;
                     ctx.fillText("VERSÉS SUR", circleX, circleY + (isA4 ? 22 : 16));
                 } else if (styleType === 'type4') {
-                    // -20% DE REMISE IMMÉDIATE AVEC CARTE U (Cercle rouge)
                     const num = discountStr.endsWith('%') ? discountStr.slice(0, -1) : discountStr;
                     ctx.font = `900 ${isA4 ? 90 : 65}px ${FONT_SLAB}`;
                     const nW = ctx.measureText(num).width;
@@ -1404,7 +1477,6 @@
                     ctx.fillText("DE REMISE IMMÉDIATE AVEC", circleX, circleY + (isA4 ? 30 : 20));
                 }
 
-                // Logo CARTE_U.png en bas à cheval sur le cercle
                 const uImg = await loadCarteUImage();
                 if (uImg) {
                     const imgW = isA4 ? 180 : 120;
@@ -1442,18 +1514,18 @@
             const isMech = isPosterPromoActive(item);
             const hasCustomPromo = Boolean(item.detectedPromo && !item.detectedPromo.isGlobalSync && !forceManualGlobalDiscount);
             const discIn = getEffectivePosterDiscount(item);
-            const discTxt = hasCustomPromo ? (item.detectedPromo.text || 'DE REMISE|IMMÉDIATE') : $('inputDiscountText'].value.trim();
-            const presetK = hasCustomPromo ? item.detectedPromo.presetKey : $('selectMechanicPreset'].value;
+            const discTxt = hasCustomPromo ? (item.detectedPromo.text || 'DE REMISE|IMMÉDIATE') : $('inputDiscountText').value.trim();
+            const presetK = hasCustomPromo ? item.detectedPromo.presetKey : $('selectMechanicPreset').value;
             const presetObj = MECHANIC_PRESETS[presetK] || {};
             const isCarteUPromos = Boolean(presetObj.isCarteU || item.detectedPromo?.isCarteU);
 
-            let uLabel = (hasCustomPromo && applyMechanicPriceCalc) ? item.detectedPromo.unitLabel : $('inputUnitLabel'].value;
+            let uLabel = (hasCustomPromo && applyMechanicPriceCalc) ? item.detectedPromo.unitLabel : $('inputUnitLabel').value;
             if (isCarteUPromos) { uLabel = "LE PRODUIT € CARTE U DÉDUITS"; }
 
-            const showCont = $('chkShowContenance'].checked, dateRaw = $('inputDates'].value.trim();
+            const showCont = $('chkShowContenance').checked, dateRaw = $('inputDates').value.trim();
             const pricing = computePromoPricing(item, presetK, discIn, isMech);
             const dispAlc = item.showAlcohol18 !== null ? item.showAlcohol18 : showAlcoholGlobal;
-            const autoTrim = $('chkAutoTrim'].checked;
+            const autoTrim = $('chkAutoTrim').checked;
             const activeImg = (item.useCustomLeftImage && item.customRawImg) ? (autoTrim ? item.customTrimmedImg : item.customRawImg) : (isA4PortraitMode ? (autoTrim ? trimmedTopImageA4 : rawTopImageA4) : (autoTrim ? trimmedLeftImage4 : rawLeftImage4));
 
             const ctx = canvas.getContext('2d');
@@ -1503,7 +1575,6 @@
                 return;
             }
 
-            // Mode Stock Rayon (1200 x 420)
             canvas.width = 1200; canvas.height = 420;
             ctx.fillStyle = '#FFFFFF'; ctx.fillRect(0, 0, 1200, 420);
 
@@ -1565,8 +1636,8 @@
         function renderAllPosters() {
             if (postersList.length > MAX_LABELS_LIMIT) postersList = postersList.slice(0, MAX_LABELS_LIMIT);
             const container = $('postersContainer'); container.innerHTML = '';
-            $('badgeCount'].textContent = `${postersList.length} / ${MAX_LABELS_LIMIT} étiquette${postersList.length > 1 ? 's' : ''}`;
-            if ($('quotaServiceBadge')) $('quotaServiceBadge'].textContent = `${postersList.length} / ${MAX_LABELS_LIMIT} max`;
+            $('badgeCount').textContent = `${postersList.length} / ${MAX_LABELS_LIMIT} étiquette${postersList.length > 1 ? 's' : ''}`;
+            if ($('quotaServiceBadge')) $('quotaServiceBadge').textContent = `${postersList.length} / ${MAX_LABELS_LIMIT} max`;
 
             if (postersList.length === 0) {
                 container.innerHTML = `
@@ -1574,7 +1645,7 @@
                         <p class="text-sm font-bold text-gray-600">Aucune étiquette affichée. Dépose un fichier PDF/Photo ou crée une étiquette manuellement.</p>
                         <button type="button" id="btnEmptyStateAdd" class="text-xs font-extrabold px-4 py-2 rounded-lg bg-red-600 text-white hover:bg-red-700 shadow">➕ Créer une étiquette</button>
                     </div>`;
-                $('btnEmptyStateAdd'].onclick = () => $('btnAddBlankPoster'].click();
+                $('btnEmptyStateAdd').onclick = () => $('btnAddBlankPoster').click();
                 return;
             }
 
@@ -1624,13 +1695,13 @@
                     postersList[i].crossedPrice = (v && v > 0) ? v : null;
                     if (postersList[i].crossedPrice && postersList[i].crossedPrice > postersList[i].oldPrice && !forceManualGlobalDiscount) {
                         const pct = Math.max(1, Math.round(((postersList[i].crossedPrice - postersList[i].oldPrice) / postersList[i].crossedPrice) * 100));
-                        const selPreset = MECHANIC_PRESETS[$('selectMechanicPreset'].value] || {};
+                        const selPreset = MECHANIC_PRESETS[$('selectMechanicPreset').value] || {};
                         postersList[i].detectedPromo = {
                             active: true, isGlobalSync: false,
-                            presetKey: $('selectMechanicPreset'].value || 'remise_34',
+                            presetKey: $('selectMechanicPreset').value || 'remise_34',
                             discount: `-${pct}%`,
-                            text: $('inputDiscountText'].value.trim() || 'DE REMISE|IMMÉDIATE',
-                            unitLabel: $('inputUnitLabel'].value.trim() || 'LE PRODUIT',
+                            text: $('inputDiscountText').value.trim() || 'DE REMISE|IMMÉDIATE',
+                            unitLabel: $('inputUnitLabel').value.trim() || 'LE PRODUIT',
                             isCarteU: Boolean(selPreset.isCarteU)
                         };
                     }
@@ -1646,33 +1717,33 @@
                 drawSinglePoster($(`posterCanvas_${i}`), postersList[i]);
             });
 
-            document.querySelectorAll('.btn-toggle-item-promo'].forEach(b => b.onclick = function() {
+            document.querySelectorAll('.btn-toggle-item-promo').forEach(b => b.onclick = function() {
                 const i = +this.dataset.idx;
                 const currentlyActive = isPosterPromoActive(postersList[i]);
                 if (currentlyActive) {
                     if (!postersList[i].detectedPromo) postersList[i].detectedPromo = { active: false, isGlobalSync: true };
                     else postersList[i].detectedPromo.active = false;
                 } else {
-                    const activePreset = MECHANIC_PRESETS[$('selectMechanicPreset'].value] || {};
+                    const activePreset = MECHANIC_PRESETS[$('selectMechanicPreset').value] || {};
                     postersList[i].detectedPromo = {
                         active: true, isGlobalSync: forceManualGlobalDiscount,
-                        presetKey: $('selectMechanicPreset'].value,
+                        presetKey: $('selectMechanicPreset').value,
                         discount: getEffectivePosterDiscount(postersList[i]),
-                        text: $('inputDiscountText'].value.trim(),
-                        unitLabel: $('inputUnitLabel'].value.trim(),
+                        text: $('inputDiscountText').value.trim(),
+                        unitLabel: $('inputUnitLabel').value.trim(),
                         isCarteU: Boolean(activePreset.isCarteU)
                     };
                 }
                 renderAllPosters();
             });
-            document.querySelectorAll('.btn-toggle-item-alcohol'].forEach(b => b.onclick = function() { const i = +this.dataset.idx; postersList[i].showAlcohol18 = !(postersList[i].showAlcohol18 !== null ? postersList[i].showAlcohol18 : showAlcoholGlobal); renderAllPosters(); });
-            document.querySelectorAll('.btn-save-to-library'].forEach(b => b.onclick = function() { openSaveDestinationModal(+this.dataset.idx); });
-            document.querySelectorAll('.btn-delete-poster'].forEach(b => b.onclick = function() { postersList.splice(+this.dataset.idx, 1); renderAllPosters(); });
-            document.querySelectorAll('.btn-toggle-item-img'].forEach(b => b.onclick = function() { const i = +this.dataset.idx; postersList[i].useCustomLeftImage = !postersList[i].useCustomLeftImage; renderAllPosters(); if (postersList[i].useCustomLeftImage && !postersList[i].customRawImg) { currentGalleryTarget = i; $('visualGalleryModal'].classList.remove('hidden'); } });
-            document.querySelectorAll('.btn-open-item-gallery'].forEach(b => b.onclick = function() { currentGalleryTarget = +this.dataset.idx; $('visualGalleryModal'].classList.remove('hidden'); });
+            document.querySelectorAll('.btn-toggle-item-alcohol').forEach(b => b.onclick = function() { const i = +this.dataset.idx; postersList[i].showAlcohol18 = !(postersList[i].showAlcohol18 !== null ? postersList[i].showAlcohol18 : showAlcoholGlobal); renderAllPosters(); });
+            document.querySelectorAll('.btn-save-to-library').forEach(b => b.onclick = function() { openSaveDestinationModal(+this.dataset.idx); });
+            document.querySelectorAll('.btn-delete-poster').forEach(b => b.onclick = function() { postersList.splice(+this.dataset.idx, 1); renderAllPosters(); });
+            document.querySelectorAll('.btn-toggle-item-img').forEach(b => b.onclick = function() { const i = +this.dataset.idx; postersList[i].useCustomLeftImage = !postersList[i].useCustomLeftImage; renderAllPosters(); if (postersList[i].useCustomLeftImage && !postersList[i].customRawImg) { currentGalleryTarget = i; $('visualGalleryModal').classList.remove('hidden'); } });
+            document.querySelectorAll('.btn-open-item-gallery').forEach(b => b.onclick = function() { currentGalleryTarget = +this.dataset.idx; $('visualGalleryModal').classList.remove('hidden'); });
         }
 
-        $('btnDownloadPdfA4'].onclick = () => {
+        $('btnDownloadPdfA4').onclick = () => {
             if (!postersList.length) return;
             const pdf = new window.jspdf.jsPDF('p', 'mm', 'a4');
             const usablePageHeight = 294;
@@ -1690,12 +1761,12 @@
             pdf.save(isA4PortraitMode ? 'etiquettes_A4_Portrait.pdf' : 'etiquettes_Stock_Rayon.pdf');
         };
 
-        $('inputDiscount'].oninput = () => {
+        $('inputDiscount').oninput = () => {
             forceManualGlobalDiscount = true;
             postersList.forEach(it => {
                 if (it.detectedPromo) {
                     it.detectedPromo.isGlobalSync = true;
-                    it.detectedPromo.discount = $('inputDiscount'].value.trim();
+                    it.detectedPromo.discount = $('inputDiscount').value.trim();
                 }
             });
             renderAllPosters();
@@ -1704,8 +1775,8 @@
         ['inputDates', 'inputDiscountText', 'inputUnitLabel'].forEach(id => $(id).oninput = () => {
             postersList.forEach(it => {
                 if (it.detectedPromo) {
-                    it.detectedPromo.text = $('inputDiscountText'].value.trim();
-                    it.detectedPromo.unitLabel = $('inputUnitLabel'].value.trim();
+                    it.detectedPromo.text = $('inputDiscountText').value.trim();
+                    it.detectedPromo.unitLabel = $('inputUnitLabel').value.trim();
                 }
             });
             renderAllPosters();
