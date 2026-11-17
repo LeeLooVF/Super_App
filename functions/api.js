@@ -24,7 +24,6 @@ export async function onRequest(context) {
     );
   }
 
-  // Fonction utilitaire : lister tous les objets R2 avec pagination complète (> 1000 fichiers)
   async function listAllObjects(prefix = "") {
     let allObjects = [];
     let cursor = undefined;
@@ -40,7 +39,6 @@ export async function onRequest(context) {
     return allObjects;
   }
 
-  // Fonction utilitaire : récupérer la liste partagée des images GitHub masquées
   async function getDeletedStaticFiles() {
     try {
       const obj = await bucket.get(DELETED_STATIC_KEY);
@@ -91,9 +89,156 @@ export async function onRequest(context) {
       });
     }
 
-    // 2. UPLOADER, CRÉER DOSSIER, DÉPLACER/RENOMMER OU SYNCHRONISER SUPPRESSION GITHUB (POST /api)
+    // 2. ACTIONS POST (EXTRACTION IA GEMINI SANS TIMEOUT 524, DOSSIERS, UPLOAD R2, MODIFICATIONS)
     if (request.method === "POST") {
       const body = await request.json();
+
+      // EXTRACTION ULTRA-PRÉCISE ET RAPIDE VIA GEMINI VISION (SANS TIMEOUT 524)
+      if (body.action === "extract_labels_gemini") {
+        const apiKey = (body.apiKey || env.GEMINI_API_KEY || "").trim();
+        if (!apiKey) {
+          return new Response(
+            JSON.stringify({ ok: false, error: "MISSING_API_KEY", message: "Clé GEMINI_API_KEY manquante." }),
+            { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+          );
+        }
+
+        const dataUrl = body.imageDataUrl || "";
+        const parts = dataUrl.split(",");
+        const mimeType = (parts[0].match(/:(.*?);/) || [null, "image/jpeg"])[1];
+        const base64Image = parts[1];
+
+        const systemPrompt = `Tu es un expert en lecture d'étiquettes Super U. Il existe 2 formats possibles sur l'image :
+1) Planche d'étiquettes bleues (grille 3x7).
+2) Planche d'étiquettes grand format "Etiq-25" (3 à 4 bandes horizontales par page) avec :
+   - Titre du produit en haut à gauche en gras (ex: "CALEND.AVENT OURS LINDT 170G").
+   - Très gros prix dans un cadre arrondi à droite (ex: "10,99 €") -> c'est le prix principal (mets-le dans promoMainPrice s'il y a un prix barré, sinon dans oldPrice).
+   - Juste à gauche du gros cadre, un prix barré d'un trait oblique (ex: "11,55 €") -> s'il est présent, mets-le dans oldPrice (il n'y a pas toujours de prix barré).
+   - En bas à gauche : "Prix kg 64,65 €" (baseUnitPrice = 64.65, unitType = "kg") et "cont: 0,170 kg" (contenanceText = "170 g").
+   - Sous "Prix kg" : un code court à 7 chiffres à GAUCHE (ex: "7176992" -> IGNORE-LE, c'est le code interne) et un code à 13 chiffres à DROITE (ex: "4000539766145" -> c'est le gencode EAN-13 !).
+
+Pour chaque étiquette, extrais :
+- "productName" : Nom du produit en MAJUSCULES.
+- "oldPrice" : Prix principal TTC (ou ancien prix barré s'il y a deux prix).
+- "promoMainPrice" : Nouveau prix réduit s'il y a un prix barré, sinon null.
+- "baseUnitPrice" : Prix au kilo, au litre ou à la pièce.
+- "unitType" : "kg", "l" ou "pièce".
+- "contenanceText" : Contenance lisible (ex: "170 g", "75 cl", "1,5 L", "1 pièce").
+- "gencode" : Code-barres EAN-13 ou EAN-8 (en ignorant toujours les codes internes à 7 chiffres ou commençant par 00001 / 90527).
+- "hasPromo" : true uniquement si une remise explicite (-34%, 2+1, 1+1...) est écrite sur l'étiquette.
+- "promoDiscount" : Valeur courte de la remise (ex: "-34%", "2+1"), sinon "".
+- "promoText" : Texte de la remise (ex: "DE REMISE|IMMÉDIATE"), sinon "".
+- "promoPresetKey" : "remise_imm", "2_plus_1", "1_plus_1", "2eme_50" ou "".
+
+Ignore toujours l'encadré d'en-tête "Fichier portable / Etiq-25 / X étiquettes".`;
+
+        const geminiPayload = {
+          contents: [
+            {
+              parts: [
+                { text: systemPrompt },
+                { inline_data: { mime_type: mimeType, data: base64Image } }
+              ]
+            }
+          ],
+          generationConfig: {
+            temperature: 0.1,
+            responseMimeType: "application/json",
+            responseSchema: {
+              type: "OBJECT",
+              properties: {
+                labels: {
+                  type: "ARRAY",
+                  items: {
+                    type: "OBJECT",
+                    properties: {
+                      productName: { type: "STRING" },
+                      oldPrice: { type: "NUMBER" },
+                      promoMainPrice: { type: "NUMBER", nullable: true },
+                      baseUnitPrice: { type: "NUMBER" },
+                      unitType: { type: "STRING" },
+                      contenanceText: { type: "STRING" },
+                      gencode: { type: "STRING" },
+                      hasPromo: { type: "BOOLEAN" },
+                      promoDiscount: { type: "STRING" },
+                      promoText: { type: "STRING" },
+                      promoPresetKey: { type: "STRING" }
+                    },
+                    required: ["productName", "oldPrice", "baseUnitPrice", "unitType", "contenanceText", "gencode", "hasPromo"]
+                  }
+                }
+              },
+              required: ["labels"]
+            }
+          }
+        };
+
+        // Sélection directe du modèle Flash actif sur la clé (max 2 essais rapides pour éviter tout Timeout 524)
+        let modelsToTry = ["gemini-3.8-flash", "gemini-flash-latest"];
+        try {
+          const listRes = await fetch(
+            `https://generativelanguage.googleapis.com/v1beta/models?key=${encodeURIComponent(apiKey)}`,
+            { headers: { "x-goog-api-key": apiKey } }
+          );
+          if (listRes.ok) {
+            const listData = await listRes.json();
+            const availableFlash = (listData.models || [])
+              .filter(m => (m.supportedGenerationMethods || []).includes("generateContent"))
+              .map(m => m.name.replace(/^models\//, ""))
+              .filter(name => /gemini.*flash/i.test(name) && !/2\.0|2\.5|1\.5|embedding|imagen|veo|tts|audio/i.test(name));
+            if (availableFlash.length > 0) {
+              modelsToTry = [availableFlash[0], "gemini-3.8-flash"];
+            }
+          }
+        } catch (e) {}
+
+        let geminiJson = null;
+        let lastErr = "Erreur API Gemini";
+
+        for (const modelName of [...new Set(modelsToTry)].slice(0, 2)) {
+          const geminiRes = await fetch(
+            `https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent?key=${encodeURIComponent(apiKey)}`,
+            {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+                "x-goog-api-key": apiKey
+              },
+              body: JSON.stringify(geminiPayload)
+            }
+          );
+
+          const textResp = await geminiRes.text();
+          let data = null;
+          try {
+            data = JSON.parse(textResp);
+          } catch (e) {
+            lastErr = `Erreur réseau (${geminiRes.status})`;
+            continue;
+          }
+
+          if (geminiRes.ok && data?.candidates?.[0]?.content?.parts?.[0]?.text) {
+            geminiJson = data;
+            break;
+          } else {
+            lastErr = data?.error?.message || `Erreur HTTP ${geminiRes.status}`;
+          }
+        }
+
+        if (!geminiJson) {
+          return new Response(
+            JSON.stringify({ ok: false, error: lastErr }),
+            { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+          );
+        }
+
+        const rawText = geminiJson.candidates?.[0]?.content?.parts?.[0]?.text || '{"labels":[]}';
+        const parsedData = JSON.parse(rawText);
+
+        return new Response(JSON.stringify({ ok: true, labels: parsedData.labels || [] }), {
+          headers: { ...corsHeaders, "Content-Type": "application/json" }
+        });
+      }
 
       // A. Création d'un dossier ou sous-dossier
       if (body.action === "create_folder") {
@@ -139,7 +284,7 @@ export async function onRequest(context) {
         });
       }
 
-      // C. Renommer et/ou déplacer un fichier vers un autre dossier/sous-dossier (Code Bonesink124!)
+      // C. Renommer et/ou déplacer un fichier vers un autre dossier/sous-dossier
       if (body.action === "update_file_meta") {
         if (body.code !== DELETE_PASSCODE) {
           return new Response(
@@ -180,7 +325,7 @@ export async function onRequest(context) {
         });
       }
 
-      // D. Renommer ou déplacer un dossier / sous-dossier entier (et tout son contenu)
+      // D. Renommer ou déplacer un dossier / sous-dossier entier
       if (body.action === "rename_folder") {
         if (body.code !== DELETE_PASSCODE) {
           return new Response(
@@ -239,7 +384,7 @@ export async function onRequest(context) {
         });
       }
 
-      // E. Upload standard d'un fichier (déjà converti en WebP côté client si c'est une image)
+      // E. Upload standard d'un fichier sur R2
       const { folder, subFolder, label, fileName, fileType, dataUrl, previewDataUrl } = body;
       const safeFolder = folder || "left_4";
       const safeSubFolder = (subFolder || "Général")
@@ -308,7 +453,7 @@ export async function onRequest(context) {
       });
     }
 
-    // 3. SUPPRIMER UN FICHIER OU UN DOSSIER/SOUS-DOSSIER COMPLET AVEC LE CODE Bonesink124! (DELETE /api)
+    // 3. SUPPRIMER UN FICHIER OU UN DOSSIER/SOUS-DOSSIER COMPLET (DELETE /api)
     if (request.method === "DELETE") {
       const code = url.searchParams.get("code") || "";
       if (code !== DELETE_PASSCODE) {
