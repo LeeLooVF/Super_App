@@ -21,6 +21,20 @@
     </style>
 </head>
 <body class="bg-gray-100 min-h-screen p-3 md:p-5 font-sans text-gray-800">
+
+    <!-- ÉCRAN DE VERROUILLAGE PAR MOT DE PASSE (Matthieu) -->
+    <div id="authOverlay" class="fixed inset-0 bg-black/85 z-[100] flex items-center justify-center p-4 backdrop-blur-md">
+        <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full p-6 space-y-4 border-t-4 border-red-600 text-center">
+            <h2 class="text-lg font-extrabold text-gray-900 uppercase tracking-wide">🔒 Accès restreint</h2>
+            <p class="text-xs text-gray-600">Veuillez entrer le mot de passe administrateur pour accéder au générateur d'étiquettes.</p>
+            <input type="password" id="inputAuthPassword" placeholder="Mot de passe" class="w-full p-2.5 border-2 border-gray-300 rounded-xl text-sm font-bold text-center focus:border-red-600 outline-none">
+            <button type="button" id="btnSubmitAuth" class="w-full bg-red-600 hover:bg-red-700 text-white font-extrabold py-2.5 px-4 rounded-xl shadow transition text-xs uppercase tracking-wider">
+                🔓 Valider
+            </button>
+            <p id="authErrorMsg" class="text-xs font-bold text-red-600 hidden">❌ Mot de passe incorrect.</p>
+        </div>
+    </div>
+
     <div class="max-w-7xl mx-auto space-y-5">
         <!-- BANDEAU DE CONFIGURATION GLOBALE (RÉDUIT À 80%) -->
         <div id="topControlPanel" class="bg-white p-4 rounded-xl shadow-md border-t-4 border-red-600 space-y-3 sticky top-2 z-20">
@@ -28,26 +42,27 @@
             <div class="flex flex-wrap justify-between items-center border-b pb-2.5 gap-2">
                 <div class="flex flex-wrap items-center gap-2">
                     <h1 class="text-base font-extrabold text-gray-800 tracking-wide shrink-0">Generateur</h1>
-                    <span id="badgeCount" class="text-[11px] bg-red-100 text-red-700 font-bold px-2.5 py-1 rounded-full shrink-0">0 / 50 étiquette</span>
-                    <!-- BOUTON MODE STOCK RAYON / A4 PORTRAIT -->
+                    <span id="badgeCount" class="text-[11px] bg-red-100 text-red-700 font-bold px-2 py-1 rounded-full shrink-0">0 / 50 étiquette</span>
+                    <button type="button" id="btnAddBlankPoster" class="text-[11px] font-extrabold px-2 py-1.5 rounded-lg border-2 border-emerald-600 bg-emerald-600 text-white hover:bg-emerald-700 transition shadow-sm shrink-0" title="Ajouter une étiquette manuellement">
+                        ➕ Étiquette
+                    </button>
+                    <button type="button" id="btnClearAllPosters" class="text-[11px] font-extrabold px-2 py-1.5 rounded-lg border-2 border-red-200 bg-red-50 text-red-700 hover:bg-red-600 hover:text-white transition shadow-sm shrink-0" title="Supprimer toutes les étiquettes de la liste">
+                        🗑️ Tout vider
+                    </button>
                     <button type="button" id="btnToggleA4Mode" class="text-[11px] font-extrabold px-3 py-1.5 rounded-lg border-2 border-gray-800 bg-white text-gray-800 hover:bg-gray-800 hover:text-white transition flex items-center gap-1.5 shadow-sm shrink-0">
                         <span>Mode : Stock Rayon</span><span class="bg-red-600 text-white text-[10px] px-1.5 py-0.5 rounded">Basculer A4 Portrait</span>
                     </button>
-                    <!-- BOUTON BIBLIOTHÈQUE -->
                     <button type="button" id="btnOpenReadyDocsModal" class="text-[11px] font-extrabold px-3 py-1.5 rounded-lg border-2 border-purple-600 bg-purple-600 text-white hover:bg-purple-700 transition flex items-center gap-1.5 shadow-sm shrink-0">
                         <span>📚 Bibliothèque</span><span id="readyDocsCountBadge" class="bg-white text-purple-700 text-[10px] px-1.5 py-0.5 rounded-full font-black">29</span>
                     </button>
-                    <!-- BOUTON FOND D'ÉTIQUETTE -->
-                    <button type="button" id="btnOpenBgModal" class="text-[11px] font-extrabold px-3 py-1.5 rounded-lg border-2 border-purple-300 bg-purple-50 text-purple-900 hover:bg-purple-100 transition flex items-center gap-1.5 shadow-sm shrink-0">
+                    <button type="button" id="btnOpenBgModal" class="text-[11px] font-extrabold px-3 py-1.5 rounded-lg border-2 border-purple-300 bg-purple-50 text-purple-900 hover:bg-purple-100 transition flex items-center gap-1.5 shadow-sm shrink-0" title="Ajouter un fond en arrière-plan sur toutes les étiquettes Stock Rayon">
                         <span id="bgBtnLabel" class="truncate max-w-[130px]">🎨 Fond : Aucun</span>
                     </button>
-                    <!-- BOUTON -18 ALCOOL -->
                     <button type="button" id="btnToggleAlcohol18" class="text-[11px] font-extrabold px-3 py-1.5 rounded-lg border-2 border-orange-300 bg-orange-50 text-orange-800 hover:bg-orange-100 transition flex items-center gap-1.5 shadow-sm shrink-0">
                         <span class="bg-orange-600 text-white text-[10px] font-black px-1.5 py-0.5 rounded">-18</span><span id="alcoholBtnLabel">Alcool</span>
                     </button>
                 </div>
 
-                <!-- BLOC DROIT : POLICES, STATUT ET ÉTAT DES SERVICES -->
                 <div class="flex flex-wrap items-center gap-2">
                     <button type="button" id="btnOpenFontModal" class="text-[11px] bg-gray-100 hover:bg-gray-200 text-gray-800 font-extrabold py-1.5 px-3 rounded-lg cursor-pointer border-2 border-gray-300 transition flex items-center gap-1.5 shadow-sm shrink-0">
                         🔤 Polices .OTF / R2
@@ -85,7 +100,7 @@
                 </div>
             </div>
 
-            <!-- LIGNE 1 : DÉPÔT PDF, IMAGE, DATES, COULEUR DATE -->
+            <!-- LIGNE 1 -->
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3 items-center">
                 <div class="bg-blue-50 p-2 rounded-lg border border-blue-200 h-full flex flex-col justify-between">
                     <label class="block text-xs font-bold text-blue-900 uppercase mb-1">📷 Dépôt PDF (50 max )</label>
@@ -119,7 +134,7 @@
                 </div>
             </div>
 
-            <!-- LIGNE 2 : MÉCANIQUE MIS À JOUR AVEC LES NOUVELLES OPTIONS DE "nouvelle mecanique.jpg" -->
+            <!-- LIGNE 2 : NOUVELLES MÉCANIQUES CORRIGÉES & VISUEL MÉCANIQUE -->
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3 items-end pt-2 border-t border-gray-100">
                 <div>
                     <div class="flex justify-between items-center mb-1">
@@ -128,7 +143,7 @@
                     </div>
                     <div class="flex gap-1.5">
                         <select id="selectMechanicPreset" disabled class="w-2/3 p-1.5 border rounded-lg text-xs font-bold text-gray-800 bg-gray-100 opacity-50 cursor-pointer">
-                            <optgroup label="Remises immédiates en %">
+                            <optgroup label="Remises immédiates">
                                 <option value="remise_20">-20% DE REMISE IMMÉDIATE</option>
                                 <option value="remise_34" selected>-34% DE REMISE IMMÉDIATE</option>
                                 <option value="remise_50">-50% DE REMISE IMMÉDIATE</option>
@@ -181,7 +196,6 @@
                     <button type="button" id="btnClearAllPosters" class="w-1/2 bg-red-50 hover:bg-red-600 text-red-700 hover:text-white border border-red-200 font-bold py-2 px-2 rounded-lg shadow transition text-xs uppercase flex items-center justify-center gap-1">🗑️ Tout vider</button>
                 </div>
             </div>
-            <!-- LIGNE BOUTON TÉLÉCHARGER LE PDF -->
             <div>
                 <button id="btnDownloadPdfA4" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-lg shadow transition text-xs uppercase tracking-wider flex items-center justify-center gap-2">
                     <span id="btnDownloadLabel">📄 TÉLÉCHARGER LE PDF (STOCK RAYON)</span>
@@ -192,7 +206,7 @@
         <div id="postersContainer" class="space-y-6"></div>
     </div>
 
-    <!-- MODALE 1 : GALERIE VISUELLE (IMAGES GAUCHE & IMAGES A4) -->
+    <!-- MODALE 1 : GALERIE VISUELLE -->
     <div id="visualGalleryModal" class="fixed inset-0 bg-black/60 z-50 hidden flex items-center justify-center p-4 backdrop-blur-sm">
         <div class="bg-white rounded-2xl shadow-2xl max-w-5xl w-full max-h-[90vh] flex flex-col overflow-hidden border-t-4 border-red-600">
             <div class="flex flex-wrap justify-between items-center px-5 py-3.5 border-b bg-gray-50 gap-3">
@@ -414,7 +428,7 @@
             <div class="flex items-center gap-2.5">
                 <button type="button" id="btnPrintLightboxDoc" class="text-xs font-extrabold bg-emerald-600 text-white px-4 py-2 rounded-lg shadow">🖨️ Imprimer</button>
                 <button type="button" id="btnDownloadLightboxDoc" class="text-xs font-extrabold bg-indigo-600 text-white px-4 py-2 rounded-lg shadow">⬇️ Télécharger</button>
-                <button type="button" id="btnCloseLightboxModal" class="text-xs font-bold bg-gray-200 hover:bg-red-600 hover:text-white px-3 py-2 rounded-lg">✕ Fermer</button>
+                <button type="button" id="btnCloseLightboxModal" class="text-xs font-bold bg-gray-200 hover:bg-red-600 hover:text-white text-gray-800 px-3 py-2 rounded-lg">✕ Fermer</button>
             </div>
         </div>
         <div class="flex-1 flex items-center justify-center overflow-auto my-3 p-2">
@@ -433,31 +447,36 @@
         const FONT_SANS = '"Montserrat", Arial, sans-serif';
         const DB_NAME = 'SuperU_PromoLabels_DB', STORE_NAME = 'saved_left_images', READY_DOCS_STORE = 'ready_created_files';
 
-        // Liste officielle mise à jour avec toutes les mécaniques (Remises, Carte U, Lots, Prix choc...)
-        const MECHANIC_PRESETS = {
-            remise_20:                  { discount: '-20%', text: 'DE REMISE|IMMÉDIATE', unitLabel: 'LE PRODUIT', mode: 'pct_single' },
-            remise_34:                  { discount: '-34%', text: 'DE REMISE|IMMÉDIATE', unitLabel: 'LE PRODUIT', mode: 'pct_single' },
-            remise_50:                  { discount: '-50%', text: 'DE REMISE|IMMÉDIATE', unitLabel: 'LE PRODUIT', mode: 'pct_single' },
-            remise_60_2eme:             { discount: '-60%', text: 'DE REMISE IMMÉDIATE|SUR LE 2ÈME PRODUIT|AU CHOIX', unitLabel: 'LE 2ÈME PRODUIT AU CHOIX', mode: 'nth_2', nthPct: 60 },
-            remise_50_2eme_identique:   { discount: '-50%', text: 'DE REMISE IMMÉDIATE|SUR LE 2ÈME|PRODUIT IDENTIQUE', unitLabel: 'LE 2ÈME PRODUIT IDENTIQUE', mode: 'nth_2', nthPct: 50 },
-            carte_u_20_immed:           { discount: '-20%', text: 'DE REMISE|IMMÉDIATE AVEC|CARTE U', unitLabel: 'LE PRODUIT', mode: 'pct_single', isCarteU: true },
-            carte_u_20_verse:           { discount: '20%',  text: 'VERSÉS SUR|CARTE U', unitLabel: 'LE PRODUIT', mode: 'direct_lot', isCarteU: true },
-            carte_u_34_verse:           { discount: '34%',  text: 'VERSÉS SUR|CARTE U', unitLabel: 'LE PRODUIT', mode: 'direct_lot', isCarteU: true },
-            carte_u_68_identique:       { discount: '68%',  text: 'SUR LE 2ÈME PRODUIT|IDENTIQUE VERSÉS SUR|CARTE U', unitLabel: 'LE 2ÈME PRODUIT IDENTIQUE', mode: 'direct_lot', isCarteU: true },
-            remise_2_euros:             { discount: '-2€',  text: 'DE REMISE|IMMÉDIATE', unitLabel: 'LE PRODUIT', mode: 'euro_single' },
-            prix_coutant:               { discount: 'PRIX', text: 'COÛTANT', unitLabel: 'LE PRODUIT', mode: 'direct_lot' },
-            prix_bas:                   { discount: 'PRIX', text: 'BAS', unitLabel: 'LE PRODUIT', mode: 'direct_lot' },
-            prix_choc:                  { discount: 'PRIX', text: 'CHOC !', unitLabel: 'LE PRODUIT', mode: 'direct_lot' },
-            '1_plus_1':                 { discount: '1+1',  text: 'GRATUIT', unitLabel: 'LE LOT DE 2', mode: 'bogo_1_1' },
-            '2_plus_1':                 { discount: '2+1',  text: 'OFFERT', unitLabel: 'LES 3 PRODUITS', mode: 'bogo_2_1' },
-            '3_plus_1':                 { discount: '3+1',  text: 'OFFERTE', unitLabel: 'LES 4 PRODUITS', mode: 'bogo_3_1' },
-            le_lot_choix:               { discount: 'LE LOT', text: 'AU CHOIX', unitLabel: 'LE LOT AU CHOIX', mode: 'direct_lot' },
-            le_lot_identique:           { discount: 'LE LOT', text: 'IDENTIQUE', unitLabel: 'LE LOT IDENTIQUE', mode: 'direct_lot' },
-            le_lot_2_choix:             { discount: 'LE LOT', text: 'DE 2 PRODUITS|AU CHOIX', unitLabel: 'LE LOT DE 2', mode: 'direct_lot' },
-            le_lot_2_identique:         { discount: 'LE LOT', text: 'DE 2 PRODUITS|IDENTIQUE', unitLabel: 'LE LOT DE 2', mode: 'direct_lot' },
-            le_lot_3_choix:             { discount: 'LE LOT', text: 'DE 3 PRODUITS|AU CHOIX', unitLabel: 'LE LOT DE 3', mode: 'direct_lot' },
-            le_lot_3_identique:         { discount: 'LE LOT', text: 'DE 3 PRODUITS|IDENTIQUE', unitLabel: 'LE LOT DE 3', mode: 'direct_lot' }
+        // ============================================================================
+        // AUTHENTIFICATION PAR MOT DE PASSE (Matthieu)
+        // ============================================================================
+        function checkAuth() {
+            const isAuth = sessionStorage.getItem('superu_auth_passed') === 'true';
+            if (isAuth) {
+                $('authOverlay').classList.add('hidden');
+            } else {
+                $('authOverlay').classList.remove('hidden');
+            }
+        }
+
+        $('btnSubmitAuth').onclick = () => {
+            const pwd = $('inputAuthPassword').value.trim();
+            if (pwd === 'Matthieu') {
+                sessionStorage.setItem('superu_auth_passed', 'true');
+                $('authOverlay').classList.add('hidden');
+                $('authErrorMsg').classList.add('hidden');
+            } else {
+                $('authErrorMsg').classList.remove('hidden');
+            }
         };
+
+        $('inputAuthPassword').onkeydown = e => {
+            if (e.key === 'Enter') $('btnSubmitAuth').click();
+        };
+
+        window.addEventListener('DOMContentLoaded', () => {
+            checkAuth();
+        });
 
         let postersList = [];
         let rawLeftImage4 = null, trimmedLeftImage4 = null, labelImage4 = 'Les Prix Bas';
@@ -473,7 +492,6 @@
         let rawGithubLeftItems = [], rawGithubA4Items = [], rawGithubBgItems = [];
         let dynamicPresets4PerPage = [], dynamicPresetsA4Portrait = [], dynamicPresetsBackgrounds = [];
 
-        // Police par défaut : Copie de Museo_Slab_3
         let activeFontFamilyName = 'Copie de Museo_Slab_3';
         let availableFontsList = [
             { id: 'default_museo_3', name: 'Copie de Museo_Slab_3', isSystem: true },
@@ -485,7 +503,7 @@
         const ensureWebpFileName = f => `${(f || 'image').replace(/\.[^.]+$/, '')}.webp`;
         const readFileAsDataURL = file => new Promise(res => { const r = new FileReader(); r.onload = e => res(e.target.result); r.readAsDataURL(file); });
 
-        // Cache préchargé pour l'image CARTE_U.png
+        // Cache pour le logo CARTE_U.png
         let carteUImageObj = null;
         async function loadCarteUImage() {
             if (carteUImageObj) return carteUImageObj;
@@ -494,11 +512,7 @@
                 try {
                     const img = new Image();
                     if (window.location.protocol !== 'file:') img.crossOrigin = 'anonymous';
-                    await new Promise((res, rej) => {
-                        img.onload = res;
-                        img.onerror = rej;
-                        img.src = url;
-                    });
+                    await new Promise((res, rej) => { img.onload = res; img.onerror = rej; img.src = url; });
                     carteUImageObj = img;
                     return img;
                 } catch (e) {}
@@ -1219,7 +1233,7 @@
                 ? '<span>📄 Mode : A4 Portrait</span><span class="bg-white text-red-600 text-[10px] px-1.5 py-0.5 rounded">Basculer Stock Rayon</span>'
                 : '<span>📐 Mode : Stock Rayon</span><span class="bg-red-600 text-white text-[10px] px-1.5 py-0.5 rounded">Basculer A4 Portrait</span>';
             $('btnDownloadLabel').textContent = isA4PortraitMode ? '📄 TÉLÉCHARGER LE PDF (A4 PORTRAIT)' : '📄 TÉLÉCHARGER LE PDF (STOCK RAYON)';
-            $('labelZoneImage').textContent = isA4PortraitMode ? '🖼️ 2. IMAGE HAUT (DOSSIER IMAGES A4)' : '🖼️ 2. IMAGE GAUCHE';
+            $('labelZoneImage').textContent = isA4PortraitMode ? '🖼️ 2. IMAGE HAUT (DOSSIER IMAGES A4)' : '🖼️ 2. IMAGE';
             $('globalGalleryLabel').textContent = `🖼️ ${isA4PortraitMode ? (labelImageA4 || 'Choisir visuel A4') : (labelImage4 || 'Choisir visuel')}`;
             $('btnOpenBgModal').classList.toggle('hidden', isA4PortraitMode);
             buildVisualGallery(); renderAllPosters();
@@ -1304,7 +1318,7 @@
                 activeBgStockLabel = labelName;
                 activeBgStockIsR2 = isR2Baked33;
                 $('bgBtnLabel').textContent = `🎨 Fond : ${labelName}`;
-                $('btnOpenBgModal').className = 'text-[11px] font-extrabold px-2.5 py-1 rounded-lg border-2 border-purple-600 bg-purple-600 text-white transition flex items-center gap-1 shadow-sm shrink-0';
+                $('btnOpenBgModal').className = 'text-[11px] font-extrabold px-3.5 py-1.5 rounded-lg border-2 border-purple-600 bg-purple-600 text-white transition flex items-center gap-1.5 shadow-sm shrink-0';
                 $('bgGalleryModal').classList.add('hidden');
                 renderAllPosters();
             };
@@ -1368,7 +1382,7 @@
             activeBgStockLabel = 'Aucun';
             activeBgStockIsR2 = false;
             $('bgBtnLabel').textContent = '🎨 Fond : Aucun';
-            $('btnOpenBgModal').className = 'text-[11px] font-extrabold px-2.5 py-1 rounded-lg border-2 border-purple-300 bg-purple-50 text-purple-900 hover:bg-purple-100 transition flex items-center gap-1 shadow-sm shrink-0';
+            $('btnOpenBgModal').className = 'text-[11px] font-extrabold px-3 py-1.5 rounded-lg border-2 border-purple-300 bg-purple-50 text-purple-900 hover:bg-purple-100 transition flex items-center gap-1.5 shadow-sm shrink-0';
             $('bgGalleryModal').classList.add('hidden');
             renderAllPosters();
         };
@@ -1693,7 +1707,7 @@
                     autoDetectedPromo = {
                         active: true,
                         isGlobalSync: false,
-                        presetKey: $('selectMechanicPreset').value || 'remise_34',
+                        presetKey: $('selectMechanicPreset'].value || 'remise_34',
                         discount: `-${pct}%`,
                         text: $('inputDiscountText').value.trim() || 'DE REMISE|IMMÉDIATE',
                         unitLabel: $('inputUnitLabel').value.trim() || 'LE PRODUIT'
@@ -1702,7 +1716,7 @@
                     autoDetectedPromo = {
                         active: true,
                         isGlobalSync: true,
-                        presetKey: $('selectMechanicPreset').value,
+                        presetKey: $('selectMechanicPreset'].value,
                         discount: $('inputDiscount').value.trim(),
                         text: $('inputDiscountText').value.trim(),
                         unitLabel: $('inputUnitLabel').value.trim()
@@ -1881,7 +1895,6 @@
             ctx.restore();
         }
 
-        // Dessine le prix principal et gère l'application automatique du bleu turquoise si l'option Carte U est active
         function drawFormattedPrice(ctx, priceNumber, preferredCenterX, baselineY, isOldPrice, maxRightX = 656, scaleFactor = 1.0, isCarteUPromos = false) {
             const FONT_SLAB = getActiveFontSlab();
             const [euros, rawCents] = priceNumber.toFixed(2).split('.');
@@ -1891,7 +1904,6 @@
             const centF = Math.round((isOldPrice ? (isFour ? 30 : 32) : (isFour ? 48 : 55)) * scaleFactor);
             const symF = Math.round((isOldPrice ? (isFour ? 25 : 28) : (isFour ? 44 : 50)) * scaleFactor);
 
-            // Couleur : Noir si prix barré (isOldPrice) ; Bleu turquoise Super U (#008585) si Carte U ; Rouge standard (#EE1C25) sinon
             if (isOldPrice) {
                 ctx.fillStyle = '#000000';
             } else if (isCarteUPromos) {
@@ -1953,7 +1965,6 @@
             const baseUnit = item.baseUnitPrice > 0 ? item.baseUnitPrice : item.oldPrice;
             const manualCrossed = (item.crossedPrice && Number(item.crossedPrice) > 0) ? Number(item.crossedPrice) : null;
 
-            // Option "Calcul prix" sur DÉSACTIVÉ : aucun calcul automatique n'est appliqué au prix rouge, on garde le prix d'origine et le prix barré.
             if (!isMechanicShown || !applyMechanicPriceCalc) {
                 return {
                     hasCrossedPrice: Boolean(manualCrossed),
@@ -1963,7 +1974,6 @@
                 };
             }
 
-            // Option "Calcul prix" sur ACTIVÉ : on applique le pourcentage ou la mécanique sur le prix de départ
             const refStartPrice = manualCrossed ? manualCrossed : item.oldPrice;
             const refStartUnit = (manualCrossed && item.oldPrice > 0)
                 ? baseUnit * (manualCrossed / item.oldPrice)
@@ -2029,7 +2039,6 @@
             const presetInfo = MECHANIC_PRESETS[presetKey] || {};
 
             if (presetInfo.isCarteU) {
-                // Rendu spécial pour les cercles Carte U (Fond bleu turquoise + Logo CARTE_U.png en bas du cercle)
                 ctx.fillStyle = '#008585';
                 ctx.beginPath(); ctx.arc(circleX, circleY, radius, 0, Math.PI * 2); ctx.fill();
 
@@ -2043,14 +2052,10 @@
                     const imgW = isA4 ? 180 : 120;
                     const imgH = imgW * (uImg.height / uImg.width);
                     ctx.drawImage(uImg, circleX - imgW / 2, circleY + (isA4 ? 15 : 5), imgW, imgH);
-                } else {
-                    ctx.font = `700 ${isA4 ? 24 : 16}px ${FONT_SLAB}`;
-                    ctx.fillText("AVEC CARTE U", circleX, circleY + (isA4 ? 45 : 30));
                 }
                 return;
             }
 
-            // Rendu standard rouge pour les autres mécaniques
             ctx.fillStyle = '#EE1C25'; ctx.beginPath(); ctx.arc(circleX, circleY, radius, 0, Math.PI * 2); ctx.fill();
             ctx.fillStyle = '#FFFFFF';
             const mainY = circleY + (hasPhrase ? (isA4 ? 5 : 2) : (isA4 ? 35 : 26));
@@ -2083,7 +2088,6 @@
             const presetObj = MECHANIC_PRESETS[presetK] || {};
             const isCarteUPromos = Boolean(presetObj.isCarteU || item.detectedPromo?.isCarteU);
 
-            // Mention sous prix bleue si Carte U ("LE PRODUIT € CARTE U DÉDUITS")
             let uLabel = (hasCustomPromo && applyMechanicPriceCalc) ? item.detectedPromo.unitLabel : $('inputUnitLabel').value;
             if (isCarteUPromos) {
                 uLabel = "LE PRODUIT € CARTE U DÉDUITS";
@@ -2109,23 +2113,15 @@
 
                 if (isMech) {
                     await drawPromoCircle(ctx, 605, 490, 165, discIn, discTxt, true, presetK);
-                    if (pricing.hasCrossedPrice) {
-                        drawFormattedPrice(ctx, pricing.crossedPrice, 300, 395, true, 422, 1.35, false);
-                        drawFormattedPrice(ctx, pricing.mainPrice, 285, 555, false, 422, 1.35, isCarteUPromos);
-                    } else {
-                        drawFormattedPrice(ctx, pricing.mainPrice, 285, 500, false, 422, 1.35, isCarteUPromos);
-                    }
+                    if (pricing.hasCrossedPrice) { drawFormattedPrice(ctx, pricing.crossedPrice, 300, 395, true, 422, 1.35, false); drawFormattedPrice(ctx, pricing.mainPrice, 285, 555, false, 422, 1.35, isCarteUPromos); }
+                    else drawFormattedPrice(ctx, pricing.mainPrice, 285, 500, false, 422, 1.35, isCarteUPromos);
                     ctx.fillStyle = isCarteUPromos ? '#008585' : '#EE1C25';
                     ctx.font = `800 22px ${FONT_SANS}`; ctx.textAlign = 'center'; ctx.fillText(uLabel.toUpperCase(), 285, 598);
                     ctx.fillStyle = '#000000'; ctx.font = `600 21px ${FONT_SANS}`; ctx.fillText(pricing.unitPriceText, 285, 628);
                     if (showCont && item.contenanceText) { ctx.fillStyle = '#374151'; ctx.font = `700 19px ${FONT_SANS}`; ctx.fillText(`Contenance : ${item.contenanceText}`, 285, 655); }
                 } else {
-                    if (pricing.hasCrossedPrice) {
-                        drawFormattedPrice(ctx, pricing.crossedPrice, 435, 395, true, 780, 1.35, false);
-                        drawFormattedPrice(ctx, pricing.mainPrice, 420, 555, false, 780, 1.55, isCarteUPromos);
-                    } else {
-                        drawFormattedPrice(ctx, pricing.mainPrice, 420, 500, false, 780, 1.65, isCarteUPromos);
-                    }
+                    if (pricing.hasCrossedPrice) { drawFormattedPrice(ctx, pricing.crossedPrice, 435, 395, true, 780, 1.35, false); drawFormattedPrice(ctx, pricing.mainPrice, 420, 555, false, 780, 1.55, isCarteUPromos); }
+                    else drawFormattedPrice(ctx, pricing.mainPrice, 420, 500, false, 780, 1.65, isCarteUPromos);
                     ctx.fillStyle = isCarteUPromos ? '#008585' : '#EE1C25';
                     ctx.font = `800 25px ${FONT_SANS}`; ctx.textAlign = 'center'; ctx.fillText(uLabel.toUpperCase(), 420, pricing.hasCrossedPrice ? 598 : 555);
                     ctx.fillStyle = '#000000'; ctx.font = `600 23px ${FONT_SANS}`; ctx.fillText(pricing.unitPriceText, 420, pricing.hasCrossedPrice ? 630 : 588);
@@ -2279,10 +2275,10 @@
                         postersList[i].detectedPromo = {
                             active: true,
                             isGlobalSync: false,
-                            presetKey: $('selectMechanicPreset').value || 'remise_34',
+                            presetKey: $('selectMechanicPreset'].value || 'remise_34',
                             discount: `-${pct}%`,
-                            text: $('inputDiscountText').value.trim() || 'DE REMISE|IMMÉDIATE',
-                            unitLabel: $('inputUnitLabel').value.trim() || 'LE PRODUIT'
+                            text: $('inputDiscountText'].value.trim() || 'DE REMISE|IMMÉDIATE',
+                            unitLabel: $('inputUnitLabel'].value.trim() || 'LE PRODUIT'
                         };
                     }
                 } else if (f === 'baseUnitPrice') postersList[i].baseUnitPrice = parseFloat(this.value) || 0;
@@ -2306,14 +2302,14 @@
                         postersList[i].detectedPromo.active = false;
                     }
                 } else {
-                    const activePreset = MECHANIC_PRESETS[$('selectMechanicPreset').value] || {};
+                    const activePreset = MECHANIC_PRESETS[$('selectMechanicPreset'].value] || {};
                     postersList[i].detectedPromo = {
                         active: true,
                         isGlobalSync: forceManualGlobalDiscount,
-                        presetKey: $('selectMechanicPreset').value,
+                        presetKey: $('selectMechanicPreset'].value,
                         discount: getEffectivePosterDiscount(postersList[i]),
-                        text: $('inputDiscountText').value.trim(),
-                        unitLabel: $('inputUnitLabel').value.trim(),
+                        text: $('inputDiscountText'].value.trim(),
+                        unitLabel: $('inputUnitLabel'].value.trim(),
                         isCarteU: Boolean(activePreset.isCarteU)
                     };
                 }
@@ -2345,7 +2341,6 @@
             pdf.save(isA4PortraitMode ? 'etiquettes_A4_Portrait.pdf' : 'etiquettes_Stock_Rayon.pdf');
         };
 
-        // Dès qu'on modifie le champ inputDiscount (-34%), on force le % manuel sur toutes les étiquettes
         $('inputDiscount').oninput = () => {
             forceManualGlobalDiscount = true;
             postersList.forEach(it => {
