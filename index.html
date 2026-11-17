@@ -119,12 +119,15 @@
                 </div>
             </div>
 
-            <!-- LIGNE 2 : MÉCANIQUE & VALEUR -->
+            <!-- LIGNE 2 : MÉCANIQUE & VALEUR + BOUTON PRIX BARRÉ ON/OFF -->
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3 items-end pt-2 border-t border-gray-100">
                 <div>
-                    <div class="flex justify-between items-center mb-1">
+                    <div class="flex flex-wrap justify-between items-center mb-1 gap-1">
                         <label class="block text-xs font-bold text-gray-700 uppercase">⚙️ MÉCANIQUE & VALEUR</label>
-                        <button type="button" id="btnTogglePriceCalc" class="text-[11px] font-bold px-2 py-0.5 rounded bg-amber-100 text-amber-900 border border-amber-400 hover:bg-amber-200 transition">Calcul prix : Désactivé</button>
+                        <div class="flex items-center gap-1">
+                            <button type="button" id="btnToggleCrossedPrice" class="text-[11px] font-bold px-2 py-0.5 rounded bg-green-100 text-green-800 border border-green-300 hover:bg-green-200 transition" title="Afficher ou masquer le prix barré sur toutes les étiquettes">Prix barré : ON</button>
+                            <button type="button" id="btnTogglePriceCalc" class="text-[11px] font-bold px-2 py-0.5 rounded bg-amber-100 text-amber-900 border border-amber-400 hover:bg-amber-200 transition">Calcul prix : Désactivé</button>
+                        </div>
                     </div>
                     <div class="flex gap-1.5">
                         <select id="selectMechanicPreset" disabled class="w-2/3 p-1.5 border rounded-lg text-xs font-bold text-gray-800 bg-gray-100 opacity-50 cursor-pointer">
@@ -313,7 +316,7 @@
         </div>
     </div>
 
-    <!-- MODALE 3 : DÉPLACER / RENOMMER UN FICHIER SUR R2 (SANS ACCÈS RESTREINT) -->
+    <!-- MODALE 3 : DÉPLACER / RENOMMER UN FICHIER SUR R2 -->
     <div id="moveRenameFileModal" class="fixed inset-0 bg-black/65 z-[58] hidden flex items-center justify-center p-4 backdrop-blur-sm">
         <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full p-5 space-y-4 border-t-4 border-blue-600">
             <div class="flex justify-between items-center border-b pb-2.5">
@@ -428,7 +431,7 @@
         const FONT_SANS = '"Montserrat", Arial, sans-serif';
         const DB_NAME = 'SuperU_PromoLabels_DB', STORE_NAME = 'saved_left_images', READY_DOCS_STORE = 'ready_created_files';
 
-        // Liste officielle des mécaniques (incluant les 4 mécaniques Carte U conformes aux captures)
+        // Liste officielle des mécaniques
         const MECHANIC_PRESETS = {
             remise_20:                  { discount: '-20%', text: 'DE REMISE|IMMÉDIATE', unitLabel: 'LE PRODUIT', mode: 'pct_single' },
             remise_34:                  { discount: '-34%', text: 'DE REMISE|IMMÉDIATE', unitLabel: 'LE PRODUIT', mode: 'pct_single' },
@@ -460,7 +463,7 @@
         let rawTopImageA4 = null, trimmedTopImageA4 = null, labelImageA4 = 'Les Prix Bas (A4)';
         let activeBgStockImg = null, activeBgStockLabel = 'Aucun', activeBgStockIsR2 = false;
 
-        let dateColor = '#FFFFFF', showDate = false, showMechanic = false, applyMechanicPriceCalc = false, showAlcoholGlobal = false, isA4PortraitMode = false, currentGalleryTarget = 'global';
+        let dateColor = '#FFFFFF', showDate = false, showMechanic = false, applyMechanicPriceCalc = false, showCrossedPriceGlobal = true, showAlcoholGlobal = false, isA4PortraitMode = false, currentGalleryTarget = 'global';
         let forceManualGlobalDiscount = false;
 
         let savedUserImages = [], readyDepositedDocs = [], readyGeneratedDocs = [], customSubFolders = { ready_deposited: ['Général'], ready_generated: ['Général'] };
@@ -528,6 +531,13 @@
             return showMechanic;
         }
 
+        function isPosterCrossedPriceVisible(item) {
+            if (typeof item.showCrossedPrice === 'boolean') {
+                return item.showCrossedPrice;
+            }
+            return showCrossedPriceGlobal;
+        }
+
         function getEffectivePosterDiscount(item) {
             const presetKey = item.detectedPromo?.presetKey || $('selectMechanicPreset').value;
             const preset = MECHANIC_PRESETS[presetKey] || {};
@@ -553,6 +563,7 @@
                 productName: 'NOUVEAU PRODUIT',
                 oldPrice: 1.99,
                 crossedPrice: null,
+                showCrossedPrice: null,
                 baseUnitPrice: 1.99,
                 unitQty: 1,
                 unitType: 'pièce',
@@ -674,7 +685,7 @@
         const getCandidateUrls = preset => { const u = safeFileUrl(preset.file); return [u, `${R2_PUBLIC_BASE_URL}/${u}`]; };
 
         // ============================================================================
-        // BASE DE DONNÉES LOCALE & SYNCHRONISATION R2 (SANS ACCÈS RESTREINT)
+        // BASE DE DONNÉES LOCALE & SYNCHRONISATION R2
         // ============================================================================
         function openImageDB() {
             return new Promise((res, rej) => {
@@ -1174,7 +1185,7 @@
         $('btnDownloadLightboxDoc').onclick = () => currentLightboxDoc && downloadReadyDocument(currentLightboxDoc);
 
         // ============================================================================
-        // BOUTONS DE CONFIGURATION, GALERIE VISUELLE & GALERIE DES FONDS
+        // BOUTONS DE CONFIGURATION, PRIX BARRÉ ON/OFF, GALERIES
         // ============================================================================
         $('btnToggleAlcohol18').onclick = () => {
             showAlcoholGlobal = !showAlcoholGlobal;
@@ -1182,6 +1193,16 @@
                 ? 'text-[11px] font-extrabold px-3 py-1.5 rounded-lg border-2 border-orange-600 bg-orange-600 text-white flex items-center gap-1 shadow-sm shrink-0'
                 : 'text-[11px] font-extrabold px-3 py-1.5 rounded-lg border-2 border-orange-300 bg-orange-50 text-orange-800 hover:bg-orange-100 flex items-center gap-1 shadow-sm shrink-0';
             $('alcoholBtnLabel').textContent = 'Alcool';
+            renderAllPosters();
+        };
+
+        $('btnToggleCrossedPrice').onclick = function() {
+            showCrossedPriceGlobal = !showCrossedPriceGlobal;
+            this.textContent = showCrossedPriceGlobal ? 'Prix barré : ON' : 'Prix barré : OFF';
+            this.className = showCrossedPriceGlobal
+                ? 'text-[11px] font-bold px-2 py-0.5 rounded bg-green-100 text-green-800 border border-green-300 hover:bg-green-200 transition'
+                : 'text-[11px] font-bold px-2 py-0.5 rounded bg-red-100 text-red-800 border border-red-300 hover:bg-red-200 transition';
+            postersList.forEach(it => { it.showCrossedPrice = showCrossedPriceGlobal; });
             renderAllPosters();
         };
 
@@ -1700,6 +1721,7 @@
                     productName,
                     oldPrice: mainPrice,
                     crossedPrice: crossedPrice,
+                    showCrossedPrice: null,
                     baseUnitPrice: baseUnitPrice || mainPrice,
                     unitQty: contQtyKgOrL || 1,
                     unitType,
@@ -1789,6 +1811,7 @@
                         productName: (lbl.productName || 'PRODUIT').toUpperCase().trim(),
                         oldPrice: mainRedPrice,
                         crossedPrice: crossedOldPrice,
+                        showCrossedPrice: null,
                         baseUnitPrice: Number(lbl.baseUnitPrice) > 0 ? Number(lbl.baseUnitPrice) : mainRedPrice,
                         unitQty: 1, unitType: uType, contenanceText: lbl.contenanceText || '',
                         gencode: (lbl.gencode || '').replace(/\D/g, ''),
@@ -1939,10 +1962,11 @@
             const uType = item.unitType || 'pièce', prefix = uType === 'pièce' ? 'La pièce' : (uType === 'l' ? 'Le L' : 'Le kg');
             const baseUnit = item.baseUnitPrice > 0 ? item.baseUnitPrice : item.oldPrice;
             const manualCrossed = (item.crossedPrice && Number(item.crossedPrice) > 0) ? Number(item.crossedPrice) : null;
+            const allowCrossed = isPosterCrossedPriceVisible(item);
 
             if (!isMechanicShown || !applyMechanicPriceCalc) {
                 return {
-                    hasCrossedPrice: Boolean(manualCrossed),
+                    hasCrossedPrice: allowCrossed && Boolean(manualCrossed),
                     crossedPrice: manualCrossed || (item.crossedPrice || item.oldPrice),
                     mainPrice: item.oldPrice,
                     unitPriceText: `${prefix} : ${baseUnit.toFixed(2).replace('.', ',')} €`
@@ -1960,7 +1984,7 @@
             if (preset.mode === 'nth_2') {
                 const p = pctM ? parseFloat(pctM[1].replace(',', '.')) : (preset.nthPct || 50);
                 return {
-                    hasCrossedPrice: true,
+                    hasCrossedPrice: allowCrossed,
                     crossedPrice: refStartPrice,
                     mainPrice: refStartPrice * (1 - p / 100),
                     unitPriceText: `${prefix} par 2 : ${(refStartUnit * (1 - p / 200)).toFixed(2).replace('.', ',')} €`
@@ -1968,7 +1992,7 @@
             }
             if (preset.mode === 'bogo_1_1') {
                 return {
-                    hasCrossedPrice: true,
+                    hasCrossedPrice: allowCrossed,
                     crossedPrice: refStartPrice * 2,
                     mainPrice: refStartPrice,
                     unitPriceText: `${prefix} par 2 : ${(refStartUnit / 2).toFixed(2).replace('.', ',')} €`
@@ -1976,7 +2000,7 @@
             }
             if (preset.mode === 'bogo_2_1') {
                 return {
-                    hasCrossedPrice: true,
+                    hasCrossedPrice: allowCrossed,
                     crossedPrice: refStartPrice * 3,
                     mainPrice: refStartPrice * 2,
                     unitPriceText: `${prefix} par 3 : ${((refStartUnit * 2) / 3).toFixed(2).replace('.', ',')} €`
@@ -1984,7 +2008,7 @@
             }
             if (preset.mode === 'bogo_3_1') {
                 return {
-                    hasCrossedPrice: true,
+                    hasCrossedPrice: allowCrossed,
                     crossedPrice: refStartPrice * 4,
                     mainPrice: refStartPrice * 3,
                     unitPriceText: `${prefix} par 4 : ${((refStartUnit * 3) / 4).toFixed(2).replace('.', ',')} €`
@@ -1994,7 +2018,7 @@
                 const off = eurM ? parseFloat(eurM[1].replace(',', '.')) : 0;
                 const np = Math.max(0, refStartPrice - off);
                 return {
-                    hasCrossedPrice: off > 0 || Boolean(manualCrossed),
+                    hasCrossedPrice: allowCrossed && (off > 0 || Boolean(manualCrossed)),
                     crossedPrice: refStartPrice,
                     mainPrice: np,
                     unitPriceText: `${prefix} : ${(refStartUnit * (refStartPrice > 0 ? np / refStartPrice : 1)).toFixed(2).replace('.', ',')} €`
@@ -2002,14 +2026,14 @@
             }
             const pct = pctM ? parseFloat(pctM[1].replace(',', '.')) : 0;
             return {
-                hasCrossedPrice: pct > 0 || Boolean(manualCrossed),
+                hasCrossedPrice: allowCrossed && (pct > 0 || Boolean(manualCrossed)),
                 crossedPrice: refStartPrice,
                 mainPrice: refStartPrice * (1 - pct / 100),
                 unitPriceText: `${prefix} : ${(refStartUnit * (1 - pct / 100)).toFixed(2).replace('.', ',')} €`
             };
         }
 
-        // Formatage intelligent des lignes de texte à l'intérieur du cercle Carte U
+        // Formatage des lignes de texte à l'intérieur du cercle Carte U
         function formatCarteUCircleLines(rawDiscText) {
             if (!rawDiscText) return [];
             let cleaned = rawDiscText
@@ -2032,40 +2056,70 @@
             return cleaned.split('|').map(s => s.trim()).filter(Boolean);
         }
 
-        // Dessin d'une ligne de texte avec "2ÈME" en exposant ("2ème") comme sur la capture 3
-        function drawCircleLineWithSuperscript(ctx, lineText, centerX, baselineY, fontSize, fontSlab) {
-            const match2eme = lineText.match(/^(.*?\b2)(?:ÈME|EME|ème|eme)(\b.*)$/);
-            if (!match2eme) {
-                ctx.font = `900 ${fontSize}px ${fontSlab}`;
-                ctx.textAlign = 'center';
-                ctx.fillText(lineText, centerX, baselineY);
-                return;
+        // Calcule la largeur maximale disponible à l'intérieur du cercle à une hauteur Y donnée (corde géométrique)
+        function getMaxChordWidthInCircle(circleY, radius, lineBaselineY, fontSize, safetyPad = 14) {
+            const topY = lineBaselineY - fontSize * 0.85;
+            const bottomY = lineBaselineY + fontSize * 0.20;
+            const dy = Math.max(Math.abs(topY - circleY), Math.abs(bottomY - circleY), Math.abs(lineBaselineY - circleY));
+            const effectiveR = Math.max(20, radius - safetyPad);
+            if (dy >= effectiveR) return 40;
+            return 2 * Math.sqrt(effectiveR * effectiveR - dy * dy);
+        }
+
+        // Dessine une ligne de texte dans le cercle (avec support de "2ème" en exposant) en réduisant automatiquement la police si elle dépasse la corde du cercle
+        function drawFittedCircleLine(ctx, lineText, circleX, circleY, radius, baselineY, initialFontSize, fontSlab, withSuperscript2eme = false, minFontSize = 9) {
+            const cleanLine = (lineText || '').trim();
+            if (!cleanLine) return;
+
+            let fs = initialFontSize;
+            const match2eme = withSuperscript2eme ? cleanLine.match(/^(.*?\b2)(?:ÈME|EME|ème|eme)(\b.*)$/) : null;
+
+            while (fs > minFontSize) {
+                const maxAllowedW = getMaxChordWidthInCircle(circleY, radius, baselineY, fs, 13);
+                let measuredW = 0;
+                if (match2eme) {
+                    const supSize = Math.max(8, Math.round(fs * 0.58));
+                    ctx.font = `900 ${fs}px ${fontSlab}`;
+                    measuredW += ctx.measureText(match2eme[1]).width + ctx.measureText(match2eme[2]).width;
+                    ctx.font = `900 ${supSize}px ${fontSlab}`;
+                    measuredW += ctx.measureText('ème').width;
+                } else {
+                    ctx.font = `900 ${fs}px ${fontSlab}`;
+                    measuredW = ctx.measureText(cleanLine).width;
+                }
+                if (measuredW <= maxAllowedW) break;
+                fs -= 0.5;
             }
-            const prefix = match2eme[1];
-            const sup = 'ème';
-            const suffix = match2eme[2];
-            const supSize = Math.max(9, Math.round(fontSize * 0.58));
 
-            ctx.font = `900 ${fontSize}px ${fontSlab}`;
-            const wPrefix = ctx.measureText(prefix).width;
-            const wSuffix = ctx.measureText(suffix).width;
-            ctx.font = `900 ${supSize}px ${fontSlab}`;
-            const wSup = ctx.measureText(sup).width;
+            if (match2eme) {
+                const prefix = match2eme[1];
+                const sup = 'ème';
+                const suffix = match2eme[2];
+                const supSize = Math.max(8, Math.round(fs * 0.58));
 
-            const totalW = wPrefix + wSup + wSuffix;
-            let curX = centerX - totalW / 2;
+                ctx.font = `900 ${fs}px ${fontSlab}`;
+                const wPrefix = ctx.measureText(prefix).width;
+                const wSuffix = ctx.measureText(suffix).width;
+                ctx.font = `900 ${supSize}px ${fontSlab}`;
+                const wSup = ctx.measureText(sup).width;
 
-            ctx.textAlign = 'left';
-            ctx.font = `900 ${fontSize}px ${fontSlab}`;
-            ctx.fillText(prefix, curX, baselineY);
-            curX += wPrefix;
+                let curX = circleX - (wPrefix + wSup + wSuffix) / 2;
+                ctx.textAlign = 'left';
+                ctx.font = `900 ${fs}px ${fontSlab}`;
+                ctx.fillText(prefix, curX, baselineY);
+                curX += wPrefix;
 
-            ctx.font = `900 ${supSize}px ${fontSlab}`;
-            ctx.fillText(sup, curX, baselineY - Math.round(fontSize * 0.36));
-            curX += wSup;
+                ctx.font = `900 ${supSize}px ${fontSlab}`;
+                ctx.fillText(sup, curX, baselineY - Math.round(fs * 0.36));
+                curX += wSup;
 
-            ctx.font = `900 ${fontSize}px ${fontSlab}`;
-            ctx.fillText(suffix, curX, baselineY);
+                ctx.font = `900 ${fs}px ${fontSlab}`;
+                ctx.fillText(suffix, curX, baselineY);
+            } else {
+                ctx.font = `900 ${fs}px ${fontSlab}`;
+                ctx.textAlign = 'center';
+                ctx.fillText(cleanLine, circleX, baselineY);
+            }
         }
 
         async function drawPromoCircle(ctx, circleX, circleY, radius, discountStr, rawDiscText, isA4, presetKey = '') {
@@ -2074,7 +2128,6 @@
             const isCarteU = Boolean(presetInfo.isCarteU || /CARTE\s*U/i.test(rawDiscText));
 
             if (isCarteU) {
-                // Rouge (#EE1C25) pour une remise immédiate avec Carte U (-20%), Bleu turquoise (#008585) pour les offres "VERSÉS SUR CARTE U"
                 const isImmedRed = presetKey === 'carte_u_20_immed' || discountStr.trim().startsWith('-') || /IMM[ÉE]DIATE/i.test(rawDiscText);
                 ctx.fillStyle = isImmedRed ? '#EE1C25' : '#008585';
                 ctx.beginPath();
@@ -2085,7 +2138,6 @@
                 const lines = formatCarteUCircleLines(rawDiscText);
                 const lineCount = lines.length;
 
-                // 1) Dessin du pourcentage en haut du cercle avec le symbole % en exposant
                 const pctBaselineY = circleY - (
                     isA4
                         ? (lineCount >= 3 ? 42 : lineCount === 2 ? 34 : 24)
@@ -2095,17 +2147,25 @@
                 if (discountStr.endsWith('%')) {
                     const num = discountStr.slice(0, -1);
                     const isNeg = num.startsWith('-');
-                    const mF = isA4
+                    let mF = isA4
                         ? (isNeg ? 98 : 114)
                         : (isNeg ? 68 : (lineCount >= 3 ? 76 : 82));
-                    const pF = isA4
+                    let pF = isA4
                         ? (isNeg ? 46 : 52)
                         : (isNeg ? 31 : 36);
 
+                    const maxMainW = getMaxChordWidthInCircle(circleY, radius, pctBaselineY, mF, 14);
                     ctx.font = `900 ${mF}px ${FONT_SLAB}`;
-                    const nW = ctx.measureText(num).width;
+                    let nW = ctx.measureText(num).width;
                     ctx.font = `900 ${pF}px ${FONT_SLAB}`;
-                    const pW = ctx.measureText('%').width;
+                    let pW = ctx.measureText('%').width;
+                    if (nW + pW > maxMainW) {
+                        const ratio = maxMainW / (nW + pW);
+                        mF = Math.floor(mF * ratio);
+                        pF = Math.floor(pF * ratio);
+                        ctx.font = `900 ${mF}px ${FONT_SLAB}`; nW = ctx.measureText(num).width;
+                        ctx.font = `900 ${pF}px ${FONT_SLAB}`; pW = ctx.measureText('%').width;
+                    }
 
                     const sX = circleX - (nW + pW) / 2;
                     ctx.textAlign = 'left';
@@ -2115,12 +2175,9 @@
                     ctx.fillText('%', sX + nW + 2, pctBaselineY - (isA4 ? (isNeg ? 38 : 44) : (isNeg ? 26 : 30)));
                 } else if (discountStr) {
                     const cF = isA4 ? 86 : 58;
-                    ctx.font = `900 ${cF}px ${FONT_SLAB}`;
-                    ctx.textAlign = 'center';
-                    ctx.fillText(discountStr, circleX, pctBaselineY);
+                    drawFittedCircleLine(ctx, discountStr, circleX, circleY, radius, pctBaselineY, cF, FONT_SLAB, false, 18);
                 }
 
-                // 2) Dessin des lignes de texte au centre du cercle (entre le % et la Carte U)
                 if (lineCount > 0) {
                     const maxLen = Math.max(...lines.map(l => l.length));
                     let fSize, lineH, firstLineY;
@@ -2146,11 +2203,10 @@
                     }
 
                     lines.forEach((l, i) => {
-                        drawCircleLineWithSuperscript(ctx, l, circleX, firstLineY + i * lineH, fSize, FONT_SLAB);
+                        drawFittedCircleLine(ctx, l, circleX, circleY, radius, firstLineY + i * lineH, fSize, FONT_SLAB, true, 9);
                     });
                 }
 
-                // 3) Dessin du logo CARTE_U.png en bas du cercle (débordant légèrement sous le cercle comme sur les captures)
                 const uImg = await loadCarteUImage();
                 if (uImg) {
                     const imgW = isA4 ? 195 : 134;
@@ -2165,27 +2221,120 @@
                 return;
             }
 
-            // Rendu standard rouge pour les autres mécaniques hors Carte U
-            const hasPhrase = rawDiscText.length > 0;
-            ctx.fillStyle = '#EE1C25'; ctx.beginPath(); ctx.arc(circleX, circleY, radius, 0, Math.PI * 2); ctx.fill();
+            // ============================================================================
+            // RENDU DU CERCLE ROUGE (AVEC TAILLE AUGMENTÉE POUR "BAS" / "CHOC !" ET ZÉRO DÉPASSEMENT)
+            // ============================================================================
+            const lines = rawDiscText ? rawDiscText.split('|').map(s => s.trim()).filter(Boolean) : [];
+            const lineCount = lines.length;
+            const hasPhrase = lineCount > 0;
+
+            ctx.fillStyle = '#EE1C25';
+            ctx.beginPath();
+            ctx.arc(circleX, circleY, radius, 0, Math.PI * 2);
+            ctx.fill();
             ctx.fillStyle = '#FFFFFF';
-            const mainY = circleY + (hasPhrase ? (isA4 ? 5 : 2) : (isA4 ? 35 : 26));
-            if (discountStr.endsWith('%')) {
-                const num = discountStr.slice(0, -1), mF = isA4 ? (hasPhrase ? 105 : 120) : (hasPhrase ? 74 : 84), pF = isA4 ? (hasPhrase ? 58 : 66) : (hasPhrase ? 42 : 48);
-                ctx.font = `900 ${mF}px ${FONT_SLAB}`; const nW = ctx.measureText(num).width;
-                ctx.font = `900 ${pF}px ${FONT_SLAB}`; const pW = ctx.measureText('%').width;
-                const sX = circleX - (nW + pW) / 2;
-                ctx.textAlign = 'left'; ctx.font = `900 ${mF}px ${FONT_SLAB}`; ctx.fillText(num, sX, mainY);
-                ctx.font = `900 ${pF}px ${FONT_SLAB}`; ctx.fillText('%', sX + nW + 2, mainY - (isA4 ? 38 : 26));
-            } else if (discountStr) {
-                const cF = discountStr.length > 7 ? (isA4 ? 54 : 38) : (discountStr.length > 5 ? (isA4 ? 70 : 48) : (isA4 ? 102 : 64));
-                ctx.font = `900 ${cF}px ${FONT_SLAB}`; ctx.textAlign = 'center'; ctx.fillText(discountStr, circleX, mainY);
+
+            const upperMain = discountStr.trim().toUpperCase();
+            const upperSub = lineCount === 1 ? lines[0].toUpperCase() : '';
+            const isPrixSpecial = upperMain === 'PRIX' && lineCount === 1;
+            const isBigBasOrChoc = isPrixSpecial && (upperSub === 'BAS' || upperSub.startsWith('CHOC'));
+            const isBogoSingleWord = /^(\d+\s*\+\s*\d+)$/.test(upperMain) && lineCount === 1;
+
+            // Position verticale du texte principal (en haut du cercle)
+            let mainY;
+            if (!hasPhrase) {
+                mainY = circleY + (isA4 ? 35 : 26);
+            } else if (isBigBasOrChoc) {
+                mainY = circleY - (isA4 ? 14 : 10);
+            } else if (isBogoSingleWord) {
+                mainY = circleY - (isA4 ? 4 : 3);
+            } else if (lineCount >= 3) {
+                // Remonte le % quand il y a 3 lignes (ex: -50% / -60% sur le 2ème produit) pour que la 3ème ligne reste dans la partie large du cercle
+                mainY = circleY - (isA4 ? 24 : 16);
+            } else {
+                mainY = circleY + (isA4 ? 2 : 0);
             }
+
+            if (discountStr.endsWith('%')) {
+                const num = discountStr.slice(0, -1);
+                let mF = isA4
+                    ? (lineCount >= 3 ? 96 : (hasPhrase ? 105 : 120))
+                    : (lineCount >= 3 ? 68 : (hasPhrase ? 74 : 84));
+                let pF = isA4
+                    ? (lineCount >= 3 ? 52 : (hasPhrase ? 58 : 66))
+                    : (lineCount >= 3 ? 38 : (hasPhrase ? 42 : 48));
+
+                const maxChordMain = getMaxChordWidthInCircle(circleY, radius, mainY, mF, 14);
+                ctx.font = `900 ${mF}px ${FONT_SLAB}`;
+                let nW = ctx.measureText(num).width;
+                ctx.font = `900 ${pF}px ${FONT_SLAB}`;
+                let pW = ctx.measureText('%').width;
+                if (nW + pW > maxChordMain) {
+                    const ratio = maxChordMain / (nW + pW);
+                    mF = Math.floor(mF * ratio);
+                    pF = Math.floor(pF * ratio);
+                    ctx.font = `900 ${mF}px ${FONT_SLAB}`; nW = ctx.measureText(num).width;
+                    ctx.font = `900 ${pF}px ${FONT_SLAB}`; pW = ctx.measureText('%').width;
+                }
+
+                const sX = circleX - (nW + pW) / 2;
+                ctx.textAlign = 'left';
+                ctx.font = `900 ${mF}px ${FONT_SLAB}`;
+                ctx.fillText(num, sX, mainY);
+                ctx.font = `900 ${pF}px ${FONT_SLAB}`;
+                ctx.fillText('%', sX + nW + 2, mainY - (isA4 ? (lineCount >= 3 ? 34 : 38) : (lineCount >= 3 ? 23 : 26)));
+            } else if (discountStr) {
+                let cF;
+                if (isBigBasOrChoc) {
+                    cF = isA4 ? 92 : 62;
+                } else if (isBogoSingleWord) {
+                    cF = isA4 ? 104 : 70;
+                } else {
+                    cF = discountStr.length > 7 ? (isA4 ? 54 : 38) : (discountStr.length > 5 ? (isA4 ? 70 : 48) : (isA4 ? 102 : 64));
+                }
+                drawFittedCircleLine(ctx, discountStr, circleX, circleY, radius, mainY, cF, FONT_SLAB, false, 16);
+            }
+
+            // Dessin du texte secondaire sous la valeur principale (garanti sans dépassement du cercle)
             if (hasPhrase) {
-                const lines = rawDiscText.split('|');
-                ctx.font = `800 ${isA4 ? 32 : (lines.some(l => l.trim().length > 14) ? 18 : 21)}px ${FONT_SLAB}`;
-                ctx.textAlign = 'center';
-                lines.forEach((l, i) => ctx.fillText(l.trim(), circleX, circleY + (isA4 ? 55 : 32) + i * (isA4 ? 36 : 23)));
+                if (isBigBasOrChoc) {
+                    // Mot "BAS" (dans PRIX BAS) et "CHOC !" (dans PRIX CHOC !) nettement agrandis
+                    const subFont = upperSub === 'BAS'
+                        ? (isA4 ? 68 : 46)
+                        : (isA4 ? 58 : 40);
+                    const subY = circleY + (isA4 ? 62 : 42);
+                    drawFittedCircleLine(ctx, lines[0], circleX, circleY, radius, subY, subFont, FONT_SLAB, false, 14);
+                } else if (isPrixSpecial) {
+                    // Ex: PRIX COÛTANT
+                    const subFont = isA4 ? 44 : 30;
+                    const subY = circleY + (isA4 ? 52 : 35);
+                    drawFittedCircleLine(ctx, lines[0], circleX, circleY, radius, subY, subFont, FONT_SLAB, false, 12);
+                } else if (isBogoSingleWord) {
+                    // Ex: 1+1 GRATUIT, 2+1 OFFERT, 3+1 OFFERTE bien visibles et centrés
+                    const subFont = isA4 ? 42 : 28;
+                    const subY = circleY + (isA4 ? 50 : 34);
+                    drawFittedCircleLine(ctx, lines[0], circleX, circleY, radius, subY, subFont, FONT_SLAB, false, 12);
+                } else {
+                    let baseFont, lineSpacing, startY;
+                    if (lineCount >= 3) {
+                        baseFont = isA4 ? 25 : 17;
+                        lineSpacing = isA4 ? 29 : 19.5;
+                        startY = circleY + (isA4 ? 22 : 14);
+                    } else if (lineCount === 2) {
+                        baseFont = isA4 ? 30 : 20.5;
+                        lineSpacing = isA4 ? 34 : 23;
+                        startY = circleY + (isA4 ? 44 : 29);
+                    } else {
+                        baseFont = isA4 ? 34 : 23;
+                        lineSpacing = isA4 ? 36 : 24;
+                        startY = circleY + (isA4 ? 52 : 34);
+                    }
+
+                    lines.forEach((l, i) => {
+                        const lineY = startY + i * lineSpacing;
+                        drawFittedCircleLine(ctx, l, circleX, circleY, radius, lineY, baseFont, FONT_SLAB, false, 10);
+                    });
+                }
             }
         }
 
@@ -2199,7 +2348,6 @@
             const presetObj = MECHANIC_PRESETS[presetK] || {};
             const isCarteUPromos = Boolean(presetObj.isCarteU || item.detectedPromo?.isCarteU || /CARTE\s*U/i.test(discTxt));
 
-            // Mention sous prix bleue si Carte U ("LE PRODUIT € CARTE U DÉDUITS")
             let uLabel = (hasCustomPromo && applyMechanicPriceCalc) ? item.detectedPromo.unitLabel : $('inputUnitLabel').value;
             if (isCarteUPromos) {
                 uLabel = "LE PRODUIT € CARTE U DÉDUITS";
@@ -2305,7 +2453,6 @@
                 ctx.font = `800 15px ${FONT_SANS}`; ctx.textAlign = 'center'; ctx.fillText(uLabel.toUpperCase(), 555, 294);
                 ctx.fillStyle = '#000000'; ctx.font = `600 15px ${FONT_SANS}`; ctx.fillText(pricing.unitPriceText, 555, 314);
                 if (showCont && item.contenanceText) { ctx.fillStyle = '#374151'; ctx.font = `700 14px ${FONT_SANS}`; ctx.fillText(`Contenance : ${item.contenanceText}`, 555, 334); }
-                // Dessin du cercle après le texte sous prix afin que le cercle et la Carte U se superposent proprement par-dessus la fin de "DÉDUITS"
                 await drawPromoCircle(ctx, 782, 185, 114, discIn, discTxt, false, presetK);
             } else {
                 if (pricing.hasCrossedPrice) {
@@ -2350,6 +2497,7 @@
             postersList.forEach((item, index) => {
                 const isCustom = Boolean(item.useCustomLeftImage), isAlc = item.showAlcohol18 !== null ? item.showAlcohol18 : showAlcoholGlobal;
                 const hasP = isPosterPromoActive(item);
+                const isCrossedOn = isPosterCrossedPriceVisible(item);
                 const promoBadgeDiscount = getEffectivePosterDiscount(item);
                 const crossedVal = (item.crossedPrice && Number(item.crossedPrice) > 0) ? Number(item.crossedPrice).toFixed(2) : '';
 
@@ -2367,7 +2515,10 @@
                         </div>
                         <button type="button" data-idx="${index}" class="btn-toggle-item-alcohol font-extrabold px-1.5 py-1 rounded border shrink-0 ${isAlc ? 'bg-orange-600 text-white' : 'bg-orange-50 text-orange-800'}">-18 ${isAlc ? 'ON' : 'OFF'}</button>
                         <label class="flex items-center gap-0.5 font-semibold text-gray-600 shrink-0">Prix:<input type="number" step="0.01" data-idx="${index}" data-field="oldPrice" value="${item.oldPrice.toFixed(2)}" class="poster-edit-input w-11 font-bold border rounded px-1 py-1 text-pink-700 bg-pink-50 text-center" title="Prix principal affiché"></label>
-                        <label class="flex items-center gap-0.5 font-semibold text-gray-600 shrink-0">Barré:<input type="number" step="0.01" data-idx="${index}" data-field="crossedPrice" value="${crossedVal}" placeholder="-" class="poster-edit-input w-11 font-bold border rounded px-1 py-1 text-gray-700 bg-gray-100 text-center" title="Prix barré affiché juste au-dessus"></label>
+                        <div class="flex items-center gap-0.5 shrink-0">
+                            <button type="button" data-idx="${index}" class="btn-toggle-item-crossed font-bold px-1.5 py-1 rounded border transition ${isCrossedOn ? 'bg-gray-800 text-white border-gray-900' : 'bg-gray-100 text-gray-400 border-gray-300 line-through'}" title="Afficher ou masquer le prix barré sur cette étiquette">Barré ${isCrossedOn ? 'ON' : 'OFF'}</button>
+                            <input type="number" step="0.01" data-idx="${index}" data-field="crossedPrice" value="${crossedVal}" placeholder="-" class="poster-edit-input w-11 font-bold border rounded px-1 py-1 text-gray-700 bg-gray-100 text-center ${isCrossedOn ? '' : 'opacity-40'}" title="Valeur du prix barré">
+                        </div>
                         <label class="flex items-center gap-0.5 font-semibold text-gray-600 shrink-0">P.Unité:<input type="number" step="0.01" data-idx="${index}" data-field="baseUnitPrice" value="${(item.baseUnitPrice || item.oldPrice).toFixed(2)}" class="poster-edit-input w-11 font-bold border rounded px-1 py-1 text-amber-800 bg-amber-50 text-center"></label>
                         <label class="flex items-center gap-0.5 font-semibold text-gray-600 shrink-0">Unité:<select data-idx="${index}" data-field="unitType" class="poster-edit-input font-bold border rounded px-1 py-1 bg-yellow-50"><option value="pièce" ${item.unitType === 'pièce' ? 'selected' : ''}>Pièce</option><option value="kg" ${item.unitType === 'kg' ? 'selected' : ''}>Kg</option><option value="l" ${item.unitType === 'l' ? 'selected' : ''}>Litre</option></select></label>
                         <label class="flex items-center gap-0.5 font-semibold text-gray-600 shrink-0">Cont.:<input type="text" data-idx="${index}" data-field="contenanceText" value="${(item.contenanceText || '').replace(/"/g, '&quot;')}" class="poster-edit-input w-11 font-bold border rounded px-1 py-1 text-emerald-800 bg-emerald-50 text-center"></label>
@@ -2391,6 +2542,7 @@
                 } else if (f === 'crossedPrice') {
                     const v = parseFloat(this.value);
                     postersList[i].crossedPrice = (v && v > 0) ? v : null;
+                    if (postersList[i].crossedPrice) postersList[i].showCrossedPrice = true;
                     const selPreset = MECHANIC_PRESETS[$('selectMechanicPreset').value] || {};
                     if (postersList[i].crossedPrice && postersList[i].crossedPrice > postersList[i].oldPrice && !forceManualGlobalDiscount && !selPreset.isCarteU) {
                         const pct = Math.max(1, Math.round(((postersList[i].crossedPrice - postersList[i].oldPrice) / postersList[i].crossedPrice) * 100));
@@ -2414,6 +2566,11 @@
                     promoBtn.className = `btn-toggle-item-promo font-extrabold px-2 py-1 rounded border shrink-0 transition ${hasP ? 'bg-red-600 text-white border-red-700 hover:bg-red-700' : 'bg-gray-100 text-gray-600 border-gray-300 hover:bg-gray-200'}`;
                 }
                 drawSinglePoster($(`posterCanvas_${i}`), postersList[i]);
+            });
+            document.querySelectorAll('.btn-toggle-item-crossed').forEach(b => b.onclick = function() {
+                const i = +this.dataset.idx;
+                postersList[i].showCrossedPrice = !isPosterCrossedPriceVisible(postersList[i]);
+                renderAllPosters();
             });
             document.querySelectorAll('.btn-toggle-item-promo').forEach(b => b.onclick = function() {
                 const i = +this.dataset.idx;
