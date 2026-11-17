@@ -1,6 +1,5 @@
 // functions/api.js
 const PUBLIC_R2_URL = "https://pub-06317316428d44fe94ff17808d4763df.r2.dev";
-const DELETE_PASSCODE = "Bonesink124!";
 const DELETED_STATIC_KEY = "__system__/deleted_static_files.json";
 
 export async function onRequest(context) {
@@ -89,11 +88,11 @@ export async function onRequest(context) {
       });
     }
 
-    // 2. ACTIONS POST (EXTRACTION IA GEMINI SANS TIMEOUT 524, DOSSIERS, UPLOAD R2, MODIFICATIONS)
+    // 2. ACTIONS POST (EXTRACTION IA GEMINI, DOSSIERS, UPLOAD R2, MODIFICATIONS SANS MOT DE PASSE)
     if (request.method === "POST") {
       const body = await request.json();
 
-      // EXTRACTION ULTRA-PRÉCISE ET RAPIDE VIA GEMINI VISION (SANS TIMEOUT 524)
+      // EXTRACTION VIA GEMINI VISION
       if (body.action === "extract_labels_gemini") {
         const apiKey = (body.apiKey || env.GEMINI_API_KEY || "").trim();
         if (!apiKey) {
@@ -173,7 +172,6 @@ Ignore toujours l'encadré d'en-tête "Fichier portable / Etiq-25 / X étiquette
           }
         };
 
-        // Sélection directe du modèle Flash actif sur la clé (max 2 essais rapides pour éviter tout Timeout 524)
         let modelsToTry = ["gemini-3.8-flash", "gemini-flash-latest"];
         try {
           const listRes = await fetch(
@@ -264,14 +262,8 @@ Ignore toujours l'encadré d'en-tête "Fichier portable / Etiq-25 / X étiquette
         });
       }
 
-      // B. Masquer une image GitHub ("Images Gauche" / "Images A4") pour tout le monde sur R2
+      // B. Masquer une image GitHub ("Images Gauche" / "Images A4" / "Fonds") sur R2
       if (body.action === "hide_static_file") {
-        if (body.code !== DELETE_PASSCODE) {
-          return new Response(
-            JSON.stringify({ ok: false, error: "Code de suppression incorrect." }),
-            { status: 403, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-          );
-        }
         const currentList = await getDeletedStaticFiles();
         if (body.filePath && !currentList.includes(body.filePath)) {
           currentList.push(body.filePath);
@@ -286,12 +278,6 @@ Ignore toujours l'encadré d'en-tête "Fichier portable / Etiq-25 / X étiquette
 
       // C. Renommer et/ou déplacer un fichier vers un autre dossier/sous-dossier
       if (body.action === "update_file_meta") {
-        if (body.code !== DELETE_PASSCODE) {
-          return new Response(
-            JSON.stringify({ ok: false, error: "Code incorrect." }),
-            { status: 403, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-          );
-        }
         const existingObj = await bucket.get(body.key);
         if (!existingObj) {
           return new Response(
@@ -327,13 +313,6 @@ Ignore toujours l'encadré d'en-tête "Fichier portable / Etiq-25 / X étiquette
 
       // D. Renommer ou déplacer un dossier / sous-dossier entier
       if (body.action === "rename_folder") {
-        if (body.code !== DELETE_PASSCODE) {
-          return new Response(
-            JSON.stringify({ ok: false, error: "Code incorrect." }),
-            { status: 403, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-          );
-        }
-
         const targetFolder = body.folder || "ready_deposited";
         const oldSub = (body.oldSubFolder || "").trim();
         const newSub = (body.newSubFolder || "")
@@ -453,16 +432,8 @@ Ignore toujours l'encadré d'en-tête "Fichier portable / Etiq-25 / X étiquette
       });
     }
 
-    // 3. SUPPRIMER UN FICHIER OU UN DOSSIER/SOUS-DOSSIER COMPLET (DELETE /api)
+    // 3. SUPPRIMER UN FICHIER OU UN DOSSIER/SOUS-DOSSIER COMPLET SANS MOT DE PASSE (DELETE /api)
     if (request.method === "DELETE") {
-      const code = url.searchParams.get("code") || "";
-      if (code !== DELETE_PASSCODE) {
-        return new Response(
-          JSON.stringify({ ok: false, error: "Code de suppression incorrect." }),
-          { status: 403, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-        );
-      }
-
       const action = url.searchParams.get("action") || "delete_file";
 
       if (action === "delete_folder") {
