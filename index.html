@@ -62,24 +62,32 @@
         </div>
     </div>
 
+    <!-- INPUT FILE GLOBAL CACHÉ POUR LE DÉPÔT PDF (50 MAX) -->
+    <input type="file" id="inputBlueLabel" accept=".jpeg,.jpg,.png,.pdf,.webp,.bmp,image/*,application/pdf" multiple class="hidden">
+
     <!-- ESPACE DE TRAVAIL PRINCIPAL EN 2 COLONNES (GAUCHE = BARRE HAUT + ÉDITEUR + LISTE | DROITE = PANNEAU DE CONTRÔLES) -->
     <div id="mainWorkspace" class="max-w-[1680px] mx-auto flex flex-col lg:flex-row gap-4 items-start">
 
         <!-- COLONNE GAUCHE : BARRE SUPÉRIEURE + ÉDITEUR + LISTE PDF -->
         <div class="flex-1 w-full min-w-0 space-y-4">
 
-            <!-- BARRE SUPÉRIEURE (CONSERVÉE TOUT EN HAUT) -->
+            <!-- BARRE SUPÉRIEURE -->
             <div class="bg-white px-4 py-2.5 rounded-xl shadow-md border-t-4 border-red-600 flex flex-wrap justify-between items-center gap-2">
                 <div class="flex flex-wrap items-center gap-2">
                     <h1 class="text-base font-extrabold text-gray-800 tracking-wide shrink-0">Generateur</h1>
                     <span id="badgeCount" class="text-[11px] bg-red-100 text-red-700 font-bold px-2.5 py-1 rounded-full shrink-0">1 / 50 étiquette</span>
 
-                    <!-- BOUTON MODE STOCK RAYON / A4 PORTRAIT -->
-                    <button type="button" id="btnToggleA4Mode" class="text-[11px] font-extrabold px-2.5 py-1 rounded-lg border-2 border-gray-800 bg-white text-gray-800 hover:bg-gray-800 hover:text-white transition flex items-center gap-1.5 shadow-sm shrink-0">
-                        <span>Mode : Stock Rayon</span><span class="bg-red-600 text-white text-[10px] px-1.5 py-0.5 rounded">Basculer A4 Portrait</span>
-                    </button>
+                    <!-- BOUTONS DISTINCTS POUR PASSER DE STOCK RAYON À A4 PORTRAIT (MÊME STYLE QUE CRÉATION / GÉNÉRER LISTE) -->
+                    <div class="inline-flex items-center rounded-lg bg-gray-100 p-0.5 border-2 border-gray-300 shrink-0 gap-1">
+                        <button type="button" id="btnFormatStockRayon" class="text-[11px] font-extrabold px-2.5 py-1 rounded-md bg-gray-800 text-white shadow-sm transition flex items-center gap-1">
+                            <span>🏷️ Stock Rayon</span>
+                        </button>
+                        <button type="button" id="btnFormatA4Portrait" class="text-[11px] font-extrabold px-2.5 py-1 rounded-md text-gray-700 hover:bg-gray-200 transition flex items-center gap-1">
+                            <span>📄 A4 Portrait</span>
+                        </button>
+                    </div>
 
-                    <!-- BOUTONS DISTINCTS POUR PASSER D'UN MODE À L'AUTRE -->
+                    <!-- BOUTONS DISTINCTS POUR PASSER DE MODE CRÉATION À GÉNÉRER LISTE -->
                     <div class="inline-flex items-center rounded-lg bg-gray-100 p-0.5 border-2 border-gray-300 shrink-0 gap-1">
                         <button type="button" id="btnModeCreation" class="text-[11px] font-extrabold px-2.5 py-1 rounded-md bg-emerald-600 text-white shadow-sm transition flex items-center gap-1">
                             <span>✏️ Mode Création</span>
@@ -88,12 +96,6 @@
                             <span>📋 Générer Liste</span>
                         </button>
                     </div>
-
-                    <!-- BOUTON DÉPÔT PDF (50 MAX) PLACÉ DANS L'ONGLET DU DESSUS (EN MODE GÉNÉRER LISTE) -->
-                    <label id="btnDepositPdfTop" class="hidden text-[11px] font-extrabold px-3 py-1 rounded-lg border-2 border-blue-600 bg-blue-600 text-white hover:bg-blue-700 transition flex items-center gap-1.5 shadow-sm shrink-0 cursor-pointer">
-                        <span>📷 DÉPÔT PDF (50 MAX)</span>
-                        <input type="file" id="inputBlueLabel" accept=".jpeg,.jpg,.png,.pdf,.webp,.bmp,image/*,application/pdf" multiple class="hidden">
-                    </label>
 
                     <!-- BOUTON BIBLIOTHÈQUE -->
                     <button type="button" id="btnOpenReadyDocsModal" class="text-[11px] font-extrabold px-3 py-1 rounded-lg border-2 border-purple-600 bg-purple-600 text-white hover:bg-purple-700 transition flex items-center gap-1.5 shadow-sm shrink-0">
@@ -139,7 +141,7 @@
                 </div>
             </div>
 
-            <!-- ÉDITEUR D'ÉTIQUETTE EN COURS (CONFORME À LA CAPTURE "NOuveau espace.png") -->
+            <!-- ÉDITEUR D'ÉTIQUETTE EN COURS -->
             <div id="manualEditorCard" class="bg-white p-4 rounded-xl shadow-md space-y-3">
                 <div class="flex flex-wrap items-center justify-between border-b pb-2.5 gap-2 text-xs">
                     <!-- BLOC GAUCHE : #1 + NOM DU PRODUIT + BOUTON SANS PROMO / PROMO -->
@@ -202,9 +204,15 @@
                         <h2 class="text-xs font-extrabold uppercase text-gray-800">📋 Étiquettes dans la liste PDF</h2>
                         <span id="savedListCountBadge" class="text-[11px] bg-emerald-100 text-emerald-800 font-black px-2.5 py-0.5 rounded-full">0 / 50</span>
                     </div>
-                    <button type="button" id="btnClearSavedList" class="text-[11px] font-extrabold px-3 py-1 rounded-lg bg-red-50 hover:bg-red-600 text-red-600 hover:text-white border border-red-200 transition flex items-center gap-1">
-                        🗑️ Vider la liste
-                    </button>
+                    <div class="flex items-center gap-2">
+                        <!-- Bouton Dépôt PDF supplémentaire affiché dans l'en-tête de liste uniquement quand des étiquettes sont déjà chargées en mode Générer Liste -->
+                        <label id="btnHeaderDepositPdf" for="inputBlueLabel" class="hidden text-[11px] font-extrabold px-3 py-1 rounded-lg border-2 border-blue-600 bg-blue-600 text-white hover:bg-blue-700 transition items-center gap-1.5 shadow-sm cursor-pointer">
+                            <span>📷 DÉPÔT PDF (50 MAX)</span>
+                        </label>
+                        <button type="button" id="btnClearSavedList" class="text-[11px] font-extrabold px-3 py-1 rounded-lg bg-red-50 hover:bg-red-600 text-red-600 hover:text-white border border-red-200 transition flex items-center gap-1">
+                            🗑️ Vider la liste
+                        </button>
+                    </div>
                 </div>
                 <div id="postersContainer" class="space-y-4"></div>
             </div>
@@ -321,7 +329,7 @@
                 <input type="text" id="inputUnitLabel" value="LE PRODUIT" placeholder="Utilise | pour sauter une ligne" class="w-full p-1.5 border rounded-lg text-xs font-bold text-red-600 uppercase">
             </div>
 
-            <!-- BOUTONS FOND : AUCUN & -18 ALCOOL (DÉPLACÉS À DROITE SOUS LES AUTRES BOUTONS EN MODE CRÉATION ET GÉNÉRER LISTE) -->
+            <!-- BOUTONS FOND : AUCUN & -18 ALCOOL (VISIBLES EN STOCK RAYON ET EN A4 PORTRAIT, EN MODE CRÉATION ET GÉNÉRER LISTE) -->
             <div class="flex gap-2 pt-1">
                 <button type="button" id="btnOpenBgModal" class="flex-1 text-xs font-extrabold py-2.5 px-3 rounded-xl border-2 border-purple-300 bg-purple-50 text-purple-900 hover:bg-purple-100 transition flex items-center justify-center gap-1.5 shadow-sm">
                     <span id="bgBtnLabel" class="truncate">🎨 Fond : Aucun</span>
@@ -368,12 +376,12 @@
         </div>
     </div>
 
-    <!-- MODALE 1-BIS : GALERIE DES FONDS D'ARRIÈRE-PLAN -->
+    <!-- MODALE 1-BIS : GALERIE DES FONDS D'ARRIÈRE-PLAN (STOCK RAYON & A4 PORTRAIT) -->
     <div id="bgGalleryModal" class="fixed inset-0 bg-black/60 z-50 hidden flex items-center justify-center p-4 backdrop-blur-sm">
         <div class="bg-white rounded-2xl shadow-2xl max-w-5xl w-full max-h-[90vh] flex flex-col overflow-hidden border-t-4 border-purple-600">
             <div class="flex flex-wrap justify-between items-center px-5 py-3.5 border-b bg-gray-50 gap-3">
                 <div>
-                    <h2 class="text-sm font-extrabold text-purple-900 uppercase">🎨 Choisir un Fond d'étiquette (Stock Rayon)</h2>
+                    <h2 class="text-sm font-extrabold text-purple-900 uppercase">🎨 Choisir un Fond d'étiquette (Stock Rayon & A4 Portrait)</h2>
                     <p class="text-[11px] text-gray-500">Appliqué en arrière-plan • Opacité automatique à 33% sur chaque nouveau dépôt R2</p>
                 </div>
                 <div class="flex flex-wrap items-center gap-2">
@@ -771,6 +779,34 @@
         }
 
         // ============================================================================
+        // GESTION DES BOUTONS DISTINCTS (FORMAT : STOCK RAYON vs A4 PORTRAIT)
+        // ============================================================================
+        function setFormatMode(a4Mode) {
+            isA4PortraitMode = a4Mode;
+            const btnStock = $('btnFormatStockRayon');
+            const btnA4 = $('btnFormatA4Portrait');
+
+            if (isA4PortraitMode) {
+                btnStock.className = 'text-[11px] font-extrabold px-2.5 py-1 rounded-md text-gray-700 hover:bg-gray-200 transition flex items-center gap-1';
+                btnA4.className = 'text-[11px] font-extrabold px-2.5 py-1 rounded-md bg-red-600 text-white shadow-sm transition flex items-center gap-1';
+            } else {
+                btnStock.className = 'text-[11px] font-extrabold px-2.5 py-1 rounded-md bg-gray-800 text-white shadow-sm transition flex items-center gap-1';
+                btnA4.className = 'text-[11px] font-extrabold px-2.5 py-1 rounded-md text-gray-700 hover:bg-gray-200 transition flex items-center gap-1';
+            }
+
+            $('btnDownloadLabel').textContent = isA4PortraitMode ? '📄 TÉLÉCHARGER LE PDF (A4 PORTRAIT)' : '📄 TÉLÉCHARGER LE PDF (STOCK RAYON)';
+            $('labelZoneImage').textContent = isA4PortraitMode ? '🖼️ 2.IMAGES' : '🖼️ IMAGE';
+            $('globalGalleryLabel').textContent = `🖼️ ${isA4PortraitMode ? (labelImageA4 || 'Choisir visuel A4') : (labelImage4 || 'Choisir visuel')}`;
+            // Le bouton Fond reste visible aussi bien en Stock Rayon qu'en A4 Portrait (en Création et Générer Liste)
+            $('btnOpenBgModal').classList.remove('hidden');
+            buildVisualGallery();
+            renderAllPosters();
+        }
+
+        $('btnFormatStockRayon').onclick = () => setFormatMode(false);
+        $('btnFormatA4Portrait').onclick = () => setFormatMode(true);
+
+        // ============================================================================
         // GESTION DES DEUX MODES DISTINCTS (CRÉATION vs GÉNÉRER LISTE / DÉPÔT PDF)
         // ============================================================================
         function updateActionButtonsByMode() {
@@ -803,18 +839,15 @@
             isPdfDepositWorkspaceMode = isDepositListMode;
             const btnCreation = $('btnModeCreation');
             const btnGenereListe = $('btnModeGenereListe');
-            const btnDepositTop = $('btnDepositPdfTop');
             const manualCard = $('manualEditorCard');
 
             if (isPdfDepositWorkspaceMode) {
                 btnCreation.className = 'text-[11px] font-extrabold px-2.5 py-1 rounded-md text-gray-700 hover:bg-gray-200 transition flex items-center gap-1';
                 btnGenereListe.className = 'text-[11px] font-extrabold px-2.5 py-1 rounded-md bg-blue-600 text-white shadow-sm transition flex items-center gap-1';
-                btnDepositTop.classList.remove('hidden');
                 manualCard.classList.add('hidden');
             } else {
                 btnCreation.className = 'text-[11px] font-extrabold px-2.5 py-1 rounded-md bg-emerald-600 text-white shadow-sm transition flex items-center gap-1';
                 btnGenereListe.className = 'text-[11px] font-extrabold px-2.5 py-1 rounded-md text-gray-700 hover:bg-gray-200 transition flex items-center gap-1';
-                btnDepositTop.classList.add('hidden');
                 manualCard.classList.remove('hidden');
             }
 
@@ -1007,14 +1040,14 @@
             };
         }
 
-        // BOUTON "AJOUTER A LA LISTE"
+        // BOUTON "AJOUTER A LA LISTE" (Insère la dernière étiquette tout en haut de la liste et fait descendre les précédentes)
         $('btnAddDraftToList').onclick = () => {
             if (isPdfDepositWorkspaceMode) return;
             if (postersList.length >= MAX_LABELS_LIMIT) {
                 return alert(`⚠️ Limite maximale de ${MAX_LABELS_LIMIT} étiquettes atteinte dans la liste PDF.`);
             }
             const addedCopy = cloneItemWithSnapshot(draftItem);
-            postersList.push(addedCopy);
+            postersList.unshift(addedCopy);
             renderAllPosters();
         };
 
@@ -1038,7 +1071,7 @@
             RefreshActiveView();
         };
 
-        // BOUTON "VIDER LA LISTE" (vide la liste des étiquettes validées)
+        // BOUTON "VIDER LA LISTE"
         $('btnClearSavedList').onclick = () => {
             if (!postersList.length) return;
             postersList = [];
@@ -1670,21 +1703,6 @@
             RefreshActiveView();
         };
 
-        $('btnToggleA4Mode').onclick = function() {
-            isA4PortraitMode = !isA4PortraitMode;
-            this.className = isA4PortraitMode
-                ? 'text-[11px] font-extrabold px-2.5 py-1 rounded-lg border-2 border-red-600 bg-red-600 text-white flex items-center gap-1.5 shadow-sm shrink-0'
-                : 'text-[11px] font-extrabold px-2.5 py-1 rounded-lg border-2 border-gray-800 bg-white text-gray-800 flex items-center gap-1.5 shadow-sm shrink-0';
-            this.innerHTML = isA4PortraitMode
-                ? '<span>📄 Mode : A4 Portrait</span><span class="bg-white text-red-600 text-[10px] px-1.5 py-0.5 rounded">Basculer Stock Rayon</span>'
-                : '<span>Mode : Stock Rayon</span><span class="bg-red-600 text-white text-[10px] px-1.5 py-0.5 rounded">Basculer A4 Portrait</span>';
-            $('btnDownloadLabel').textContent = isA4PortraitMode ? '📄 TÉLÉCHARGER LE PDF (A4 PORTRAIT)' : '📄 TÉLÉCHARGER LE PDF (STOCK RAYON)';
-            $('labelZoneImage').textContent = isA4PortraitMode ? '🖼️ 2.IMAGES' : '🖼️ IMAGE';
-            $('globalGalleryLabel').textContent = `🖼️ ${isA4PortraitMode ? (labelImageA4 || 'Choisir visuel A4') : (labelImage4 || 'Choisir visuel')}`;
-            $('btnOpenBgModal').classList.toggle('hidden', isA4PortraitMode);
-            buildVisualGallery(); renderAllPosters();
-        };
-
         $('selectMechanicPreset').onchange = function() {
             const p = MECHANIC_PRESETS[this.value]; if (!p) return;
             forceManualGlobalDiscount = true;
@@ -1794,7 +1812,7 @@
         $('chkShowContenance').onchange = $('chkAutoTrim').onchange = () => RefreshActiveView();
 
         // ============================================================================
-        // GESTION DES FONDS D'ARRIÈRE-PLAN
+        // GESTION DES FONDS D'ARRIÈRE-PLAN (STOCK RAYON & A4 PORTRAIT)
         // ============================================================================
         function applyBackgroundVisual(dataUrl, labelName, isR2Baked33 = false) {
             const img = new Image();
@@ -2367,7 +2385,7 @@
         };
 
         // ============================================================================
-        // DESSIN SUR CANVAS (STOCK RAYON & A4 PORTRAIT)
+        // DESSIN SUR CANVAS (STOCK RAYON & A4 PORTRAIT AVEC SUPPORT DU FOND)
         // ============================================================================
         function drawAlcohol18Banner(ctx, x, y, scale = 1.0) {
             const FONT_SLAB = getActiveFontSlab();
@@ -2912,6 +2930,20 @@
             if (isA4PortraitMode) {
                 canvas.width = 840; canvas.height = 1188;
                 ctx.fillStyle = '#FFFFFF'; ctx.fillRect(0, 0, 840, 1188);
+
+                // Application du Fond en A4 Portrait (sur la zone blanche sous l'en-tête)
+                if (refBgStock?.complete && refBgStock.naturalWidth > 0) {
+                    ctx.save();
+                    ctx.beginPath();
+                    ctx.rect(0, 235, 840, 953);
+                    ctx.clip();
+                    const bgScale = Math.max(840 / refBgStock.width, 953 / refBgStock.height);
+                    const bgW = refBgStock.width * bgScale;
+                    const bgH = refBgStock.height * bgScale;
+                    ctx.drawImage(refBgStock, (840 - bgW) / 2, 235 + (953 - bgH) / 2, bgW, bgH);
+                    ctx.restore();
+                }
+
                 ctx.fillStyle = '#EE1C25'; ctx.fillRect(0, 0, 840, 235);
                 if (activeImg?.complete && activeImg.naturalWidth > 0) {
                     ctx.save(); ctx.beginPath(); ctx.rect(0, 0, 840, 235); ctx.clip();
@@ -3070,7 +3102,6 @@
 
             draftItem = cloneItemWithSnapshot(item);
             delete draftItem.snapshotState;
-            // On retire l'étiquette de la liste pour qu'elle puisse être ré-ajoutée proprement après modification
             postersList.splice(index, 1);
             syncDraftInputsFromModel();
             renderAllPosters();
@@ -3088,11 +3119,32 @@
             $('savedListCountBadge').textContent = `${postersList.length} / ${MAX_LABELS_LIMIT}`;
             if ($('quotaServiceBadge')) $('quotaServiceBadge').textContent = `${postersList.length} / ${MAX_LABELS_LIMIT} max`;
 
+            const headerDepositBtn = $('btnHeaderDepositPdf');
+            if (headerDepositBtn) {
+                if (isPdfDepositWorkspaceMode && postersList.length > 0) {
+                    headerDepositBtn.classList.remove('hidden');
+                    headerDepositBtn.classList.add('inline-flex');
+                } else {
+                    headerDepositBtn.classList.add('hidden');
+                    headerDepositBtn.classList.remove('inline-flex');
+                }
+            }
+
             if (postersList.length === 0) {
-                container.innerHTML = `
-                    <div class="bg-gray-50 p-4 rounded-xl text-center border border-dashed border-gray-300">
-                        <p class="text-xs font-bold text-gray-500">${isPdfDepositWorkspaceMode ? 'Aucune étiquette générée pour le moment. Clique sur "📷 DÉPÔT PDF (50 MAX)" dans la barre du haut pour générer ta liste.' : 'Aucune étiquette dans la liste d\'attente. Clique sur "AJOUTER A LA LISTE" à droite pour ajouter tes étiquettes au PDF.'}</p>
-                    </div>`;
+                if (isPdfDepositWorkspaceMode) {
+                    container.innerHTML = `
+                        <div class="bg-gray-50 p-4 rounded-xl text-center border border-dashed border-gray-300 flex flex-wrap items-center justify-center gap-2">
+                            <span class="text-xs font-bold text-gray-500">Aucune étiquette générée pour le moment. Clique sur</span>
+                            <label for="inputBlueLabel" class="inline-flex items-center gap-1.5 text-[11px] font-extrabold px-3 py-1.5 rounded-lg border-2 border-blue-600 bg-blue-600 text-white hover:bg-blue-700 transition shadow-sm cursor-pointer">
+                                <span>📷 DÉPÔT PDF (50 MAX)</span>
+                            </label>
+                        </div>`;
+                } else {
+                    container.innerHTML = `
+                        <div class="bg-gray-50 p-4 rounded-xl text-center border border-dashed border-gray-300">
+                            <p class="text-xs font-bold text-gray-500">Aucune étiquette dans la liste d'attente. Clique sur "AJOUTER A LA LISTE" à droite pour ajouter tes étiquettes au PDF.</p>
+                        </div>`;
+                }
                 return;
             }
 
@@ -3235,17 +3287,18 @@
                 return;
             }
 
-            // En Mode Création : affichage des cartes validées dans la liste PDF
+            // En Mode Création : affichage des cartes validées dans la liste PDF (la plus récente apparaît en haut juste sous l'éditeur)
             postersList.forEach((item, index) => {
                 const hasP = isPosterPromoActive(item);
                 const promoBadgeDiscount = getEffectivePosterDiscount(item);
+                const chronoNumber = postersList.length - index;
 
                 const card = document.createElement('div');
                 card.className = 'bg-gray-50 p-3 rounded-xl border border-gray-200 space-y-2.5';
                 card.innerHTML = `
                     <div class="flex flex-wrap items-center justify-between border-b border-gray-200 pb-2 gap-2 text-xs">
                         <div class="flex items-center gap-2 min-w-0">
-                            <span class="bg-emerald-700 text-white font-bold px-2 py-0.5 rounded shrink-0">#${index + 1}</span>
+                            <span class="bg-emerald-700 text-white font-bold px-2 py-0.5 rounded shrink-0">#${chronoNumber}</span>
                             <span class="font-extrabold uppercase text-gray-800 truncate">${item.productName}</span>
                             <span class="font-bold px-2 py-0.5 rounded text-[11px] ${hasP ? 'bg-red-100 text-red-700 border border-red-200' : 'bg-gray-200 text-gray-600'}">
                                 ${hasP ? `Promo ${promoBadgeDiscount}` : 'Sans promo'}
@@ -3279,7 +3332,7 @@
             });
         }
 
-        // TÉLÉCHARGER LE PDF (Télécharge le PDF de toutes les étiquettes générées ou ajoutées à la liste)
+        // TÉLÉCHARGER LE PDF
         $('btnDownloadPdfA4').onclick = () => {
             if ($('btnDownloadPdfA4').disabled) return;
             const pdf = new window.jspdf.jsPDF('p', 'mm', 'a4');
@@ -3348,6 +3401,7 @@
             checkSiteEntryGate();
             draftItem = createDefaultDraftItem();
             syncDraftInputsFromModel();
+            setFormatMode(false);
             setWorkspaceMode(false);
             await autoLoadMuseoSlabFonts();
             await loadCarteUImage();
