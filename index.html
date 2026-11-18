@@ -1355,7 +1355,7 @@
                 ? '<span>📄 Mode : A4 Portrait</span><span class="bg-white text-red-600 text-[10px] px-1.5 py-0.5 rounded">Basculer Stock Rayon</span>'
                 : '<span>📐 Mode : Stock Rayon</span><span class="bg-red-600 text-white text-[10px] px-1.5 py-0.5 rounded">Basculer A4 Portrait</span>';
             $('btnDownloadLabel').textContent = isA4PortraitMode ? '📄 TÉLÉCHARGER LE PDF (A4 PORTRAIT)' : '📄 TÉLÉCHARGER LE PDF (STOCK RAYON)';
-            $('labelZoneImage').textContent = isA4PortraitMode ? '🖼️ 2. IMAGE HAUT (DOSSIER IMAGES A4)' : '🖼️ 2. IMAGE GAUCHE';
+            $('labelZoneImage').textContent = isA4PortraitMode ? '🖼️ 2.IMAGES' : '🖼️ 2. IMAGE GAUCHE';
             $('globalGalleryLabel').textContent = `🖼️ ${isA4PortraitMode ? (labelImageA4 || 'Choisir visuel A4') : (labelImage4 || 'Choisir visuel')}`;
             $('btnOpenBgModal').classList.toggle('hidden', isA4PortraitMode);
             buildVisualGallery(); renderAllPosters();
