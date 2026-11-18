@@ -316,7 +316,7 @@
         </div>
     </div>
 
-    <!-- MODALE 3 : DÉPLACER / RENOMMER UN FICHIER SUR R2 -->
+    <!-- MODALE 3 : DÉPLACER / RENOMMER UN FICHIER SUR R2 (AVEC CODE REQUIS) -->
     <div id="moveRenameFileModal" class="fixed inset-0 bg-black/65 z-[58] hidden flex items-center justify-center p-4 backdrop-blur-sm">
         <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full p-5 space-y-4 border-t-4 border-blue-600">
             <div class="flex justify-between items-center border-b pb-2.5">
@@ -342,6 +342,10 @@
                 <div>
                     <label class="block text-[11px] font-semibold text-gray-500 mb-1">Ou nouveau chemin (ex: <code class="bg-gray-100 px-1 rounded">Fêtes/Pâques</code>) :</label>
                     <input type="text" id="inputMoveCustomSubFolder" placeholder="Optionnel : nouveau dossier/sous-dossier" class="w-full p-2 border rounded-lg text-xs">
+                </div>
+                <div>
+                    <label class="block text-xs font-extrabold text-red-700 uppercase mb-1">🔒 Code de sécurité requis :</label>
+                    <input type="password" id="inputMovePasscode" placeholder="Saisir le code administrateur" autocomplete="off" class="w-full p-2 border-2 border-red-200 rounded-lg text-xs font-bold">
                 </div>
             </div>
             <div class="flex justify-end gap-2 pt-2 border-t">
@@ -385,7 +389,7 @@
             <div class="flex flex-wrap justify-between items-center border-b pb-3 gap-2">
                 <div>
                     <h3 class="text-sm font-extrabold text-gray-800 uppercase">🔤 Gestionnaire de Polices d'écriture (R2)</h3>
-                    <p class="text-[11px] text-gray-500">Police par défaut : Copie de Museo_Slab_3 • Dépose ou supprime librement une police sur R2</p>
+                    <p class="text-[11px] text-gray-500">Police par défaut : Copie de Museo_Slab_3 • Dépose une nouvelle police sur R2 ou supprime avec code</p>
                 </div>
                 <div class="flex items-center gap-2">
                     <label class="text-xs font-bold bg-emerald-600 hover:bg-emerald-700 text-white px-3 py-1.5 rounded-lg cursor-pointer shadow-sm">
@@ -427,6 +431,7 @@
         const R2_PUBLIC_BASE_URL = 'https://pub-06317316428d44fe94ff17808d4763df.r2.dev';
         const R2_API_ENDPOINT = '/api';
         const GITHUB_REPO_API = 'https://api.github.com/repos/LeeLooVF/Super_App/contents';
+        const REQUIRED_DELETE_CODE = 'Matthieu';
         const MAX_LABELS_LIMIT = 50;
         const FONT_SANS = '"Montserrat", Arial, sans-serif';
         const DB_NAME = 'SuperU_PromoLabels_DB', STORE_NAME = 'saved_left_images', READY_DOCS_STORE = 'ready_created_files';
@@ -481,6 +486,13 @@
         const safeFileUrl = f => f.split('/').map(encodeURIComponent).join('/');
         const ensureWebpFileName = f => `${(f || 'image').replace(/\.[^.]+$/, '')}.webp`;
         const readFileAsDataURL = file => new Promise(res => { const r = new FileReader(); r.onload = e => res(e.target.result); r.readAsDataURL(file); });
+
+        function askDeletePasscode(desc = 'effectuer cette action') {
+            const code = prompt(`🔒 Sécurité : Entre le code administrateur pour ${desc} :`);
+            if (code === null) return null;
+            if (code !== REQUIRED_DELETE_CODE) { alert("❌ Code incorrect ! Opération annulée."); return null; }
+            return code;
+        }
 
         let carteUImageObj = null;
         async function loadCarteUImage() {
@@ -691,7 +703,7 @@
         const getCandidateUrls = preset => { const u = safeFileUrl(preset.file); return [u, `${R2_PUBLIC_BASE_URL}/${u}`]; };
 
         // ============================================================================
-        // BASE DE DONNÉES LOCALE & SYNCHRONISATION R2
+        // BASE DE DONNÉES LOCALE & SYNCHRONISATION R2 (AVEC CODE "Matthieu")
         // ============================================================================
         function openImageDB() {
             return new Promise((res, rej) => {
@@ -764,8 +776,10 @@
             const newSubRaw = prompt(`✏️ Nouveau nom ou chemin pour "${oldSubFolder}" :\n(Utilise "/" pour un sous-dossier, ex: "Fêtes/Noël")`, oldSubFolder);
             if (!newSubRaw || !newSubRaw.trim() || newSubRaw.trim() === oldSubFolder) return;
             const cleanNewSub = normalizeFolderPath(newSubRaw);
+            const code = askDeletePasscode(`renommer/déplacer le dossier "${oldSubFolder}" vers "${cleanNewSub}"`);
+            if (!code) return;
             try {
-                const res = await fetch(R2_API_ENDPOINT, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'rename_folder', folder: tabFolder, oldSubFolder, newSubFolder: cleanNewSub }) });
+                const res = await fetch(R2_API_ENDPOINT, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'rename_folder', folder: tabFolder, oldSubFolder, newSubFolder: cleanNewSub, code }) });
                 const json = await res.json();
                 if (!json.ok) return alert("Erreur serveur : " + (json.error || "Refusé"));
             } catch (e) {}
@@ -777,8 +791,10 @@
 
         async function deleteFolderAndSubfoldersWithPassword(tabFolder, targetSubFolder) {
             if (!targetSubFolder || targetSubFolder === 'Général') return alert("Le dossier racine 'Général' ne peut pas être supprimé.");
+            const code = askDeletePasscode(`supprimer le dossier "${targetSubFolder}" et tout son contenu`);
+            if (!code) return;
             try {
-                const res = await fetch(`${R2_API_ENDPOINT}?action=delete_folder&folder=${encodeURIComponent(tabFolder)}&subFolder=${encodeURIComponent(targetSubFolder)}`, { method: 'DELETE' });
+                const res = await fetch(`${R2_API_ENDPOINT}?action=delete_folder&folder=${encodeURIComponent(tabFolder)}&subFolder=${encodeURIComponent(targetSubFolder)}&code=${encodeURIComponent(code)}`, { method: 'DELETE' });
                 const json = await res.json();
                 if (!json.ok) return alert("Erreur : " + (json.error || "Suppression refusée"));
             } catch (e) {}
@@ -792,9 +808,11 @@
         }
 
         async function hideStaticGithubFileOnR2(filePath, labelName) {
+            const code = askDeletePasscode(`supprimer le visuel "${labelName}" pour tous les utilisateurs`);
+            if (!code) return;
             if (!deletedStaticFiles.includes(filePath)) { deletedStaticFiles.push(filePath); localStorage.setItem('superu_deleted_static_files', JSON.stringify(deletedStaticFiles)); }
             try {
-                const res = await fetch(R2_API_ENDPOINT, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'hide_static_file', filePath }) });
+                const res = await fetch(R2_API_ENDPOINT, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'hide_static_file', filePath, code }) });
                 const json = await res.json();
                 if (json?.ok && Array.isArray(json.deletedStaticFiles)) { deletedStaticFiles = json.deletedStaticFiles; localStorage.setItem('superu_deleted_static_files', JSON.stringify(deletedStaticFiles)); }
             } catch (e) {}
@@ -804,9 +822,11 @@
         }
 
         async function deleteSharedOrLocalItemWithPassword(item, storeName, displayName) {
+            const code = askDeletePasscode(`supprimer "${displayName || item.label || item.name}"`);
+            if (!code) return false;
             if (item.r2Key) {
                 try {
-                    const res = await fetch(`${R2_API_ENDPOINT}?key=${encodeURIComponent(item.r2Key)}&thumbKey=${encodeURIComponent(item.thumbKey || '')}`, { method: 'DELETE' });
+                    const res = await fetch(`${R2_API_ENDPOINT}?key=${encodeURIComponent(item.r2Key)}&thumbKey=${encodeURIComponent(item.thumbKey || '')}&code=${encodeURIComponent(code)}`, { method: 'DELETE' });
                     const json = await res.json();
                     if (!json.ok) { alert("Erreur : " + (json.error || "Refusé")); return false; }
                 } catch (e) {}
@@ -893,7 +913,7 @@
         }
 
         // ============================================================================
-        // GESTIONNAIRE DE POLICES & DÉPLACER/RENOMMER R2
+        // GESTIONNAIRE DE POLICES & DÉPLACER/RENOMMER R2 (AVEC CODE "Matthieu")
         // ============================================================================
         function populateMoveTargetSubFolders(tabKey, selectedSub) {
             const sel = $('selectMoveTargetSubFolder'); sel.innerHTML = '';
@@ -910,6 +930,8 @@
 
         $('btnConfirmMoveRename').onclick = async function() {
             if (!pendingMoveRenameDoc) return;
+            const code = $('inputMovePasscode').value;
+            if (code !== REQUIRED_DELETE_CODE) return alert("❌ Code de sécurité incorrect !");
             const newLabel = $('inputMoveRenameLabel').value.trim() || pendingMoveRenameDoc.name;
             const newTab = $('selectMoveTargetTab').value;
             const typedCustom = $('inputMoveCustomSubFolder').value.trim();
@@ -917,7 +939,11 @@
 
             if (typedCustom && !(customSubFolders[newTab] || []).includes(newSub)) await createSubFolderOnR2(newTab, newSub);
             if (pendingMoveRenameDoc.r2Key) {
-                try { await fetch(R2_API_ENDPOINT, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'update_file_meta', key: pendingMoveRenameDoc.r2Key, newLabel, newFolder: newTab, newSubFolder: newSub }) }); } catch (e) {}
+                try {
+                    const res = await fetch(R2_API_ENDPOINT, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'update_file_meta', key: pendingMoveRenameDoc.r2Key, newLabel, newFolder: newTab, newSubFolder: newSub, code }) });
+                    const json = await res.json();
+                    if (!json.ok) return alert("Erreur : " + (json.error || "Modification refusée"));
+                } catch (e) {}
             }
             $('moveRenameFileModal').classList.add('hidden'); pendingMoveRenameDoc = null;
             await syncAllFromR2();
@@ -1144,7 +1170,7 @@
                         </div>
                     </div>`;
                 card.onclick = e => {
-                    if (e.target.closest('.btn-mv')) { e.stopPropagation(); pendingMoveRenameDoc = doc; $('inputMoveRenameLabel').value = doc.name || ''; const t = doc.folder === 'ready_generated' ? 'ready_generated' : 'ready_deposited'; $('selectMoveTargetTab').value = t; populateMoveTargetSubFolders(t, normalizeFolderPath(doc.subFolder)); $('inputMoveCustomSubFolder').value = ''; return $('moveRenameFileModal').classList.remove('hidden'); }
+                    if (e.target.closest('.btn-mv')) { e.stopPropagation(); pendingMoveRenameDoc = doc; $('inputMoveRenameLabel').value = doc.name || ''; const t = doc.folder === 'ready_generated' ? 'ready_generated' : 'ready_deposited'; $('selectMoveTargetTab').value = t; populateMoveTargetSubFolders(t, normalizeFolderPath(doc.subFolder)); $('inputMoveCustomSubFolder').value = ''; $('inputMovePasscode').value = ''; return $('moveRenameFileModal').classList.remove('hidden'); }
                     if (e.target.closest('.btn-dl')) { e.stopPropagation(); return deleteSharedOrLocalItemWithPassword(doc, READY_DOCS_STORE, doc.name); }
                     if (e.target.closest('.btn-pr')) { e.stopPropagation(); return printReadyDocument(doc); }
                     if (e.target.closest('.btn-dw')) { e.stopPropagation(); return downloadReadyDocument(doc); }
@@ -2129,7 +2155,6 @@
             return cleaned.split('|').map(s => s.trim()).filter(Boolean);
         }
 
-        // Calcule la largeur disponible dans le cercle à la hauteur du milieu de la ligne de texte
         function getMaxChordWidthInCircle(circleY, radius, lineBaselineY, fontSize, safetyPad = 12) {
             const midTextY = lineBaselineY - fontSize * 0.35;
             const dy = Math.abs(midTextY - circleY);
@@ -2212,7 +2237,6 @@
                 const lines = formatCarteUCircleLines(rawDiscText, itemPrice, pctValue);
                 const lineCount = lines.length;
 
-                // Position verticale de la ligne de base du grand chiffre % (calibrée selon le nombre de lignes sous le %)
                 let pctBaselineY;
                 if (isA4) {
                     pctBaselineY = circleY - (lineCount >= 3 ? 32 : lineCount === 2 ? 22 : 12);
@@ -2224,7 +2248,6 @@
                     const num = discountStr.slice(0, -1);
                     const isNeg = num.startsWith('-');
 
-                    // Tailles franches et imposantes comme sur vos 4 images 001_2.png, 002.png, 003.png, 004.png
                     let mF = isA4
                         ? (isNeg ? 120 : (lineCount >= 3 ? 132 : 140))
                         : (isNeg ? 82 : (lineCount >= 3 ? 90 : 96));
@@ -2237,7 +2260,6 @@
                     ctx.font = `900 ${pF}px ${FONT_SLAB}`;
                     let pW = ctx.measureText('%').width;
 
-                    // Sécurité largeur (188px max en Stock Rayon, 275px max en A4) sans jamais écraser le chiffre
                     const maxAllowedPctWidth = radius * 1.66;
                     if (nW + pW > maxAllowedPctWidth) {
                         const scale = maxAllowedPctWidth / (nW + pW);
@@ -2254,7 +2276,6 @@
                     ctx.font = `900 ${mF}px ${FONT_SLAB}`;
                     ctx.fillText(num, sX, pctBaselineY);
 
-                    // Le symbole % est toujours aligné sur le haut du chiffre (décalage proportionnel à mF)
                     ctx.font = `900 ${pF}px ${FONT_SLAB}`;
                     const pctOffsetY = Math.round(mF * 0.44);
                     ctx.fillText('%', sX + nW + 2, pctBaselineY - pctOffsetY);
@@ -2263,7 +2284,6 @@
                     drawFittedCircleLine(ctx, discountStr, circleX, circleY, radius, pctBaselineY, cF, FONT_SLAB, false, 22);
                 }
 
-                // Lignes de texte entre le grand % et la Carte U (bien dégagées au-dessus de la carte)
                 if (lineCount > 0) {
                     let fSize, lineH, firstLineY;
 
@@ -2290,7 +2310,6 @@
                     });
                 }
 
-                // Image CARTE_U.png positionnée juste sous la dernière ligne de texte
                 const uImg = await loadCarteUImage();
                 if (uImg) {
                     const imgW = isA4 ? 195 : 134;
