@@ -984,7 +984,7 @@
             activeLibraryTab = tab; activeLibrarySubFolder = 'Général';
             $('btnTabDeposited').className = tab === 'ready_deposited' ? 'text-xs font-extrabold px-3.5 py-1.5 rounded-lg bg-indigo-600 text-white shadow' : 'text-xs font-extrabold px-3.5 py-1.5 rounded-lg text-gray-700';
             $('btnTabGenerated').className = tab === 'ready_generated' ? 'text-xs font-extrabold px-3.5 py-1.5 rounded-lg bg-indigo-600 text-white shadow' : 'text-xs font-extrabold px-3.5 py-1.5 rounded-lg text-gray-700';
-            renderLibraryFoldersHierarchy(); renderReadyDocsGrid($inputSearchReadyDocs.value);
+            renderLibraryFoldersHierarchy(); renderReadyDocsGrid($('inputSearchReadyDocs').value);
         }
         $('btnTabDeposited').onclick = () => setLibraryActiveTab('ready_deposited');
         $('btnTabGenerated').onclick = () => setLibraryActiveTab('ready_generated');
@@ -2104,9 +2104,9 @@
             if (!rawDiscText) return [];
             
             let replacedText = rawDiscText;
-            if (rawDiscText.includes("SOIT € VERSÉS SUR")) {
+            if (/SOIT\s*(?:[\d.,]+\s*)?€\s*VERS[ÉE]S\s*SUR/i.test(rawDiscText)) {
                 const gainEuro = (itemPrice * (pctDiscountValue / 100)).toFixed(2).replace('.', ',');
-                replacedText = rawDiscText.replace("SOIT € VERSÉS SUR", `SOIT ${gainEuro}€ VERSÉS SUR`);
+                replacedText = rawDiscText.replace(/SOIT\s*(?:[\d.,]+\s*)?€\s*VERS[ÉE]S\s*SUR/i, `SOIT ${gainEuro}€ VERSÉS SUR`);
             }
 
             let cleaned = replacedText
@@ -2129,12 +2129,12 @@
             return cleaned.split('|').map(s => s.trim()).filter(Boolean);
         }
 
-        function getMaxChordWidthInCircle(circleY, radius, lineBaselineY, fontSize, safetyPad = 14) {
-            const topY = lineBaselineY - fontSize * 0.85;
-            const bottomY = lineBaselineY + fontSize * 0.20;
-            const dy = Math.max(Math.abs(topY - circleY), Math.abs(bottomY - circleY), Math.abs(lineBaselineY - circleY));
-            const effectiveR = Math.max(20, radius - safetyPad);
-            if (dy >= effectiveR) return 40;
+        // Calcule la largeur disponible dans le cercle à la hauteur du milieu de la ligne de texte
+        function getMaxChordWidthInCircle(circleY, radius, lineBaselineY, fontSize, safetyPad = 12) {
+            const midTextY = lineBaselineY - fontSize * 0.35;
+            const dy = Math.abs(midTextY - circleY);
+            const effectiveR = Math.max(30, radius - safetyPad);
+            if (dy >= effectiveR) return radius * 0.9;
             return 2 * Math.sqrt(effectiveR * effectiveR - dy * dy);
         }
 
@@ -2146,7 +2146,7 @@
             const match2eme = withSuperscript2eme ? cleanLine.match(/^(.*?\b2)(?:ÈME|EME|ème|eme)(\b.*)$/) : null;
 
             while (fs > minFontSize) {
-                const maxAllowedW = getMaxChordWidthInCircle(circleY, radius, baselineY, fs, 13);
+                const maxAllowedW = getMaxChordWidthInCircle(circleY, radius, baselineY, fs, 11);
                 let measuredW = 0;
                 if (match2eme) {
                     const supSize = Math.max(8, Math.round(fs * 0.58));
@@ -2212,63 +2212,76 @@
                 const lines = formatCarteUCircleLines(rawDiscText, itemPrice, pctValue);
                 const lineCount = lines.length;
 
-                // Le pourcentage est remonté haut dans le cercle pour laisser place au texte et à la carte
-                const pctBaselineY = circleY - (isA4 ? 10 : 8);
+                // Position verticale de la ligne de base du grand chiffre % (calibrée selon le nombre de lignes sous le %)
+                let pctBaselineY;
+                if (isA4) {
+                    pctBaselineY = circleY - (lineCount >= 3 ? 32 : lineCount === 2 ? 22 : 12);
+                } else {
+                    pctBaselineY = circleY - (lineCount >= 3 ? 22 : lineCount === 2 ? 15 : 8);
+                }
 
                 if (discountStr.endsWith('%')) {
                     const num = discountStr.slice(0, -1);
                     const isNeg = num.startsWith('-');
-                    // Tailles énormes pour reproduire l'effet des captures d'écran
-                    let mF = isA4
-                        ? (isNeg ? 165 : 185)
-                        : (isNeg ? 115 : 128);
-                    let pF = isA4
-                        ? (isNeg ? 85 : 95)
-                        : (isNeg ? 60 : 66);
 
-                    const maxMainW = getMaxChordWidthInCircle(circleY, radius, pctBaselineY, mF, 10);
+                    // Tailles franches et imposantes comme sur vos 4 images 001_2.png, 002.png, 003.png, 004.png
+                    let mF = isA4
+                        ? (isNeg ? 120 : (lineCount >= 3 ? 132 : 140))
+                        : (isNeg ? 82 : (lineCount >= 3 ? 90 : 96));
+                    let pF = isA4
+                        ? (isNeg ? 54 : 60)
+                        : (isNeg ? 38 : 42);
+
                     ctx.font = `900 ${mF}px ${FONT_SLAB}`;
                     let nW = ctx.measureText(num).width;
                     ctx.font = `900 ${pF}px ${FONT_SLAB}`;
                     let pW = ctx.measureText('%').width;
-                    
-                    if (nW + pW > maxMainW) {
-                        const ratio = maxMainW / (nW + pW);
-                        mF = Math.floor(mF * ratio);
-                        pF = Math.floor(pF * ratio);
-                        ctx.font = `900 ${mF}px ${FONT_SLAB}`; nW = ctx.measureText(num).width;
-                        ctx.font = `900 ${pF}px ${FONT_SLAB}`; pW = ctx.measureText('%').width;
+
+                    // Sécurité largeur (188px max en Stock Rayon, 275px max en A4) sans jamais écraser le chiffre
+                    const maxAllowedPctWidth = radius * 1.66;
+                    if (nW + pW > maxAllowedPctWidth) {
+                        const scale = maxAllowedPctWidth / (nW + pW);
+                        mF = Math.round(mF * scale);
+                        pF = Math.round(pF * scale);
+                        ctx.font = `900 ${mF}px ${FONT_SLAB}`;
+                        nW = ctx.measureText(num).width;
+                        ctx.font = `900 ${pF}px ${FONT_SLAB}`;
+                        pW = ctx.measureText('%').width;
                     }
 
                     const sX = circleX - (nW + pW) / 2;
                     ctx.textAlign = 'left';
                     ctx.font = `900 ${mF}px ${FONT_SLAB}`;
                     ctx.fillText(num, sX, pctBaselineY);
+
+                    // Le symbole % est toujours aligné sur le haut du chiffre (décalage proportionnel à mF)
                     ctx.font = `900 ${pF}px ${FONT_SLAB}`;
-                    ctx.fillText('%', sX + nW + 2, pctBaselineY - (isA4 ? (isNeg ? 58 : 66) : (isNeg ? 40 : 46)));
+                    const pctOffsetY = Math.round(mF * 0.44);
+                    ctx.fillText('%', sX + nW + 2, pctBaselineY - pctOffsetY);
                 } else if (discountStr) {
-                    const cF = isA4 ? 120 : 85;
-                    drawFittedCircleLine(ctx, discountStr, circleX, circleY, radius, pctBaselineY, cF, FONT_SLAB, false, 24);
+                    const cF = isA4 ? 105 : 72;
+                    drawFittedCircleLine(ctx, discountStr, circleX, circleY, radius, pctBaselineY, cF, FONT_SLAB, false, 22);
                 }
 
+                // Lignes de texte entre le grand % et la Carte U (bien dégagées au-dessus de la carte)
                 if (lineCount > 0) {
                     let fSize, lineH, firstLineY;
 
                     if (isA4) {
                         if (lineCount >= 3) {
-                            fSize = 22; lineH = 24; firstLineY = circleY + 18;
+                            fSize = 20; lineH = 21.5; firstLineY = circleY - 4;
                         } else if (lineCount === 2) {
-                            fSize = 28; lineH = 28; firstLineY = circleY + 28;
+                            fSize = 23; lineH = 25; firstLineY = circleY + 10;
                         } else {
-                            fSize = 34; lineH = 34; firstLineY = circleY + 38;
+                            fSize = 25; lineH = 26; firstLineY = circleY + 26;
                         }
                     } else {
                         if (lineCount >= 3) {
-                            fSize = 14; lineH = 15; firstLineY = circleY + 9;
+                            fSize = 13.5; lineH = 14.5; firstLineY = circleY - 3;
                         } else if (lineCount === 2) {
-                            fSize = 17; lineH = 18; firstLineY = circleY + 14;
+                            fSize = 15.5; lineH = 17; firstLineY = circleY + 6;
                         } else {
-                            fSize = 20; lineH = 22; firstLineY = circleY + 20;
+                            fSize = 17; lineH = 18; firstLineY = circleY + 17;
                         }
                     }
 
@@ -2277,12 +2290,12 @@
                     });
                 }
 
+                // Image CARTE_U.png positionnée juste sous la dernière ligne de texte
                 const uImg = await loadCarteUImage();
                 if (uImg) {
                     const imgW = isA4 ? 195 : 134;
                     const imgH = imgW * (uImg.height / uImg.width);
-                    // L'image mord très légèrement sur le bas du cercle rouge/bleu, comme demandé
-                    const imgY = circleY + (isA4 ? 52 : 36);
+                    const imgY = circleY + (isA4 ? 48 : 33);
                     ctx.drawImage(uImg, circleX - imgW / 2, imgY, imgW, imgH);
                 } else {
                     ctx.font = `800 ${isA4 ? 24 : 16}px ${FONT_SLAB}`;
@@ -2292,7 +2305,7 @@
                 return;
             }
 
-            // RENDU DU CERCLE ROUGE POUR LES AUTRES MÉCANIQUES (TAILLE AUGMENTÉE POUR "BAS" / "CHOC !" ET ZÉRO DÉPASSEMENT)
+            // RENDU DU CERCLE ROUGE POUR LES AUTRES MÉCANIQUES
             const lines = rawDiscText ? rawDiscText.split('|').map(s => s.trim()).filter(Boolean) : [];
             const lineCount = lines.length;
             const hasPhrase = lineCount > 0;
@@ -2331,7 +2344,7 @@
                     ? (lineCount >= 3 ? 60 : (hasPhrase ? 58 : 66))
                     : (lineCount >= 3 ? 46 : (hasPhrase ? 42 : 48));
 
-                const maxChordMain = getMaxChordWidthInCircle(circleY, radius, mainY, mF, 14);
+                const maxChordMain = radius * 1.65;
                 ctx.font = `900 ${mF}px ${FONT_SLAB}`;
                 let nW = ctx.measureText(num).width;
                 ctx.font = `900 ${pF}px ${FONT_SLAB}`;
@@ -2349,7 +2362,7 @@
                 ctx.font = `900 ${mF}px ${FONT_SLAB}`;
                 ctx.fillText(num, sX, mainY);
                 ctx.font = `900 ${pF}px ${FONT_SLAB}`;
-                ctx.fillText('%', sX + nW + 2, mainY - (isA4 ? (lineCount >= 3 ? 38 : 38) : (lineCount >= 3 ? 27 : 26)));
+                ctx.fillText('%', sX + nW + 2, mainY - Math.round(mF * 0.36));
             } else if (discountStr) {
                 let cF;
                 if (isBigBasOrChoc) {
