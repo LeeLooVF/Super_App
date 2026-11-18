@@ -119,7 +119,7 @@
                 </div>
             </div>
 
-            <!-- LIGNE 2 : MÉCANIQUE & VALEUR + BOUTON PRIX BARRÉ ON/OFF + MENTION SOUS PRIX (AVEC SAUT DE LIGNE "|") -->
+            <!-- LIGNE 2 : MÉCANIQUE & VALEUR + BOUTON PRIX BARRÉ ON/OFF + MENTION SOUS PRIX -->
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3 items-end pt-2 border-t border-gray-100">
                 <div>
                     <div class="flex flex-wrap justify-between items-center mb-1 gap-1">
@@ -140,7 +140,7 @@
                             </optgroup>
                             <optgroup label="Offres Carte U">
                                 <option value="carte_u_20_immed">-20% DE REMISE IMMÉDIATE AVEC CARTE U</option>
-                                <option value="carte_u_soit_verse">SOIT 1,60€ VERSÉS SUR CARTE U (20%)</option>
+                                <option value="carte_u_soit_verse">SOIT € VERSÉS SUR CARTE U (20%)</option>
                                 <option value="carte_u_34_verse">34% VERSÉS SUR CARTE U</option>
                                 <option value="carte_u_68_identique">68% SUR LE 2ÈME PRODUIT IDENTIQUE VERSÉS SUR CARTE U</option>
                             </optgroup>
@@ -431,7 +431,6 @@
         const FONT_SANS = '"Montserrat", Arial, sans-serif';
         const DB_NAME = 'SuperU_PromoLabels_DB', STORE_NAME = 'saved_left_images', READY_DOCS_STORE = 'ready_created_files';
 
-        // Liste officielle des mécaniques avec leur mention sous prix par défaut (100% modifiable dans #inputUnitLabel, supporte "|" pour sauter une ligne)
         const MECHANIC_PRESETS = {
             remise_20:                  { discount: '-20%', text: 'DE REMISE|IMMÉDIATE', unitLabel: 'LE PRODUIT', mode: 'pct_single' },
             remise_34:                  { discount: '-34%', text: 'DE REMISE|IMMÉDIATE', unitLabel: 'LE PRODUIT', mode: 'pct_single' },
@@ -439,8 +438,8 @@
             remise_60_2eme:             { discount: '-60%', text: 'DE REMISE IMMÉDIATE|SUR LE 2ÈME PRODUIT|AU CHOIX', unitLabel: 'LE 2ÈME PRODUIT AU CHOIX', mode: 'nth_2', nthPct: 60 },
             remise_50_2eme_identique:   { discount: '-50%', text: 'DE REMISE IMMÉDIATE|SUR LE 2ÈME|PRODUIT IDENTIQUE', unitLabel: 'LE 2ÈME PRODUIT IDENTIQUE', mode: 'nth_2', nthPct: 50 },
             carte_u_20_immed:           { discount: '-20%', text: 'DE REMISE|IMMÉDIATE AVEC|CARTE U', unitLabel: 'LE PRODUIT € CARTE U DÉDUITS', mode: 'pct_single', isCarteU: true, circleBg: '#EE1C25' },
-            carte_u_soit_verse:         { discount: '20%',  text: 'SOIT 1,60€ VERSÉS SUR|CARTE U', unitLabel: 'LE PRODUIT € CARTE U DÉDUITS', mode: 'direct_lot', isCarteU: true, circleBg: '#008585' },
-            carte_u_20_verse:           { discount: '20%',  text: 'SOIT 1,60€ VERSÉS SUR|CARTE U', unitLabel: 'LE PRODUIT € CARTE U DÉDUITS', mode: 'direct_lot', isCarteU: true, circleBg: '#008585' },
+            carte_u_soit_verse:         { discount: '20%',  text: 'SOIT € VERSÉS SUR|CARTE U', unitLabel: 'LE PRODUIT € CARTE U DÉDUITS', mode: 'direct_lot', isCarteU: true, circleBg: '#008585' },
+            carte_u_20_verse:           { discount: '20%',  text: 'SOIT € VERSÉS SUR|CARTE U', unitLabel: 'LE PRODUIT € CARTE U DÉDUITS', mode: 'direct_lot', isCarteU: true, circleBg: '#008585' },
             carte_u_34_verse:           { discount: '34%',  text: 'VERSÉS SUR|CARTE U', unitLabel: 'LE PRODUIT € CARTE U DÉDUITS', mode: 'direct_lot', isCarteU: true, circleBg: '#008585' },
             carte_u_68_identique:       { discount: '68%',  text: 'SUR LE 2ÈME PRODUIT|IDENTIQUE VERSÉS SUR|CARTE U', unitLabel: 'LE 2ÈME PRODUIT IDENTIQUE', mode: 'direct_lot', isCarteU: true, circleBg: '#008585' },
             remise_2_euros:             { discount: '-2€',  text: 'DE REMISE|IMMÉDIATE', unitLabel: 'LE PRODUIT', mode: 'euro_single' },
@@ -483,7 +482,6 @@
         const ensureWebpFileName = f => `${(f || 'image').replace(/\.[^.]+$/, '')}.webp`;
         const readFileAsDataURL = file => new Promise(res => { const r = new FileReader(); r.onload = e => res(e.target.result); r.readAsDataURL(file); });
 
-        // Cache préchargé pour l'image CARTE_U.png
         let carteUImageObj = null;
         async function loadCarteUImage() {
             if (carteUImageObj) return carteUImageObj;
@@ -1158,7 +1156,7 @@
 
         function openSaveDestinationModal(idx) {
             pendingSavePosterIndex = idx;
-            $('inputSavePosterName').value = postersList[idx].productName || `Affiche_${idx + 1}`;
+            $('inputSavePosterName').value = postersList[idx].productName.replace(/\|/g, ' ') || `Affiche_${idx + 1}`;
             $('inputNewDestFolder').value = '';
             const sel = $('selectSaveDestinationFolder'); sel.innerHTML = '';
             (customSubFolders.ready_generated || ['Général']).forEach(f => {
@@ -1952,7 +1950,6 @@
             }
         }
 
-        // Dessine la mention sous le prix en gérant les sauts de ligne "|" et renvoie le décalage vertical (extraOffsetY) pour les lignes suivantes
         function drawFittedUnitLabelUnderPrice(ctx, text, centerX, baselineY, maxWidth, defaultFontSize, minFontSize = 10) {
             const raw = (text || '').toUpperCase().trim();
             if (!raw) return 0;
@@ -1977,22 +1974,42 @@
         }
 
         function drawFittedProductTitle(ctx, text, x, startY, maxWidth, maxBottomY, maxFont = 34, minFont = 17, align = 'left') {
-            const FONT_SLAB = getActiveFontSlab(), cleanText = (text || 'PRODUIT').toUpperCase().trim();
+            const FONT_SLAB = getActiveFontSlab();
+            const cleanText = (text || 'PRODUIT').toUpperCase().trim();
+            const explicitLines = cleanText.split('|').map(s => s.trim()).filter(Boolean);
+            
             ctx.textAlign = align;
             for (let fs = maxFont; fs >= minFont; fs--) {
-                const lh = Math.round(fs * 1.18); ctx.font = `900 ${fs}px ${FONT_SLAB}`;
-                const words = cleanText.split(/\s+/), lines = []; let cur = '', ok = true;
-                for (const w of words) {
-                    if (ctx.measureText(w).width > maxWidth) { ok = false; break; }
-                    const test = cur ? `${cur} ${w}` : w;
-                    if (ctx.measureText(test).width > maxWidth && cur) { lines.push(cur); cur = w; } else cur = test;
+                const lh = Math.round(fs * 1.18); 
+                ctx.font = `900 ${fs}px ${FONT_SLAB}`;
+                
+                const finalLines = [];
+                let ok = true;
+                
+                for (const explicitLine of explicitLines) {
+                    const words = explicitLine.split(/\s+/);
+                    let cur = '';
+                    for (const w of words) {
+                        if (ctx.measureText(w).width > maxWidth) { ok = false; break; }
+                        const test = cur ? `${cur} ${w}` : w;
+                        if (ctx.measureText(test).width > maxWidth && cur) { 
+                            finalLines.push(cur); 
+                            cur = w; 
+                        } else {
+                            cur = test;
+                        }
+                    }
+                    if (!ok) break;
+                    if (cur) finalLines.push(cur);
                 }
-                if (cur) lines.push(cur);
-                if (ok && startY + (lines.length - 1) * lh <= maxBottomY) {
-                    lines.forEach((l, i) => ctx.fillText(l, x, startY + i * lh)); return;
+                
+                if (ok && startY + (finalLines.length - 1) * lh <= maxBottomY) {
+                    finalLines.forEach((l, i) => ctx.fillText(l, x, startY + i * lh)); 
+                    return;
                 }
             }
-            ctx.font = `900 ${minFont - 1}px ${FONT_SLAB}`; ctx.fillText(cleanText.slice(0, 28), x, startY);
+            ctx.font = `900 ${minFont - 1}px ${FONT_SLAB}`; 
+            ctx.fillText(explicitLines.join(' ').slice(0, 28), x, startY);
         }
 
         function drawVisualBarcode(ctx, gencode, x, y, maxWidth, barHeight = 44) {
@@ -2083,9 +2100,16 @@
             };
         }
 
-        function formatCarteUCircleLines(rawDiscText) {
+        function formatCarteUCircleLines(rawDiscText, itemPrice, pctDiscountValue) {
             if (!rawDiscText) return [];
-            let cleaned = rawDiscText
+            
+            let replacedText = rawDiscText;
+            if (rawDiscText.includes("SOIT € VERSÉS SUR")) {
+                const gainEuro = (itemPrice * (pctDiscountValue / 100)).toFixed(2).replace('.', ',');
+                replacedText = rawDiscText.replace("SOIT € VERSÉS SUR", `SOIT ${gainEuro}€ VERSÉS SUR`);
+            }
+
+            let cleaned = replacedText
                 .replace(/\|\s*CARTE\s*U\s*$/i, '')
                 .replace(/\bCARTE\s*U\s*$/i, '')
                 .trim();
@@ -2169,7 +2193,7 @@
             }
         }
 
-        async function drawPromoCircle(ctx, circleX, circleY, radius, discountStr, rawDiscText, isA4, presetKey = '') {
+        async function drawPromoCircle(ctx, circleX, circleY, radius, discountStr, rawDiscText, isA4, presetKey = '', itemPrice = 0) {
             const FONT_SLAB = getActiveFontSlab();
             const presetInfo = MECHANIC_PRESETS[presetKey] || {};
             const isCarteU = Boolean(presetInfo.isCarteU || /CARTE\s*U/i.test(rawDiscText));
@@ -2182,24 +2206,27 @@
                 ctx.fill();
 
                 ctx.fillStyle = '#FFFFFF';
-                const lines = formatCarteUCircleLines(rawDiscText);
+                const pctMatch = discountStr.match(/(\d+(?:[.,]\d+)?)/);
+                const pctValue = pctMatch ? parseFloat(pctMatch[1].replace(',', '.')) : 20;
+                
+                const lines = formatCarteUCircleLines(rawDiscText, itemPrice, pctValue);
                 const lineCount = lines.length;
 
                 const pctBaselineY = circleY - (
                     isA4
-                        ? (lineCount >= 3 ? 42 : lineCount === 2 ? 34 : 24)
-                        : (lineCount >= 3 ? 28 : lineCount === 2 ? 22 : 14)
+                        ? (lineCount >= 3 ? 34 : lineCount === 2 ? 34 : 24)
+                        : (lineCount >= 3 ? 20 : lineCount === 2 ? 22 : 14)
                 );
 
                 if (discountStr.endsWith('%')) {
                     const num = discountStr.slice(0, -1);
                     const isNeg = num.startsWith('-');
                     let mF = isA4
-                        ? (isNeg ? 98 : 114)
-                        : (isNeg ? 68 : (lineCount >= 3 ? 76 : 82));
+                        ? (isNeg ? 104 : 124)
+                        : (isNeg ? 74 : (lineCount >= 3 ? 84 : 92));
                     let pF = isA4
-                        ? (isNeg ? 46 : 52)
-                        : (isNeg ? 31 : 36);
+                        ? (isNeg ? 50 : 58)
+                        : (isNeg ? 36 : 42);
 
                     const maxMainW = getMaxChordWidthInCircle(circleY, radius, pctBaselineY, mF, 14);
                     ctx.font = `900 ${mF}px ${FONT_SLAB}`;
@@ -2219,9 +2246,9 @@
                     ctx.font = `900 ${mF}px ${FONT_SLAB}`;
                     ctx.fillText(num, sX, pctBaselineY);
                     ctx.font = `900 ${pF}px ${FONT_SLAB}`;
-                    ctx.fillText('%', sX + nW + 2, pctBaselineY - (isA4 ? (isNeg ? 38 : 44) : (isNeg ? 26 : 30)));
+                    ctx.fillText('%', sX + nW + 2, pctBaselineY - (isA4 ? (isNeg ? 40 : 48) : (isNeg ? 28 : 34)));
                 } else if (discountStr) {
-                    const cF = isA4 ? 86 : 58;
+                    const cF = isA4 ? 96 : 68;
                     drawFittedCircleLine(ctx, discountStr, circleX, circleY, radius, pctBaselineY, cF, FONT_SLAB, false, 18);
                 }
 
@@ -2232,12 +2259,12 @@
                     if (isA4) {
                         fSize = lineCount >= 3 ? (maxLen > 16 ? 20 : 22) : (lineCount === 2 ? 24 : 26);
                         lineH = Math.round(fSize * 1.15);
-                        firstLineY = circleY + (lineCount >= 3 ? -8 : (lineCount === 2 ? 4 : 20));
+                        firstLineY = circleY + (lineCount >= 3 ? 0 : (lineCount === 2 ? 4 : 20));
                     } else {
                         if (lineCount >= 3) {
                             fSize = maxLen > 15 ? 13.5 : 14.5;
                             lineH = 15.5;
-                            firstLineY = circleY - 7;
+                            firstLineY = circleY - 1;
                         } else if (lineCount === 2) {
                             fSize = 15.5;
                             lineH = 17.5;
@@ -2268,7 +2295,6 @@
                 return;
             }
 
-            // RENDU DU CERCLE ROUGE (TAILLE AUGMENTÉE POUR "BAS" / "CHOC !" ET ZÉRO DÉPASSEMENT)
             const lines = rawDiscText ? rawDiscText.split('|').map(s => s.trim()).filter(Boolean) : [];
             const lineCount = lines.length;
             const hasPhrase = lineCount > 0;
@@ -2301,11 +2327,11 @@
             if (discountStr.endsWith('%')) {
                 const num = discountStr.slice(0, -1);
                 let mF = isA4
-                    ? (lineCount >= 3 ? 96 : (hasPhrase ? 105 : 120))
-                    : (lineCount >= 3 ? 68 : (hasPhrase ? 74 : 84));
+                    ? (lineCount >= 3 ? 104 : (hasPhrase ? 105 : 120))
+                    : (lineCount >= 3 ? 76 : (hasPhrase ? 74 : 84));
                 let pF = isA4
-                    ? (lineCount >= 3 ? 52 : (hasPhrase ? 58 : 66))
-                    : (lineCount >= 3 ? 38 : (hasPhrase ? 42 : 48));
+                    ? (lineCount >= 3 ? 60 : (hasPhrase ? 58 : 66))
+                    : (lineCount >= 3 ? 46 : (hasPhrase ? 42 : 48));
 
                 const maxChordMain = getMaxChordWidthInCircle(circleY, radius, mainY, mF, 14);
                 ctx.font = `900 ${mF}px ${FONT_SLAB}`;
@@ -2325,7 +2351,7 @@
                 ctx.font = `900 ${mF}px ${FONT_SLAB}`;
                 ctx.fillText(num, sX, mainY);
                 ctx.font = `900 ${pF}px ${FONT_SLAB}`;
-                ctx.fillText('%', sX + nW + 2, mainY - (isA4 ? (lineCount >= 3 ? 34 : 38) : (lineCount >= 3 ? 23 : 26)));
+                ctx.fillText('%', sX + nW + 2, mainY - (isA4 ? (lineCount >= 3 ? 38 : 38) : (lineCount >= 3 ? 27 : 26)));
             } else if (discountStr) {
                 let cF;
                 if (isBigBasOrChoc) {
@@ -2358,7 +2384,7 @@
                     if (lineCount >= 3) {
                         baseFont = isA4 ? 25 : 17;
                         lineSpacing = isA4 ? 29 : 19.5;
-                        startY = circleY + (isA4 ? 22 : 14);
+                        startY = circleY + (isA4 ? 18 : 10);
                     } else if (lineCount === 2) {
                         baseFont = isA4 ? 30 : 20.5;
                         lineSpacing = isA4 ? 34 : 23;
@@ -2387,7 +2413,6 @@
             const presetObj = MECHANIC_PRESETS[presetK] || {};
             const isCarteUPromos = Boolean(presetObj.isCarteU || item.detectedPromo?.isCarteU || /CARTE\s*U/i.test(discTxt));
 
-            // Mention sous prix 100% pilotée par #inputUnitLabel (avec support du saut de ligne "|")
             const uLabel = $('inputUnitLabel').value;
 
             const showCont = $('chkShowContenance').checked, dateRaw = $('inputDates').value.trim();
@@ -2419,7 +2444,7 @@
                     const extraY = drawFittedUnitLabelUnderPrice(ctx, uLabel, 285, 598, 390, 22, 12);
                     ctx.fillStyle = '#000000'; ctx.font = `600 21px ${FONT_SANS}`; ctx.textAlign = 'center'; ctx.fillText(pricing.unitPriceText, 285, 628 + extraY);
                     if (showCont && item.contenanceText) { ctx.fillStyle = '#374151'; ctx.font = `700 19px ${FONT_SANS}`; ctx.fillText(`Contenance : ${item.contenanceText}`, 285, 655 + extraY); }
-                    await drawPromoCircle(ctx, 605, 490, 165, discIn, discTxt, true, presetK);
+                    await drawPromoCircle(ctx, 605, 490, 165, discIn, discTxt, true, presetK, item.oldPrice);
                 } else {
                     if (pricing.hasCrossedPrice) {
                         drawFormattedPrice(ctx, pricing.crossedPrice, 435, 395, true, 780, 1.35, false);
@@ -2491,7 +2516,7 @@
                 const extraY = drawFittedUnitLabelUnderPrice(ctx, uLabel, 555, 294, 268, 15, 10);
                 ctx.fillStyle = '#000000'; ctx.font = `600 15px ${FONT_SANS}`; ctx.textAlign = 'center'; ctx.fillText(pricing.unitPriceText, 555, 314 + extraY);
                 if (showCont && item.contenanceText) { ctx.fillStyle = '#374151'; ctx.font = `700 14px ${FONT_SANS}`; ctx.fillText(`Contenance : ${item.contenanceText}`, 555, 334 + extraY); }
-                await drawPromoCircle(ctx, 782, 185, 114, discIn, discTxt, false, presetK);
+                await drawPromoCircle(ctx, 782, 185, 114, discIn, discTxt, false, presetK, item.oldPrice);
             } else {
                 if (pricing.hasCrossedPrice) {
                     drawFormattedPrice(ctx, pricing.crossedPrice, 580, 162, true, 715, 1.0, false);
