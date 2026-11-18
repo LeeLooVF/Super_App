@@ -119,7 +119,7 @@
                 </div>
             </div>
 
-            <!-- LIGNE 2 : MÉCANIQUE & VALEUR + BOUTON PRIX BARRÉ ON/OFF + MENTION SOUS PRIX (AVEC SAUT DE LIGNE "|") -->
+            <!-- LIGNE 2 : MÉCANIQUE & VALEUR + BOUTON PRIX BARRÉ ON/OFF + MENTION SOUS PRIX -->
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3 items-end pt-2 border-t border-gray-100">
                 <div>
                     <div class="flex flex-wrap justify-between items-center mb-1 gap-1">
@@ -984,7 +984,7 @@
             activeLibraryTab = tab; activeLibrarySubFolder = 'Général';
             $('btnTabDeposited').className = tab === 'ready_deposited' ? 'text-xs font-extrabold px-3.5 py-1.5 rounded-lg bg-indigo-600 text-white shadow' : 'text-xs font-extrabold px-3.5 py-1.5 rounded-lg text-gray-700';
             $('btnTabGenerated').className = tab === 'ready_generated' ? 'text-xs font-extrabold px-3.5 py-1.5 rounded-lg bg-indigo-600 text-white shadow' : 'text-xs font-extrabold px-3.5 py-1.5 rounded-lg text-gray-700';
-            renderLibraryFoldersHierarchy(); renderReadyDocsGrid($('inputSearchReadyDocs').value);
+            renderLibraryFoldersHierarchy(); renderReadyDocsGrid($inputSearchReadyDocs.value);
         }
         $('btnTabDeposited').onclick = () => setLibraryActiveTab('ready_deposited');
         $('btnTabGenerated').onclick = () => setLibraryActiveTab('ready_generated');
@@ -2212,27 +2212,26 @@
                 const lines = formatCarteUCircleLines(rawDiscText, itemPrice, pctValue);
                 const lineCount = lines.length;
 
-                const pctBaselineY = circleY - (
-                    isA4
-                        ? (lineCount >= 3 ? 34 : lineCount === 2 ? 34 : 24)
-                        : (lineCount >= 3 ? 20 : lineCount === 2 ? 22 : 14)
-                );
+                // Le pourcentage est remonté haut dans le cercle pour laisser place au texte et à la carte
+                const pctBaselineY = circleY - (isA4 ? 10 : 8);
 
                 if (discountStr.endsWith('%')) {
                     const num = discountStr.slice(0, -1);
                     const isNeg = num.startsWith('-');
+                    // Tailles énormes pour reproduire l'effet des captures d'écran
                     let mF = isA4
-                        ? (isNeg ? 104 : 124)
-                        : (isNeg ? 74 : (lineCount >= 3 ? 84 : 92));
+                        ? (isNeg ? 165 : 185)
+                        : (isNeg ? 115 : 128);
                     let pF = isA4
-                        ? (isNeg ? 50 : 58)
-                        : (isNeg ? 36 : 42);
+                        ? (isNeg ? 85 : 95)
+                        : (isNeg ? 60 : 66);
 
-                    const maxMainW = getMaxChordWidthInCircle(circleY, radius, pctBaselineY, mF, 14);
+                    const maxMainW = getMaxChordWidthInCircle(circleY, radius, pctBaselineY, mF, 10);
                     ctx.font = `900 ${mF}px ${FONT_SLAB}`;
                     let nW = ctx.measureText(num).width;
                     ctx.font = `900 ${pF}px ${FONT_SLAB}`;
                     let pW = ctx.measureText('%').width;
+                    
                     if (nW + pW > maxMainW) {
                         const ratio = maxMainW / (nW + pW);
                         mF = Math.floor(mF * ratio);
@@ -2246,33 +2245,30 @@
                     ctx.font = `900 ${mF}px ${FONT_SLAB}`;
                     ctx.fillText(num, sX, pctBaselineY);
                     ctx.font = `900 ${pF}px ${FONT_SLAB}`;
-                    ctx.fillText('%', sX + nW + 2, pctBaselineY - (isA4 ? (isNeg ? 40 : 48) : (isNeg ? 28 : 34)));
+                    ctx.fillText('%', sX + nW + 2, pctBaselineY - (isA4 ? (isNeg ? 58 : 66) : (isNeg ? 40 : 46)));
                 } else if (discountStr) {
-                    const cF = isA4 ? 96 : 68;
-                    drawFittedCircleLine(ctx, discountStr, circleX, circleY, radius, pctBaselineY, cF, FONT_SLAB, false, 18);
+                    const cF = isA4 ? 120 : 85;
+                    drawFittedCircleLine(ctx, discountStr, circleX, circleY, radius, pctBaselineY, cF, FONT_SLAB, false, 24);
                 }
 
                 if (lineCount > 0) {
-                    const maxLen = Math.max(...lines.map(l => l.length));
                     let fSize, lineH, firstLineY;
 
                     if (isA4) {
-                        fSize = lineCount >= 3 ? (maxLen > 16 ? 20 : 22) : (lineCount === 2 ? 24 : 26);
-                        lineH = Math.round(fSize * 1.15);
-                        firstLineY = circleY + (lineCount >= 3 ? 0 : (lineCount === 2 ? 4 : 20));
+                        if (lineCount >= 3) {
+                            fSize = 22; lineH = 24; firstLineY = circleY + 18;
+                        } else if (lineCount === 2) {
+                            fSize = 28; lineH = 28; firstLineY = circleY + 28;
+                        } else {
+                            fSize = 34; lineH = 34; firstLineY = circleY + 38;
+                        }
                     } else {
                         if (lineCount >= 3) {
-                            fSize = maxLen > 15 ? 13.5 : 14.5;
-                            lineH = 15.5;
-                            firstLineY = circleY - 1;
+                            fSize = 14; lineH = 15; firstLineY = circleY + 9;
                         } else if (lineCount === 2) {
-                            fSize = 15.5;
-                            lineH = 17.5;
-                            firstLineY = circleY + 2;
+                            fSize = 17; lineH = 18; firstLineY = circleY + 14;
                         } else {
-                            fSize = 17;
-                            lineH = 19;
-                            firstLineY = circleY + 14;
+                            fSize = 20; lineH = 22; firstLineY = circleY + 20;
                         }
                     }
 
@@ -2285,7 +2281,8 @@
                 if (uImg) {
                     const imgW = isA4 ? 195 : 134;
                     const imgH = imgW * (uImg.height / uImg.width);
-                    const imgY = circleY + (isA4 ? 46 : 31);
+                    // L'image mord très légèrement sur le bas du cercle rouge/bleu, comme demandé
+                    const imgY = circleY + (isA4 ? 52 : 36);
                     ctx.drawImage(uImg, circleX - imgW / 2, imgY, imgW, imgH);
                 } else {
                     ctx.font = `800 ${isA4 ? 24 : 16}px ${FONT_SLAB}`;
@@ -2295,6 +2292,7 @@
                 return;
             }
 
+            // RENDU DU CERCLE ROUGE POUR LES AUTRES MÉCANIQUES (TAILLE AUGMENTÉE POUR "BAS" / "CHOC !" ET ZÉRO DÉPASSEMENT)
             const lines = rawDiscText ? rawDiscText.split('|').map(s => s.trim()).filter(Boolean) : [];
             const lineCount = lines.length;
             const hasPhrase = lineCount > 0;
