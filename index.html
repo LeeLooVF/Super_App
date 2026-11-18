@@ -18,9 +18,58 @@
         #topControlPanel { zoom: 0.8; }
         input[type=number]::-webkit-inner-spin-button, input[type=number]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
         input[type=number] { -moz-appearance: textfield; }
+        @keyframes shakeError {
+            0%, 100% { transform: translateX(0); }
+            20%, 60% { transform: translateX(-8px); }
+            40%, 80% { transform: translateX(8px); }
+        }
+        .shake-anim { animation: shakeError 0.35s ease-in-out; }
     </style>
 </head>
 <body class="bg-gray-100 min-h-screen p-3 md:p-5 font-sans text-gray-800">
+
+    <!-- ÉCRAN D'ACCÈS RESTREINT À L'OUVERTURE DU SITE (AVEC MATTHIEU.PNG ET SA BULLE) -->
+    <div id="siteEntryGateModal" class="fixed inset-0 bg-black/85 z-[100] flex items-center justify-center p-4 backdrop-blur-md overflow-y-auto">
+        <div class="relative w-full max-w-[460px] mt-44 sm:mt-48 mb-6">
+            <!-- PERSONNAGE MATTHIEU.PNG + BULLE DE DIALOGUE -->
+            <div class="absolute -top-[185px] sm:-top-[215px] right-2 sm:right-6 flex items-center pointer-events-none select-none z-10">
+                <!-- BULLE NOIRE BORDURE BLANCHE -->
+                <div class="relative bg-black border-2 border-white rounded-2xl px-4 py-3 shadow-2xl mr-2 sm:mr-3 w-[235px] sm:w-[295px] text-center leading-snug">
+                    <p class="text-white font-black text-[10px] sm:text-[11.5px] uppercase tracking-wide">JE N'AI PAS DE FRÈRE NI DE SOEUR MAIS LE FI......</p>
+                    <p class="text-[#EE1C25] font-black text-[11px] sm:text-[12.5px] uppercase mt-0.5">JE RIGOLE.</p>
+                    <p class="text-[#EE1C25] font-black text-[11px] sm:text-[12.5px] uppercase">ÉCRIS MON PRÉNOM.</p>
+                    <!-- POINTE DE LA BULLE VERS MATTHIEU -->
+                    <div class="absolute top-1/2 -right-[11px] -translate-y-1/2 w-0 h-0 border-y-[9px] border-y-transparent border-l-[11px] border-l-white"></div>
+                    <div class="absolute top-1/2 -right-[8px] -translate-y-1/2 w-0 h-0 border-y-[7px] border-y-transparent border-l-[9px] border-l-black"></div>
+                </div>
+                <!-- PHOTO MATTHIEU.PNG -->
+                <img id="matthieuGateImg" src="Matthieu.png" alt="Matthieu" class="w-36 sm:w-48 h-auto object-contain drop-shadow-[0_10px_18px_rgba(0,0,0,0.85)]">
+            </div>
+
+            <!-- CARTE BLANCHE ACCÈS RESTREINT -->
+            <div id="siteEntryGateCard" class="relative bg-white rounded-2xl shadow-2xl border-t-4 border-red-600 px-6 sm:px-8 pt-10 pb-7 text-center space-y-5 z-20">
+                <div class="flex items-center justify-center gap-2.5">
+                    <span class="text-2xl">🔒</span>
+                    <h3 class="text-xl sm:text-2xl font-black text-gray-900 uppercase tracking-wide">ACCÈS RESTREINT</h3>
+                </div>
+
+                <p class="text-xs sm:text-sm text-gray-600 font-medium leading-relaxed px-2">
+                    Veuillez entrer le mot de passe administrateur pour accéder au générateur d'étiquettes.
+                </p>
+
+                <div class="space-y-2">
+                    <input type="password" id="inputSiteEntryPasscode" placeholder="••••••••" autocomplete="off" class="w-full py-3 px-4 border-2 border-gray-300 focus:border-red-600 focus:outline-none rounded-xl text-center text-lg font-extrabold tracking-widest text-gray-800 transition">
+                    <p id="siteEntryPasscodeError" class="hidden text-xs font-extrabold text-red-600">❌ Mot de passe incorrect ! Essaie encore.</p>
+                </div>
+
+                <button type="button" id="btnSubmitSiteEntryPasscode" class="w-full bg-[#DC2626] hover:bg-red-700 text-white font-black py-3.5 px-6 rounded-xl shadow-md hover:shadow-lg transition text-xs sm:text-sm uppercase tracking-wider flex items-center justify-center gap-2">
+                    <span>🔓</span>
+                    <span>VALIDER</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
     <div class="max-w-7xl mx-auto space-y-5">
         <!-- BANDEAU DE CONFIGURATION GLOBALE (RÉDUIT À 80%) -->
         <div id="topControlPanel" class="bg-white p-4 rounded-xl shadow-md border-t-4 border-red-600 space-y-3 sticky top-2 z-20">
@@ -316,7 +365,7 @@
         </div>
     </div>
 
-    <!-- MODALE 3 : DÉPLACER / RENOMMER UN FICHIER SUR R2 (AVEC CODE REQUIS) -->
+    <!-- MODALE 3 : DÉPLACER / RENOMMER UN FICHIER SUR R2 (AVEC SIMPLE CHAMP MOT DE PASSE) -->
     <div id="moveRenameFileModal" class="fixed inset-0 bg-black/65 z-[58] hidden flex items-center justify-center p-4 backdrop-blur-sm">
         <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full p-5 space-y-4 border-t-4 border-blue-600">
             <div class="flex justify-between items-center border-b pb-2.5">
@@ -344,8 +393,8 @@
                     <input type="text" id="inputMoveCustomSubFolder" placeholder="Optionnel : nouveau dossier/sous-dossier" class="w-full p-2 border rounded-lg text-xs">
                 </div>
                 <div>
-                    <label class="block text-xs font-extrabold text-red-700 uppercase mb-1">🔒 Code de sécurité requis :</label>
-                    <input type="password" id="inputMovePasscode" placeholder="Saisir le code administrateur" autocomplete="off" class="w-full p-2 border-2 border-red-200 rounded-lg text-xs font-bold">
+                    <label class="block text-xs font-extrabold text-red-700 uppercase mb-1">🔒 Mot de passe requis :</label>
+                    <input type="password" id="inputMovePasscode" placeholder="Saisir le mot de passe" autocomplete="off" class="w-full p-2 border-2 border-red-200 rounded-lg text-xs font-bold">
                 </div>
             </div>
             <div class="flex justify-end gap-2 pt-2 border-t">
@@ -487,11 +536,60 @@
         const ensureWebpFileName = f => `${(f || 'image').replace(/\.[^.]+$/, '')}.webp`;
         const readFileAsDataURL = file => new Promise(res => { const r = new FileReader(); r.onload = e => res(e.target.result); r.readAsDataURL(file); });
 
+        // ============================================================================
+        // 1) GESTION DE L'ACCÈS RESTREINT À L'OUVERTURE DU SITE (MATTHIEU.PNG + BULLE)
+        // ============================================================================
+        const matthieuGateImg = $('matthieuGateImg');
+        if (matthieuGateImg) {
+            matthieuGateImg.onerror = function() {
+                if (!this.dataset.triedR2) {
+                    this.dataset.triedR2 = '1';
+                    this.src = `${R2_PUBLIC_BASE_URL}/Matthieu.png`;
+                }
+            };
+        }
+
+        function checkSiteEntryGate() {
+            if (sessionStorage.getItem('superu_site_unlocked') === '1') {
+                $('siteEntryGateModal').classList.add('hidden');
+            } else {
+                $('siteEntryGateModal').classList.remove('hidden');
+                setTimeout(() => $('inputSiteEntryPasscode')?.focus(), 80);
+            }
+        }
+
+        function submitSiteEntryPasscode() {
+            const val = ($('inputSiteEntryPasscode').value || '').trim();
+            if (val.toLowerCase() === REQUIRED_DELETE_CODE.toLowerCase()) {
+                sessionStorage.setItem('superu_site_unlocked', '1');
+                $('siteEntryGateModal').classList.add('hidden');
+            } else {
+                const err = $('siteEntryPasscodeError');
+                const card = $('siteEntryGateCard');
+                err.classList.remove('hidden');
+                card.classList.remove('shake-anim');
+                void card.offsetWidth;
+                card.classList.add('shake-anim');
+                $('inputSiteEntryPasscode').select();
+            }
+        }
+
+        $('btnSubmitSiteEntryPasscode').onclick = submitSiteEntryPasscode;
+        $('inputSiteEntryPasscode').addEventListener('keydown', e => {
+            if (e.key === 'Enter') { e.preventDefault(); submitSiteEntryPasscode(); }
+        });
+
+        // ============================================================================
+        // 2) SIMPLE DEMANDE DE MOT DE PASSE POUR LA BIBLIOTHÈQUE R2
+        // ============================================================================
         function askDeletePasscode(desc = 'effectuer cette action') {
-            const code = prompt(`🔒 Sécurité : Entre le code administrateur pour ${desc} :`);
+            const code = prompt(`🔒 Mot de passe requis pour ${desc} :`);
             if (code === null) return null;
-            if (code !== REQUIRED_DELETE_CODE) { alert("❌ Code incorrect ! Opération annulée."); return null; }
-            return code;
+            if (code.trim().toLowerCase() !== REQUIRED_DELETE_CODE.toLowerCase()) {
+                alert("❌ Mot de passe incorrect ! Opération annulée.");
+                return null;
+            }
+            return REQUIRED_DELETE_CODE;
         }
 
         let carteUImageObj = null;
@@ -703,7 +801,7 @@
         const getCandidateUrls = preset => { const u = safeFileUrl(preset.file); return [u, `${R2_PUBLIC_BASE_URL}/${u}`]; };
 
         // ============================================================================
-        // BASE DE DONNÉES LOCALE & SYNCHRONISATION R2 (AVEC CODE "Matthieu")
+        // BASE DE DONNÉES LOCALE & SYNCHRONISATION R2
         // ============================================================================
         function openImageDB() {
             return new Promise((res, rej) => {
@@ -776,7 +874,7 @@
             const newSubRaw = prompt(`✏️ Nouveau nom ou chemin pour "${oldSubFolder}" :\n(Utilise "/" pour un sous-dossier, ex: "Fêtes/Noël")`, oldSubFolder);
             if (!newSubRaw || !newSubRaw.trim() || newSubRaw.trim() === oldSubFolder) return;
             const cleanNewSub = normalizeFolderPath(newSubRaw);
-            const code = askDeletePasscode(`renommer/déplacer le dossier "${oldSubFolder}" vers "${cleanNewSub}"`);
+            const code = askDeletePasscode(`renommer ou déplacer le dossier "${oldSubFolder}"`);
             if (!code) return;
             try {
                 const res = await fetch(R2_API_ENDPOINT, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'rename_folder', folder: tabFolder, oldSubFolder, newSubFolder: cleanNewSub, code }) });
@@ -808,7 +906,7 @@
         }
 
         async function hideStaticGithubFileOnR2(filePath, labelName) {
-            const code = askDeletePasscode(`supprimer le visuel "${labelName}" pour tous les utilisateurs`);
+            const code = askDeletePasscode(`supprimer le visuel "${labelName}"`);
             if (!code) return;
             if (!deletedStaticFiles.includes(filePath)) { deletedStaticFiles.push(filePath); localStorage.setItem('superu_deleted_static_files', JSON.stringify(deletedStaticFiles)); }
             try {
@@ -913,7 +1011,7 @@
         }
 
         // ============================================================================
-        // GESTIONNAIRE DE POLICES & DÉPLACER/RENOMMER R2 (AVEC CODE "Matthieu")
+        // GESTIONNAIRE DE POLICES & DÉPLACER/RENOMMER R2
         // ============================================================================
         function populateMoveTargetSubFolders(tabKey, selectedSub) {
             const sel = $('selectMoveTargetSubFolder'); sel.innerHTML = '';
@@ -930,8 +1028,11 @@
 
         $('btnConfirmMoveRename').onclick = async function() {
             if (!pendingMoveRenameDoc) return;
-            const code = $('inputMovePasscode').value;
-            if (code !== REQUIRED_DELETE_CODE) return alert("❌ Code de sécurité incorrect !");
+            const rawCode = ($('inputMovePasscode').value || '').trim();
+            if (rawCode.toLowerCase() !== REQUIRED_DELETE_CODE.toLowerCase()) {
+                return alert("❌ Mot de passe incorrect !");
+            }
+            const code = REQUIRED_DELETE_CODE;
             const newLabel = $('inputMoveRenameLabel').value.trim() || pendingMoveRenameDoc.name;
             const newTab = $('selectMoveTargetTab').value;
             const typedCustom = $('inputMoveCustomSubFolder').value.trim();
@@ -2735,6 +2836,7 @@
         });
 
         window.addEventListener('DOMContentLoaded', async () => {
+            checkSiteEntryGate();
             await autoLoadMuseoSlabFonts();
             await loadCarteUImage();
             await discoverFolderImagesAutomatically();
