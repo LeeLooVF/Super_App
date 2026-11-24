@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Generateur</title>
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
+    <link rel="shortcut icon" href="favicon.ico">
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.cdnfonts.com/css/museo-slab" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500;600;700;800;900&display=swap" rel="stylesheet">
@@ -294,13 +296,9 @@
                     <button type="button" id="btnCloseGalleryModal" class="text-gray-500 hover:text-red-600 font-bold text-lg px-2.5 py-1">✕</button>
                 </div>
             </div>
-            <div class="p-5 overflow-y-auto space-y-5 bg-gray-100/70 flex-1">
-                <div id="savedGallerySection" class="hidden space-y-2">
-                    <h3 class="text-xs font-extrabold uppercase text-blue-800 bg-blue-100 px-2.5 py-1 rounded-md inline-block">☁️ Déposés sur R2 (<span id="savedCountBadge">0</span>)</h3>
-                    <div id="savedGalleryGrid" class="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-3"></div>
-                </div>
+            <div class="p-5 overflow-y-auto space-y-4 bg-gray-100/70 flex-1">
                 <div class="space-y-2">
-                    <h3 id="galleryFolderHeading" class="text-xs font-extrabold uppercase text-gray-700 bg-gray-200 px-2.5 py-1 rounded-md inline-block">📁 Visuels détectés (<span id="presetCountBadge">0</span>)</h3>
+                    <h3 id="galleryFolderHeading" class="text-xs font-extrabold uppercase text-gray-700 bg-gray-200 px-2.5 py-1 rounded-md inline-block">📁 Tous les visuels (<span id="presetCountBadge">0</span>)</h3>
                     <div id="galleryGrid" class="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-3"></div>
                 </div>
             </div>
@@ -329,13 +327,9 @@
                     <button type="button" id="btnCloseBgModal" class="text-gray-500 hover:text-red-600 font-bold text-lg px-2.5 py-1">✕</button>
                 </div>
             </div>
-            <div class="p-5 overflow-y-auto space-y-5 bg-gray-100/70 flex-1">
-                <div id="savedBgSection" class="hidden space-y-2">
-                    <h3 class="text-xs font-extrabold uppercase text-purple-900 bg-purple-100 px-2.5 py-1 rounded-md inline-block">☁️ Fonds R2 (<span id="savedBgCountBadge">0</span>)</h3>
-                    <div id="savedBgGrid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3"></div>
-                </div>
+            <div class="p-5 overflow-y-auto space-y-4 bg-gray-100/70 flex-1">
                 <div class="space-y-2">
-                    <h3 class="text-xs font-extrabold uppercase text-gray-700 bg-gray-200 px-2.5 py-1 rounded-md inline-block">📁 Fonds préchargés (<span id="presetBgCountBadge">0</span>)</h3>
+                    <h3 class="text-xs font-extrabold uppercase text-gray-700 bg-gray-200 px-2.5 py-1 rounded-md inline-block">📁 Tous les fonds (<span id="presetBgCountBadge">0</span>)</h3>
                     <div id="bgGalleryGrid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3"></div>
                 </div>
             </div>
@@ -528,6 +522,12 @@
         let customSubFolders = { ready_deposited: ['Général'], ready_generated: ['Général'] };
         let activeLibraryTab = 'ready_deposited', activeLibrarySubFolder = 'Général', pendingMoveRenameDoc = null, currentLightboxDoc = null;
         let deletedStaticFiles = JSON.parse(localStorage.getItem('superu_deleted_static_files') || '[]');
+        let favoriteGalleryImages = JSON.parse(localStorage.getItem('superu_favorite_gallery_images') || '[]');
+        function toggleFavoriteGalleryImage(favKey) {
+            if (favoriteGalleryImages.includes(favKey)) favoriteGalleryImages = favoriteGalleryImages.filter(k => k !== favKey);
+            else favoriteGalleryImages.unshift(favKey);
+            localStorage.setItem('superu_favorite_gallery_images', JSON.stringify(favoriteGalleryImages));
+        }
         let dynamicPresets4PerPage = [], dynamicPresetsA4Portrait = [], dynamicPresetsBackgrounds = [];
 
         let activeFontFamilyName = 'Copie de Museo_Slab_3';
@@ -1454,31 +1454,56 @@
 
         function buildBgGallery(filter = '') {
             const q = filter.trim().toLowerCase();
-            const saved = savedUserImages.filter(it => it.folder === 'bg_stock' && (!q || (it.label || '').toLowerCase().includes(q)));
-            $('savedBgCountBadge').textContent = saved.length;
-            $('savedBgSection').classList.toggle('hidden', !saved.length);
-            const sGrid = $('savedBgGrid'); sGrid.innerHTML = '';
-            saved.forEach(s => {
-                const w = document.createElement('div');
-                w.className = 'relative bg-white border-2 border-purple-300 hover:border-purple-600 rounded-xl p-2 flex flex-col items-center gap-1.5 shadow-sm cursor-pointer';
-                w.innerHTML = `<button type="button" class="btn-del absolute top-1 right-1 bg-red-600 text-white text-[10px] font-bold w-5 h-5 rounded-full">✕</button><div class="w-full h-24 bg-gray-50 rounded-lg flex items-center justify-center overflow-hidden border border-gray-100"><img src="${s.dataUrl}" class="w-full h-full object-cover"></div><span class="text-[11px] font-extrabold text-purple-900 uppercase truncate w-full text-center">${s.label}</span>`;
-                w.onclick = e => { if (e.target.closest('.btn-del')) { e.stopPropagation(); return deleteSharedOrLocalItemWithPassword(s, STORE_NAME, s.label); } applyBackgroundVisual(s.dataUrl, s.label, true); };
-                sGrid.appendChild(w);
+            const pGrid = $('bgGalleryGrid'); pGrid.innerHTML = '';
+            const saved = savedUserImages
+                .filter(it => it.folder === 'bg_stock' && (!q || (it.label || '').toLowerCase().includes(q)))
+                .map(s => ({ isR2: true, favKey: 'r2_bg:' + (s.r2Key || s.id), label: s.label || 'Fond', data: s }));
+            const presets = dynamicPresetsBackgrounds
+                .filter(p => !q || p.label.toLowerCase().includes(q))
+                .map(p => ({ isR2: false, favKey: 'gh_bg:' + p.file, label: p.label, data: p }));
+
+            const combined = [...saved, ...presets].sort((a, b) => {
+                const fa = favoriteGalleryImages.includes(a.favKey) ? 0 : 1;
+                const fb = favoriteGalleryImages.includes(b.favKey) ? 0 : 1;
+                if (fa !== fb) return fa - fb;
+                return a.label.localeCompare(b.label);
             });
 
-            const pGrid = $('bgGalleryGrid'); pGrid.innerHTML = '';
-            const presets = dynamicPresetsBackgrounds.filter(p => !q || p.label.toLowerCase().includes(q));
-            $('presetBgCountBadge').textContent = presets.length;
-            presets.forEach(p => {
-                const cands = getCandidateUrls(p);
+            $('presetBgCountBadge').textContent = combined.length;
+            combined.forEach(entry => {
+                const isFav = favoriteGalleryImages.includes(entry.favKey);
                 const card = document.createElement('div');
-                card.className = 'relative bg-white border-2 border-gray-200 hover:border-purple-600 rounded-xl p-2 flex flex-col items-center gap-1.5 shadow-sm cursor-pointer group';
-                card.innerHTML = `<button type="button" class="btn-del absolute top-1 right-1 bg-red-600 text-white text-[10px] font-bold w-5 h-5 rounded-full opacity-0 group-hover:opacity-90">✕</button><div class="w-full h-24 bg-gray-50 rounded-lg flex items-center justify-center overflow-hidden border border-gray-100"><img class="w-full h-full object-cover"></div><span class="text-[11px] font-extrabold text-gray-800 uppercase truncate w-full text-center">${p.label}</span>`;
-                const img = card.querySelector('img'); let t = 0;
-                img.onerror = () => { t++; if (t < cands.length) img.src = cands[t]; else card.remove(); };
-                img.src = cands[0];
-                card.querySelector('.btn-del').onclick = e => { e.stopPropagation(); hideStaticGithubFileOnR2(p.file, p.label); };
-                card.onclick = () => applyPresetBgWithFallback(cands, p.label);
+                card.className = `relative bg-white border-2 ${isFav ? 'border-amber-400 bg-amber-50/40' : 'border-gray-200'} hover:border-purple-600 rounded-xl p-2 flex flex-col items-center gap-1.5 shadow-sm cursor-pointer group`;
+                card.innerHTML = `
+                    <button type="button" title="${isFav ? 'Retirer des favoris' : 'Ajouter aux favoris'}" class="btn-fav absolute top-1 left-1 z-10 w-6 h-6 rounded-full flex items-center justify-center text-xs shadow-sm transition ${isFav ? 'bg-amber-400 text-white' : 'bg-white/90 text-gray-400 hover:text-amber-500 border border-gray-200'}">${isFav ? '★' : '☆'}</button>
+                    <button type="button" title="Supprimer (code admin)" class="btn-del absolute top-1 right-1 z-10 bg-red-600 text-white text-[10px] font-bold w-5 h-5 rounded-full opacity-80 hover:opacity-100 shadow-sm">✕</button>
+                    <div class="w-full h-24 bg-gray-50 rounded-lg flex items-center justify-center overflow-hidden border border-gray-100"><img class="w-full h-full object-cover"></div>
+                    <span class="text-[11px] font-extrabold text-gray-800 uppercase truncate w-full text-center">${entry.label}</span>`;
+
+                const img = card.querySelector('img');
+                if (entry.isR2) {
+                    img.src = entry.data.dataUrl;
+                } else {
+                    const cands = getCandidateUrls(entry.data);
+                    let t = 0;
+                    img.onerror = () => { t++; if (t < cands.length) img.src = cands[t]; else card.remove(); };
+                    img.src = cands[0];
+                }
+
+                card.querySelector('.btn-fav').onclick = e => {
+                    e.stopPropagation();
+                    toggleFavoriteGalleryImage(entry.favKey);
+                    buildBgGallery($('inputSearchBgGallery')?.value || '');
+                };
+                card.querySelector('.btn-del').onclick = e => {
+                    e.stopPropagation();
+                    if (entry.isR2) deleteSharedOrLocalItemWithPassword(entry.data, STORE_NAME, entry.label);
+                    else hideStaticGithubFileOnR2(entry.data.file, entry.label);
+                };
+                card.onclick = () => {
+                    if (entry.isR2) applyBackgroundVisual(entry.data.dataUrl, entry.label, true);
+                    else applyPresetBgWithFallback(getCandidateUrls(entry.data), entry.label);
+                };
                 pGrid.appendChild(card);
             });
         }
@@ -1553,37 +1578,68 @@
         }
 
         function renderSavedGallerySection(filter = '') {
-            const q = filter.trim().toLowerCase(), target = isA4PortraitMode ? 'top_a4' : 'left_4';
-            const flt = savedUserImages.filter(it => (!it.folder || it.folder === target) && (!q || (it.label || '').toLowerCase().includes(q)));
-            $('savedCountBadge').textContent = flt.length;
-            $('savedGallerySection').classList.toggle('hidden', !flt.length);
-            const grid = $('savedGalleryGrid'); grid.innerHTML = '';
-            flt.forEach(s => {
-                const w = document.createElement('div');
-                w.className = 'relative bg-white border-2 border-blue-300 hover:border-red-600 rounded-xl p-2 flex flex-col items-center gap-1.5 shadow-sm cursor-pointer';
-                w.innerHTML = `<button type="button" class="btn-del absolute top-1 right-1 bg-red-600 text-white text-[10px] font-bold w-5 h-5 rounded-full">✕</button><div class="w-full h-24 bg-gray-50 rounded-lg flex items-center justify-center"><img src="${s.dataUrl}" class="max-w-full max-h-full object-contain"></div><span class="text-[11px] font-extrabold text-blue-900 uppercase truncate w-full text-center">${s.label}</span>`;
-                w.onclick = e => { if (e.target.closest('.btn-del')) { e.stopPropagation(); return deleteSharedOrLocalItemWithPassword(s, STORE_NAME, s.label); } applyDataUrlVisual(s.dataUrl, s.label); };
-                grid.appendChild(w);
-            });
+            buildVisualGallery(filter);
         }
 
         function buildVisualGallery(filter = '') {
-            const q = filter.trim().toLowerCase(), grid = $('galleryGrid'); grid.innerHTML = '';
-            const flt = getActivePresetList().filter(p => !q || p.label.toLowerCase().includes(q));
-            $('galleryFolderHeading').innerHTML = `📁 Visuels dans "${isA4PortraitMode ? 'Images A4' : 'Images Gauche'}" (<span id="presetCountBadge">${flt.length}</span>)`;
-            flt.forEach(p => {
-                const cands = getCandidateUrls(p);
+            const q = filter.trim().toLowerCase(), target = isA4PortraitMode ? 'top_a4' : 'left_4';
+            const grid = $('galleryGrid'); grid.innerHTML = '';
+
+            const saved = savedUserImages
+                .filter(it => (!it.folder || it.folder === target) && (!q || (it.label || '').toLowerCase().includes(q)))
+                .map(s => ({ isR2: true, favKey: 'r2_vis:' + (s.r2Key || s.id), label: s.label || 'Visuel', data: s }));
+            const presets = getActivePresetList()
+                .filter(p => !q || p.label.toLowerCase().includes(q))
+                .map(p => ({ isR2: false, favKey: 'gh_vis:' + p.file, label: p.label, data: p }));
+
+            const combined = [...saved, ...presets].sort((a, b) => {
+                const fa = favoriteGalleryImages.includes(a.favKey) ? 0 : 1;
+                const fb = favoriteGalleryImages.includes(b.favKey) ? 0 : 1;
+                if (fa !== fb) return fa - fb;
+                const aPB = /prix[\s_]*bas/i.test(a.label) ? -1 : 0;
+                const bPB = /prix[\s_]*bas/i.test(b.label) ? -1 : 0;
+                if (aPB !== bPB) return aPB - bPB;
+                return a.label.localeCompare(b.label);
+            });
+
+            $('galleryFolderHeading').innerHTML = `📁 Visuels "${isA4PortraitMode ? 'Images A4' : 'Images Gauche'}" (<span id="presetCountBadge">${combined.length}</span>)`;
+
+            combined.forEach(entry => {
+                const isFav = favoriteGalleryImages.includes(entry.favKey);
                 const card = document.createElement('div');
-                card.className = 'relative bg-white border-2 border-gray-200 hover:border-red-600 rounded-xl p-2 flex flex-col items-center gap-1.5 shadow-sm cursor-pointer group';
-                card.innerHTML = `<button type="button" class="btn-del absolute top-1 right-1 bg-red-600 text-white text-[10px] font-bold w-5 h-5 rounded-full opacity-0 group-hover:opacity-90">✕</button><div class="w-full h-24 bg-gray-50 rounded-lg flex items-center justify-center"><img class="max-w-full max-h-full object-contain"></div><span class="text-[11px] font-extrabold text-gray-800 uppercase truncate w-full text-center">${p.label}</span>`;
-                const img = card.querySelector('img'); let t = 0;
-                img.onerror = () => { t++; if (t < cands.length) img.src = cands[t]; else card.remove(); };
-                img.src = cands[0];
-                card.querySelector('.btn-del').onclick = e => { e.stopPropagation(); hideStaticGithubFileOnR2(p.file, p.label); };
-                card.onclick = () => applyPresetVisualWithFallback(cands, p.label);
+                card.className = `relative bg-white border-2 ${isFav ? 'border-amber-400 bg-amber-50/40' : 'border-gray-200'} hover:border-red-600 rounded-xl p-2 flex flex-col items-center gap-1.5 shadow-sm cursor-pointer group`;
+                card.innerHTML = `
+                    <button type="button" title="${isFav ? 'Retirer des favoris' : 'Ajouter aux favoris'}" class="btn-fav absolute top-1 left-1 z-10 w-6 h-6 rounded-full flex items-center justify-center text-xs shadow-sm transition ${isFav ? 'bg-amber-400 text-white' : 'bg-white/90 text-gray-400 hover:text-amber-500 border border-gray-200'}">${isFav ? '★' : '☆'}</button>
+                    <button type="button" title="Supprimer (code admin)" class="btn-del absolute top-1 right-1 z-10 bg-red-600 text-white text-[10px] font-bold w-5 h-5 rounded-full opacity-80 hover:opacity-100 shadow-sm">✕</button>
+                    <div class="w-full h-24 bg-gray-50 rounded-lg flex items-center justify-center"><img class="max-w-full max-h-full object-contain"></div>
+                    <span class="text-[11px] font-extrabold text-gray-800 uppercase truncate w-full text-center">${entry.label}</span>`;
+
+                const img = card.querySelector('img');
+                if (entry.isR2) {
+                    img.src = entry.data.dataUrl;
+                } else {
+                    const cands = getCandidateUrls(entry.data);
+                    let t = 0;
+                    img.onerror = () => { t++; if (t < cands.length) img.src = cands[t]; else card.remove(); };
+                    img.src = cands[0];
+                }
+
+                card.querySelector('.btn-fav').onclick = e => {
+                    e.stopPropagation();
+                    toggleFavoriteGalleryImage(entry.favKey);
+                    buildVisualGallery($('inputSearchGallery')?.value || '');
+                };
+                card.querySelector('.btn-del').onclick = e => {
+                    e.stopPropagation();
+                    if (entry.isR2) deleteSharedOrLocalItemWithPassword(entry.data, STORE_NAME, entry.label);
+                    else hideStaticGithubFileOnR2(entry.data.file, entry.label);
+                };
+                card.onclick = () => {
+                    if (entry.isR2) applyDataUrlVisual(entry.data.dataUrl, entry.label);
+                    else applyPresetVisualWithFallback(getCandidateUrls(entry.data), entry.label);
+                };
                 grid.appendChild(card);
             });
-            renderSavedGallerySection(filter);
         }
 
         function applyDataUrlVisual(dUrl, label) {
