@@ -2263,7 +2263,7 @@
                 if (isDShown && dRaw) {
                     const lines = dRaw.split('|').map(s => s.trim()).filter(Boolean);
                     const sY = dispAlc ? (lines.length > 1 ? 1042 : 1065) : (lines.length > 1 ? 1095 : 1120);
-                    ctx.fillStyle = dCol === '#FFFFFF' ? '#000000' : dCol; ctx.font = `800 21px ${FONT_SLAB}`; ctx.textAlign = 'center';
+                    ctx.fillStyle = dCol === '#FFFFFF' ? '#000000' : dCol; ctx.font = `400 21px ${FONT_SANS}`; ctx.textAlign = 'center';
                     lines.forEach((l, i) => ctx.fillText(l, 420, sY + i * 26));
                 }
                 if (dispAlc) drawAlcohol18Banner(ctx, 38, 1098, 1.05);
@@ -2287,19 +2287,6 @@
                 const s = Math.max(412 / activeImg.width, 420 / activeImg.height);
                 ctx.drawImage(activeImg, (412 - activeImg.width * s) / 2, (420 - activeImg.height * s) / 2, activeImg.width * s, activeImg.height * s);
                 ctx.restore();
-            }
-            if (isDShown && dRaw) {
-                const singleLineDate = dRaw.replace(/\s*\|\s*/g, ' ').trim();
-                let dFs = 20;
-                while (dFs > 11) {
-                    ctx.font = `700 ${dFs}px ${FONT_SLAB}`;
-                    if (ctx.measureText(singleLineDate).width <= 740) break;
-                    dFs -= 0.5;
-                }
-                ctx.fillStyle = dCol;
-                ctx.font = `700 ${dFs}px ${FONT_SLAB}`;
-                ctx.textAlign = 'center';
-                ctx.fillText(singleLineDate, 806, 32);
             }
             if (isMech) {
                 if (pr.isDualMultiProduct) {
@@ -2336,7 +2323,19 @@
             const tX = isMech ? 912 : 740;
             ctx.fillStyle = '#000000'; drawFittedProductTitle(ctx, item.productName, tX, 68, 1180 - tX, 315, 34, 17, 'left');
             if (dispAlc) drawAlcohol18Banner(ctx, 422, 348, 0.72);
-            if (isDShown && dRaw.includes('*')) { ctx.fillStyle = '#000000'; ctx.font = `500 11px ${FONT_SANS}`; ctx.textAlign = 'left'; ctx.fillText("* Selon jour d'ouverture de votre magasin", 422, dispAlc ? 404 : 396); }
+            if (isDShown && dRaw) {
+                const singleLineDate = dRaw.replace(/\s*\|\s*/g, ' ').trim();
+                let dFs = 14;
+                while (dFs > 9) {
+                    ctx.font = `400 ${dFs}px ${FONT_SANS}`;
+                    if (ctx.measureText(singleLineDate).width <= 485) break;
+                    dFs -= 0.5;
+                }
+                ctx.fillStyle = dCol;
+                ctx.font = `400 ${dFs}px ${FONT_SANS}`;
+                ctx.textAlign = 'left';
+                ctx.fillText(singleLineDate, 422, dispAlc ? 404 : 398);
+            }
             if (item.gencode) drawVisualBarcode(ctx, item.gencode, 922, 398, 250, 42);
             ctx.strokeStyle = '#000000'; ctx.lineWidth = 4; ctx.beginPath(); ctx.moveTo(0, 418); ctx.lineTo(1200, 418); ctx.stroke();
         }
